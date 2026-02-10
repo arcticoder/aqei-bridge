@@ -1,7 +1,9 @@
 import AqeiBridge.Spacetime
 import AqeiBridge.StressEnergy
 import AqeiBridge.AQEI_Cone
+import AqeiBridge.DiscreteCausality
 import AqeiBridge.CausalStability
+import AqeiBridge.Conjecture
 
 /-!
 Top-level import for the aqei-bridge Lean project.

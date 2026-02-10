@@ -10,5 +10,11 @@ lean/lake-packages/
 # Mathematica outputs
 mathematica/results/
 
+# Pipeline run records
+runs/
+
+# Generated Lean artifacts
+lean/src/AqeiBridge/GeneratedCandidates.lean
+
 # Misc
 results/
