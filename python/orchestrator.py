@@ -31,12 +31,14 @@ Optional environment variables are passed through to Mathematica (see search.wl)
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 
 
-def run_mathematica(repo_root: Path) -> None:
+def run_mathematica(repo_root: Path, env: dict[str, str] | None = None) -> None:
     script = repo_root / "mathematica" / "search.wl"
     if not script.exists():
         raise FileNotFoundError(script)
@@ -49,7 +51,7 @@ def run_mathematica(repo_root: Path) -> None:
     else:
         raise RuntimeError("Neither 'wolframscript' nor 'wolfram' found on PATH")
 
-    subprocess.run(cmd, cwd=str(repo_root), check=True)
+    subprocess.run(cmd, cwd=str(repo_root), check=True, env=env)
 
 
 def run_analysis(repo_root: Path) -> None:
@@ -72,11 +74,22 @@ def shutil_which(cmd: str) -> str | None:
     return None
 
 
-def main() -> int:
-    repo_root = Path(__file__).resolve().parents[1]
+def _utc_timestamp() -> str:
+    return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+
+
+def run_pipeline(repo_root: Path, env: dict[str, str] | None = None) -> dict[str, str]:
+    """Run the full 4-stage loop and persist a small run record.
+
+    Returns a dict with paths for the produced artifacts.
+    """
+
+    env_final = os.environ.copy()
+    if env:
+        env_final.update(env)
 
     print("[aqei-bridge] Stage III: running Mathematica search")
-    run_mathematica(repo_root)
+    run_mathematica(repo_root, env=env_final)
 
     print("[aqei-bridge] Stage IV: generating Lean candidates")
     run_analysis(repo_root)
@@ -84,7 +97,34 @@ def main() -> int:
     print("[aqei-bridge] Stage I: Lean build (typecheck)")
     run_lean_build(repo_root)
 
+    # Persist run metadata.
+    ts = _utc_timestamp()
+    runs_dir = repo_root / "runs" / ts
+    runs_dir.mkdir(parents=True, exist_ok=True)
+
+    results_dir = repo_root / "mathematica" / "results"
+    summary_path = results_dir / "summary.json"
+    candidates_path = results_dir / "top_candidates.json"
+    generated_path = repo_root / "lean" / "src" / "AqeiBridge" / "GeneratedCandidates.lean"
+
+    run_record = {
+        "timestampUtc": ts,
+        "resultsDir": str(results_dir),
+        "summaryJson": str(summary_path),
+        "topCandidatesJson": str(candidates_path),
+        "generatedLean": str(generated_path),
+        "env": {k: env_final[k] for k in sorted(env_final) if k.startswith("AQEI_")},
+    }
+    (runs_dir / "run.json").write_text(json.dumps(run_record, indent=2, sort_keys=True) + "\n")
+
     print("[aqei-bridge] OK")
+    return run_record
+
+
+def main() -> int:
+    repo_root = Path(__file__).resolve().parents[1]
+
+    run_pipeline(repo_root=repo_root)
     return 0
 
 

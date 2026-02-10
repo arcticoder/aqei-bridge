@@ -8,6 +8,8 @@ python -m py_compile \
   "$ROOT_DIR/python/orchestrator.py" \
   "$ROOT_DIR/python/analyze_candidates.py"
 
+python -m unittest -q tests.test_pipeline
+
 # Smoke-test: generate Lean candidates from a tiny synthetic JSON.
 TMP_DIR="$ROOT_DIR/.tmp_test"
 rm -rf "$TMP_DIR"
