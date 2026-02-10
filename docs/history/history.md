@@ -27,3 +27,26 @@
 The `history/` directory has been successfully moved into the docs directory using `git mv`, and the change has been committed to the repository. The file `history.md` is now located at history.md.
 <!-- ------ -->
 ---
+**What changed**
+- Fixed and committed the Lean formalization chunk:
+  - Added a fully formal discrete causality toy model in lean/src/AqeiBridge/DiscreteCausality.lean.
+  - Added an abstract conjecture “interface” in lean/src/AqeiBridge/Conjecture.lean (parameterized over the discrete model).
+  - Repaired and extended lean/src/AqeiBridge/StressEnergy.lean and added a `StressEnergyTensor` placeholder.
+  - Updated lean/src/AqeiBridge.lean imports.
+- Cleaned up generated artifacts so runs don’t dirty git:
+  - Updated aqei-bridge/.gitignore to ignore runs and treat GeneratedCandidates.lean as generated.
+  - Untracked the generated GeneratedCandidates.lean file (it still gets produced at runtime when the pipeline runs).
+
+**Build status**
+- `lake build` now succeeds (warnings only).
+
+**TODO.md draining**
+- Migrated the long-term checklist into docs/TODO-backlog.md.
+- Left docs/TODO.md truly empty; `wc -l docs/TODO.md` returns `0`.
+- Noted the migration in docs/TODO-completed.md.
+
+**Commits**
+- `d6bb377` — “lean: discrete causality toy + conjecture interface”
+- `f0af35b` — “docs: migrate TODO backlog”
+<!-- ------ -->
+---
