@@ -78,6 +78,26 @@ Or run the single orchestrator:
 
 - `python python/orchestrator.py`
 
+## Debugging / common failure modes
+
+- **Mathematica script errors / huge output**
+  - Start with the smallest test settings: `bash tests/mathematica_tests.sh`.
+  - If Wolfram prints enormous expressions, it's usually a failed numeric path
+    (e.g. symbolic leakage). Check `mathematica/search.wl` for any unevaluated
+    symbols and force `N@` where needed.
+
+- **WolframScript not found**
+  - `tests/mathematica_tests.sh` will fall back to `wolfram -script`.
+  - Ensure `which wolframscript` or `which wolfram` works.
+
+- **Lean build fails / Mathlib cache mismatch**
+  - The toolchain is pinned in `lean/lean-toolchain`.
+  - If you see cache warnings, run `cd lean && lake build` once to sync.
+
+- **Slow tests**
+  - Reduce `AQEI_GRID` and `AQEI_NUM_CONSTRAINTS`.
+  - Keep `AQEI_NUM_BASIS` small while iterating.
+
 ## Notes on the toy model
 
 - Current search works in a 1+1 grid, builds Gaussian wavepacket basis functions, applies a scalar Fourier-space Green multiplier, then integrates a proxy field along several “null-ish” rays.
