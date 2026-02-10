@@ -24,3 +24,6 @@
 - Verified locally: Mathematica smoke test passes, Lean build passes, and the full orchestrator runs through to completion.
 <!-- ------ -->
 ---
+The `history/` directory has been successfully moved into the docs directory using `git mv`, and the change has been committed to the repository. The file `history.md` is now located at history.md.
+<!-- ------ -->
+---
