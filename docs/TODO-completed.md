@@ -14,3 +14,6 @@
 ## 2026-02-09 (later)
 - Added timestamped run persistence in `runs/<UTC timestamp>/run.json` via `python/orchestrator.py`.
 - Added `tests/test_pipeline.py` (unittest end-to-end smoke test) and wired it into `tests/python_tests.sh`.
+
+## 2026-02-10
+- Migrated long-term checklist items into `docs/TODO-backlog.md` so `docs/TODO.md` can remain empty as the active-queue file.
