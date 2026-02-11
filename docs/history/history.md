@@ -268,3 +268,10 @@ I’ve reshaped the active queue into a small 6-item batch and moved the over-sc
 - `331f1d4` — “Add causal-graph diagnostics helpers”
 <!-- ------ -->
 ---
+- Pulled the next backlog slice into TODO, implemented it, ran run_tests.sh (passes), drained TODO back to 0 lines, and committed.
+- Added futures-map support to the CTC proxy: python/causal_graph_tools.py now accepts `{"futures": {...}}` as well as `{"edges": ...}`.
+- Added a CI-friendly poset visualization generator: python/minkowski_poset.py writes `edges` JSON and optional DOT.
+- Documented both in docs/phase4_searches.md and added smoke tests in tests/python_tests.sh.
+- Logged completion in docs/TODO-completed.md and updated the note in docs/TODO-backlog.md.
+<!-- ------ -->
+---
