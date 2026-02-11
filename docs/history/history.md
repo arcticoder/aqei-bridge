@@ -50,3 +50,28 @@ The `history/` directory has been successfully moved into the docs directory usi
 - `f0af35b` — “docs: migrate TODO backlog”
 <!-- ------ -->
 ---
+**Done (and committed)**
+- Tests + CLI knobs
+  - Added `--test-mode` support to mathematica/search.wl.
+  - Expanded run_tests.sh to explicitly run `lake build`, Mathematica `--test-mode`, and `python -m unittest discover` (and it still runs the existing per-language scripts).
+- Phase 2 Lean skeleton progress (compile-safe, still abstract)
+  - lean/src/AqeiBridge/Spacetime.lean: added abstract `CausalCurve`, `Jplus`, and a neighborhood hook type.
+  - lean/src/AqeiBridge/StressEnergy.lean: made `StressEnergyTensor` a symmetric matrix; added `LinearizedEinstein` placeholder.
+  - lean/src/AqeiBridge/AQEI_Cone.lean: added `mkFunctionals` helper for sampling-based constraint lists.
+  - lean/src/AqeiBridge/CausalStability.lean: added an `IsPathConnected` skeleton statement for the admissible region.
+  - lean/src/AqeiBridge/DiscreteCausality.lean: renamed discrete future-set to `JplusDiscrete` to avoid clashing with spacetime `Jplus`.
+- Manuscript draft
+  - Created docs/manuscript.md with an outline patterned after the “papers/” style in `energy-tensor-cone`.
+
+**TODO workflow**
+- Drained the active queue: docs/TODO.md is empty and `wc -l docs/TODO.md` returns `0`.
+- Moved outcomes into:
+  - docs/TODO-completed.md
+  - docs/TODO-backlog.md (for the deeper homotopy/continuity/Lorentzian-manifold pieces that aren’t realistic to finish in this iteration without overclaiming)
+
+**Commits**
+- `32664a0` — tests: add Mathematica `--test-mode` + explicit smoke checks
+- `7c7119b` — lean+docs: tighten Phase-2 skeletons + start manuscript
+- `c074df4` — docs: drain active TODO queue (keeps TODO.md empty)
+<!-- ------ -->
+---
