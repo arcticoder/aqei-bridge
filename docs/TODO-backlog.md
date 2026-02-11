@@ -1,6 +1,6 @@
 # TODO: Backlog (Long-Term)
 
-Lower-priority or dependent items. Review quarterly; move to active TODO.md as capacity allows. Aligned with proving core conjecture and bridging to "Chronology protection as topological invariant" (add causal sets, Alexandrov topology, order invariants).
+Lower-priority or dependent items. Review regularly; move to active TODO.md as capacity allows. Aligned with proving core conjecture and bridging to "Chronology protection as topological invariant" (add causal sets, Alexandrov topology, order invariants).
 
 ## Phase 3: Improve Heuristics & Bridge (Medium Priority)
 - [ ] Improve causal observable in `search.nb`: Add null geodesic ray tracing (solve \ddot{x}^μ + Γ^μ_{αβ} \dot{x}^α \dot{x}^β = 0 numerically). Check focusing via Raychaudhuri equation proxy. Sample Mathematica:
