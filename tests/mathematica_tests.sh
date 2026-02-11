@@ -11,11 +11,12 @@ export AQEI_GRID="32"
 export AQEI_DOMAIN="2.0"
 export AQEI_SIGMA="0.8"
 export AQEI_SEED="42"
+export AQEI_TEST_MODE="1"
 
 if command -v wolframscript >/dev/null 2>&1; then
-  wolframscript -file "$ROOT_DIR/mathematica/search.wl"
+  wolframscript -file "$ROOT_DIR/mathematica/search.wl" --test-mode
 elif command -v wolfram >/dev/null 2>&1; then
-  wolfram -script "$ROOT_DIR/mathematica/search.wl"
+  wolfram -script "$ROOT_DIR/mathematica/search.wl" --test-mode
 else
   echo "ERROR: neither wolframscript nor wolfram found on PATH" >&2
   exit 1

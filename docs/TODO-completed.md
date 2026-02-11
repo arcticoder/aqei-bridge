@@ -35,3 +35,10 @@
 - Updated `docs/manuscript.md` with a short causal-poset/Alexandrov-topology bridge section.
 - Updated `docs/TODO-BLOCKED.md` to reflect that the topology substrate exists; remaining cohomology/sheaf step is blocked on choosing a target invariant.
 - Made `python/orchestrator.py` pass `--test-mode` to Mathematica when `AQEI_TEST_MODE=1` (used by the end-to-end unit test).
+
+## 2026-02-10
+- Added `lean/src/AqeiBridge/SpacetimeCausalPoset.lean` connecting the abstract `Spacetime` causal relation to `CausalPoset` under explicit preorder axioms.
+- Added `Spacetime.alexandrovTopology` and proved `isOpen_Jplus_order` by reuse of the order-theoretic lemma.
+- Wired `AqeiBridge.SpacetimeCausalPoset` into the top-level import file.
+- Updated `docs/manuscript.md` with an explicit “axioms → Alexandrov topology” implementation note.
+- Made `tests/mathematica_tests.sh` always run `search.wl` in `--test-mode` to keep `./run_tests.sh` fast.

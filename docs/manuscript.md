@@ -42,6 +42,13 @@ We add a minimal bridge from causality to topology:
 - Define the causal future as the upper set $J^+(p) := \{ q \mid p \le q \}$.
 - Put an Alexandrov-style topology on events where *open sets are upper sets*.
 
+Lean implementation note:
+- Given a `Spacetime` and a metric `g`, we treat the abstract predicate `CausalCurve M g p q` as a
+  binary relation on events.
+- We do **not** assume it is a preorder automatically; instead we require explicit axioms
+  (reflexivity + transitivity) and then package it into a `CausalPoset`.
+- With those axioms, the induced Alexandrov topology makes each future set $J^+(p)$ open.
+
 This is a deliberately light-weight formal substrate for later “topological obstruction” invariants.
 
 ## 3. Hybrid workflow
