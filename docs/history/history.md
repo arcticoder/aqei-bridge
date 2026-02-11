@@ -85,3 +85,12 @@ The `history/` directory has been successfully moved into the docs directory usi
 - `wc -l docs/TODO.md` is `0`.
 <!-- ------ -->
 ---
+Completed: *Commit changes* (5/5)
+
+- Pulled the next backlog chunk into TODO.md (Spacetime → causal preorder → Alexandrov topology), implemented it, and drained TODO.md back to 0 lines.
+- Added SpacetimeCausalPoset.lean: `Spacetime.CausalAxioms`, `toCausalPoset`, `alexandrovTopology`, and `isOpen_Jplus_order`.
+- Wired it into AqeiBridge.lean and extended the note in manuscript.md.
+- Fixed the recurring slow/hanging test behavior by forcing Mathematica tests to use `--test-mode` in mathematica_tests.sh.
+- Verified `wc -l docs/TODO.md` is `0`, and committed the changes (`4b53a0a`).
+<!-- ------ -->
+---
