@@ -1,41 +1,31 @@
 # TODO: Backlog (Long-Term)
 
-Lower-priority or dependent items. Review regularly; move to active TODO.md as capacity allows. Aligned with proving core conjecture and bridging to "Chronology protection as topological invariant" (add causal sets, Alexandrov topology, order invariants).
+Refined: Moved unblocked items to active TODO.md (e.g., formalizations leveraging recent discrete toy). Aligned with proving conjecture + bridge to topological chronology (add causal sets/posets from recent Lean work). Review after Phase 2.
 
 ## Phase 3: Improve Heuristics & Bridge (Medium Priority)
-- [ ] Improve causal observable in `search.nb`: Add null geodesic ray tracing (solve \ddot{x}^μ + Γ^μ_{αβ} \dot{x}^α \dot{x}^β = 0 numerically). Check focusing via Raychaudhuri equation proxy. Sample Mathematica:
+- [ ] Improve causal observable: Add geodesic tracing. Sample Mathematica (unblocked from synthetic):
   ```mathematica
-  geodesicEq = {x''[λ] + Christoffel[x[λ], t[λ]] x'[λ]^2 == 0, ...};  (* Perturbed metric *)
-  NDSolve[geodesicEq, {t, x}, {λ, 0, L}]
+  NDSolve[{t''[λ] == 0, x''[λ] + PerturbedGamma[x[λ]] (x'[λ])^2 == 0}, {t, x}, {λ, 0, 1}]
   ```
-- [ ] Add multi-ray analysis: Proxy path-connectedness by continuous overlap of J⁺(p) under parameter sweeps (e.g., vary ε, check homotopy via persistent homology approx in Python).
-- [ ] Explore 2+1D toys: Use cylindrical grid in Mathematica; export to Python for analysis.
-- [ ] Enhance `analyze_candidates.py`: Emit Lean conjectures (e.g., "conjecture Bound : Δ ≤ 1.5"). Add Pareto fronts using scipy.optimize. Sample Python:
+- [ ] Multi-ray analysis: Proxy connectedness via overlap; use Python persistent homology (networkx/scipy).
+- [ ] 2+1D toys: Cylindrical grid; build on 1+1D pipeline (commit b91cc67).
+- [ ] Enhance analyze_candidates.py: Emit Lean bounds. Sample:
   ```python
-  from scipy.optimize import pareto_front
-  fronts = pareto_front(scores, constraints)
-  with open('lean/GeneratedCandidates.lean', 'a') as f:
-      f.write(f'conjecture FromRun{run_id} : Δ ≤ {max_bound} := sorry\n')
+  with open('lean/Generated.lean', 'w') as f:
+      f.write(f'conjecture DeltaBound : Δ ≤ {computed_bound} := sorry')
   ```
-- [ ] Add parameter sweeps: Use numpy.meshgrid for σ, N_basis; log results.
+- [ ] Parameter sweeps: Numpy meshgrid; log via recent orchestrator updates.
 
 ## Phase 4: Toward Proof / Disproof & Bridge Conjecture (Long Term)
-- [ ] Large-scale searches: Use cluster runs (if available) for Δ maximization; if bounded, lemma-ize in Lean.
-- [ ] Transition to realistic backgrounds: Start with Minkowski perturbations, then Schwarzschild (use post-Newtonian in Mathematica).
-- [ ] Incorporate linearized Einstein: Full solver in Python/Mathematica loop. Sample:
+- [ ] Large-scale searches: Maximize Δ; if bounded, lemma in Lean.
+- [ ] Realistic backgrounds: Minkowski to Schwarzschild; use post-Newtonian.
+- [ ] Linearized solver: Full in loop. Sample:
   ```mathematica
-  h = DSolve[LinearizedEinsteinEqs == 8 Pi T, h, {t, x}];
+  hSol = DSolve[δG == 8 π δT, h, {t,x}];
   ```
-- [ ] Prove special cases in Lean: Vacuum (T=0), weak-field (ε<<1), 1+1D toy.
-- [ ] If counterexamples: Refine to local causality or smaller neighborhoods.
-- [ ] Bridge integration: Add causal poset in `Spacetime.lean` (partial order on events), Alexandrov topology; conjecture reformulation as invariant sheaf cohomology.
+- [ ] Prove cases: Weak-field, 1+1D (extend discrete toy).
+- [ ] Counterexamples: Refine neighborhood size.
+- [ ] Bridge: Add poset in Spacetime.lean (partial order); Alexandrov topology; conjecture as invariant cohomology. Use history.md Sonnet 4.5 ideas on discrete proxies.
 
 ## General / Ongoing
-- [ ] Review/incorporate history.md ideas (e.g., non-linear opts, discrete proxies).
-- [ ] Add visualizations: Mathematica ContourPlot[h[t,x]]; export PNGs to docs/.
-
-## Phase 2 (deeper formalization subparts)
-- [ ] Upgrade `Spacetime.lean` from abstract placeholders to a genuine Lorentzian-manifold development (or a refined discrete model) with a nontrivial `CausalCurve` and `J⁺`.
-- [ ] In `CausalStability.lean`: refine the conjecture statement to include *global causal homotopy class invariance* once a concrete causal model exists.
-- [ ] Prove continuity/stability lemmas for `J⁺` under small perturbations (likely via a discrete approximation first, then manifold topology).
-- [ ] Replace `LinearizedEinstein` placeholder with a meaningful interface (and later an implementation or an axiom tied to external analytic results).
+- [ ] Visualizations: ContourPlot; export to docs/.
