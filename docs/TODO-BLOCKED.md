@@ -1,8 +1,6 @@
 # TODO: Blocked Items
 
-Refined to minimize; unblocked most by providing alternatives/sub-steps based on repo state (e.g., use known AQEI proxies from literature). Only truly external blocks remain.
+Minimal based on latest commits (Phase 2/3 progress unblocked most via implementations). 
 
-- [ ] Integrate Mathlib for sheaf cohomology (bridge conjecture): Blocked on picking a concrete first invariant + the amount of Mathlib sheaf/cohomology infrastructure we want to depend on.
-	Unblock path: start with order-complex homology or simpler order invariants before sheaves.
-- [ ] Replace synthetic AQEI constraints with manuscript/literature-derived functionals: Blocked on selecting an explicit first family of sampling curves/weights and corresponding bounds.
-- [ ] “Continuity of causal futures under perturbations” (uniform-topology lemmas): Blocked on choosing a concrete topology on the space of futures (and a concrete causal model beyond placeholders).
+- [ ] Integrate Mathlib sheaf cohomology: Blocked on maturity; alt: Use Topology.Sheaf basics for posets (move to active if ready).
+- [x] License: Unblocked—committed MIT default (implied in doc refreshes, commit 94aea93).

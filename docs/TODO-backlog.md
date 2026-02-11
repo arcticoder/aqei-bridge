@@ -1,31 +1,32 @@
 # TODO: Backlog (Long-Term)
 
-Refined: Moved unblocked items to active TODO.md (e.g., formalizations leveraging recent discrete toy). Aligned with proving conjecture + bridge to topological chronology (add causal sets/posets from recent Lean work). Review after Phase 2.
-
-## Phase 3: Improve Heuristics & Bridge (Medium Priority)
-- [x] Improve causal observable: Add geodesic tracing. Sample Mathematica (unblocked from synthetic):
-  ```mathematica
-  NDSolve[{t''[λ] == 0, x''[λ] + PerturbedGamma[x[λ]] (x'[λ])^2 == 0}, {t, x}, {λ, 0, 1}]
-  ```
-- [x] Multi-ray analysis: Proxy connectedness via overlap; threshold sweep as a lightweight 0th-persistence proxy (no extra deps).
-- [ ] 2+1D toys: Cylindrical grid; build on 1+1D pipeline (commit b91cc67).
-- [x] Enhance analyze_candidates.py: Emit Lean bounds. Sample:
-  ```python
-  with open('lean/Generated.lean', 'w') as f:
-      f.write(f'conjecture DeltaBound : Δ ≤ {computed_bound} := sorry')
-  ```
-- [x] Parameter sweeps: Meshgrid support and sweep index logging via orchestrator updates.
+Updated with completions (e.g., cdd944a Phase 3 checks, b0e5dd5 visualizations/analysis). Promote proofs/bridge to active. If conjecture holds (from searches), pivot to full bridge conjecture formalization/manuscript. Review post-Phase 4.
 
 ## Phase 4: Toward Proof / Disproof & Bridge Conjecture (Long Term)
-- [ ] Large-scale searches: Maximize Δ; if bounded, lemma in Lean.
-- [ ] Realistic backgrounds: Minkowski to Schwarzschild; use post-Newtonian.
-- [ ] Linearized solver: Full in loop. Sample:
+- [ ] Counterexamples check: Refine if emerge. Math: Check if ∃ T s.t. homotopy class changes, e.g., formation of closed timelike curves (CTC) via \( \pi_1(\mathcal{J}) \neq 0 \).
+- [ ] Bridge integration: Implement sheaf cohomology. Sample Mathematica poset viz:
   ```mathematica
-  hSol = DSolve[δG == 8 π δT, h, {t,x}];
+  poset = RelationGraph[Precedes, events, VertexLabels -> Automatic];
+  cohomology = SheafCohomology[poset, sheaf];  (* Placeholder with custom sheaf *)
   ```
-- [ ] Prove cases: Weak-field, 1+1D (extend discrete toy).
-- [ ] Counterexamples: Refine neighborhood size.
-- [ ] Bridge: Add poset in Spacetime.lean (partial order); Alexandrov topology; conjecture as invariant cohomology. Use history.md Sonnet 4.5 ideas on discrete proxies.
+- [ ] Prove full conjecture: General case using order invariants. Sample Lean:
+  ```lean
+  conjecture TopologyChronologyProtection (M : CausalPoset) :
+    InvariantUnderPert (SheafCohomology M) ∧ NoCTCIfAcyclic M
+  ```
 
 ## General / Ongoing
-- [ ] Visualizations: ContourPlot; export to docs/.
+- [x] Replace synthetic AQEI: Done with Fewster averages (commit a8bafa9 updates).
+- [ ] Add cluster support: For large searches; use multiprocessing in Python.
+  ```python
+  from multiprocessing import Pool
+  def search_worker(params): return maximize_delta(params)
+  with Pool(4) as p: results = p.map(search_worker, param_list)
+  ```
+- [ ] Visualizations: Add poset graphs. Sample Python:
+  ```python
+  import networkx as nx
+  import matplotlib.pyplot as plt
+  G = nx.DiGraph([(p, q) for p in events for q in J_plus(p)])
+  nx.draw(G, with_labels=True); plt.savefig('poset.png')
+  ```
