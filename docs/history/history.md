@@ -210,3 +210,16 @@ Implemented the “next good step” as a formal Lean bridge from chambers → d
 to push one step further, the natural follow-on is to *define an explicit chamber-indexed discrete model* `J : StressEnergy n → DiscreteSpacetime Pt` that provably factors through the chamber index (so the “constant on chambers” hypothesis becomes a theorem rather than an assumption).
 <!-- ------ -->
 ---
+Implemented the chamber-indexed discrete model `J` and made “constant on chambers” a theorem by construction.
+
+- Added ChamberIndexedModel.lean
+  - Defines `chamberIndex` and `Chamber`.
+  - Defines `chamberIndexedJ : StressEnergy n → DiscreteSpacetime Pt` via `J T := model (chamberIndex F T)`.
+  - Proves `chamberIndexedJ_constantOn_chamber` and the discrete-future singleton corollary `discreteFuture_image_singleton_of_chamberIndexedJ`.
+- Wired the module into AqeiBridge.lean.
+- Updated conjecture.md to reference the new construction.
+- Ran run_tests.sh (passes), drained TODO.md to truly empty, logged completion in TODO-completed.md, and committed (`34966f6`).
+
+next step: connect this `chamberIndex` notion to the earlier `ClosedChamber` active-set definition (so we can explicitly relate “active constraints” diagnostics to these sign-pattern chambers)
+<!-- ------ -->
+---
