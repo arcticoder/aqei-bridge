@@ -65,15 +65,29 @@ dependency-free helpers:
 - **CTC proxy**: detects whether a directed graph contains a cycle.
 - **Visualization**: exports a Graphviz DOT file.
 
-Input JSON format:
+Input JSON formats:
+
+- Explicit edges:
 
 `{"edges": [["a","b"], ["b","c"]]}`
+
+- Futures map (convenient when you already have $J^+(p)$ samples):
+
+`{"futures": {"a": ["b","c"], "b": ["c"]}}`
 
 Commands:
 
 `python python/causal_graph_tools.py ctc path/to/graph.json`
 
 `python python/causal_graph_tools.py dot path/to/graph.json --out path/to/graph.dot`
+
+### Generate a small 1+1 poset graph
+
+For quick visualization without external dependencies, generate a tiny discrete causal graph:
+
+`python python/minkowski_poset.py --tmax 5 --xmax 5 --out runs/tmp/poset.json --dot-out runs/tmp/poset.dot`
+
+This uses local “future-step” edges (a simple reachability proxy), and is meant for diagnostics only.
 
 ## Reporting guidelines
 

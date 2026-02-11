@@ -10,6 +10,7 @@ Updated with completions (e.g., cdd944a Phase 3 checks; b0e5dd5 visuals/analysis
       graph = nx.DiGraph([(p, q) for p in points for q in futures[p]])
       return nx.has_cycle(graph)  # Proxy for closed timelike curves
   ```
+  - Note: `python/causal_graph_tools.py ctc` supports both explicit `edges` and a `futures` map JSON input.
 - [ ] Full conjecture proof: Generalize using invariants. Sample Mathematica poset:
   ```mathematica
   events = Table[{t, x}, {t, 0, 10}, {x, 0, 10}];

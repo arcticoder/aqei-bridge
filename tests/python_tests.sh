@@ -9,7 +9,8 @@ python -m py_compile \
   "$ROOT_DIR/python/analyze_candidates.py" \
   "$ROOT_DIR/python/multi_ray_analysis.py" \
   "$ROOT_DIR/python/sweep_analysis.py" \
-  "$ROOT_DIR/python/causal_graph_tools.py"
+  "$ROOT_DIR/python/causal_graph_tools.py" \
+  "$ROOT_DIR/python/minkowski_poset.py"
 
 python -m unittest -q tests.test_pipeline
 
@@ -199,6 +200,51 @@ assert cyc_obj['hasCycle'] is True
 dot_out = root / '.tmp_test' / 'graph.dot'
 subprocess.check_call([sys.executable, str(tool), 'dot', str(root / '.tmp_test/graph_acyclic.json'), '--out', str(dot_out)])
 dot = dot_out.read_text()
+assert 'digraph' in dot
+assert '->' in dot
+PY
+
+rm -rf "$TMP_DIR"
+
+# Smoke-test: causal graph tools accept futures-map JSON.
+TMP_DIR="$ROOT_DIR/.tmp_test"
+rm -rf "$TMP_DIR"
+mkdir -p "$TMP_DIR"
+
+cat >"$TMP_DIR/futures_cycle.json" <<'JSON'
+{"futures": {"a": ["b"], "b": ["a"]}}
+JSON
+
+python - <<'PY'
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+root = Path('.').resolve()
+tool = root / 'python' / 'causal_graph_tools.py'
+
+out = subprocess.check_output([sys.executable, str(tool), 'ctc', str(root / '.tmp_test/futures_cycle.json'), '--json'])
+obj = json.loads(out.decode('utf-8'))
+assert obj['hasCycle'] is True
+PY
+
+# Smoke-test: Minkowski poset generator writes JSON and DOT.
+python "$ROOT_DIR/python/minkowski_poset.py" \
+  --tmax 2 \
+  --xmax 2 \
+  --out "$ROOT_DIR/.tmp_test/poset.json" \
+  --dot-out "$ROOT_DIR/.tmp_test/poset.dot"
+
+python - <<'PY'
+import json
+from pathlib import Path
+
+data = json.loads(Path('.tmp_test/poset.json').read_text())
+assert 'edges' in data
+assert len(data['edges']) > 0
+
+dot = Path('.tmp_test/poset.dot').read_text()
 assert 'digraph' in dot
 assert '->' in dot
 PY

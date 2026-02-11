@@ -130,3 +130,11 @@
 - Extended `tests/python_tests.sh` with smoke tests for cycle detection and DOT output.
 - Updated `docs/TODO-backlog.md` to note that basic multiprocessing exists via `python/sweep_parameters.py --skip-lean --jobs`.
 - Ran `./run_tests.sh` (passes).
+
+## 2026-02-11 (poset visualization + futures→graph)
+- `python/causal_graph_tools.py`: accept `{"futures": {node: [nodes...]}}` JSON and interpret it as edges.
+- Added `python/minkowski_poset.py` to generate a tiny 1+1 discrete poset graph and optionally export DOT.
+- Documented the futures-map format and poset generator in `docs/phase4_searches.md`.
+- Extended `tests/python_tests.sh` with smoke tests for futures-map input and the poset generator outputs.
+- Updated `docs/TODO-backlog.md` to note futures-map support for the CTC proxy.
+- Ran `./run_tests.sh` (passes).

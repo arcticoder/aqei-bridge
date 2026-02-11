@@ -6,6 +6,7 @@ This is intentionally dependency-free (no networkx) so it can run in CI.
 
 Input format (JSON):
 - edges: list[list[hashable, hashable]] or list[dict{"src":..., "dst":...}]
+- futures: dict[node, list[node]] interpreted as edges (node -> each future)
 
 Example:
   {"edges": [["a","b"],["b","c"]]}
@@ -39,24 +40,42 @@ def _to_node_id(x: Any) -> str:
 
 
 def _load_edges(payload: dict[str, Any]) -> list[tuple[str, str]]:
-    if "edges" not in payload:
-        raise ValueError("JSON must contain key 'edges'")
+    if "edges" in payload:
+        raw_edges = payload["edges"]
+        if not isinstance(raw_edges, list):
+            raise ValueError("'edges' must be a list")
 
-    raw_edges = payload["edges"]
-    if not isinstance(raw_edges, list):
-        raise ValueError("'edges' must be a list")
+        edges: list[tuple[str, str]] = []
+        for e in raw_edges:
+            if isinstance(e, list) and len(e) == 2:
+                src, dst = e
+            elif isinstance(e, dict) and "src" in e and "dst" in e:
+                src, dst = e["src"], e["dst"]
+            else:
+                raise ValueError("Each edge must be [src, dst] or {src:..., dst:...}")
+            edges.append((_to_node_id(src), _to_node_id(dst)))
 
-    edges: list[tuple[str, str]] = []
-    for e in raw_edges:
-        if isinstance(e, list) and len(e) == 2:
-            src, dst = e
-        elif isinstance(e, dict) and "src" in e and "dst" in e:
-            src, dst = e["src"], e["dst"]
-        else:
-            raise ValueError("Each edge must be [src, dst] or {src:..., dst:...}")
-        edges.append((_to_node_id(src), _to_node_id(dst)))
+        return edges
 
-    return edges
+    if "futures" in payload:
+        futures = payload["futures"]
+        if not isinstance(futures, dict):
+            raise ValueError("'futures' must be an object mapping node -> list[node]")
+
+        edges: list[tuple[str, str]] = []
+        # Deterministic ordering: sort by stringified node IDs.
+        src_ids = sorted((_to_node_id(k), k) for k in futures.keys())
+        for src_id, src_key in src_ids:
+            dsts = futures[src_key]
+            if not isinstance(dsts, list):
+                raise ValueError("Each futures value must be a list")
+            dst_ids = sorted(_to_node_id(d) for d in dsts)
+            for dst_id in dst_ids:
+                edges.append((src_id, dst_id))
+
+        return edges
+
+    raise ValueError("JSON must contain either key 'edges' or key 'futures'")
 
 
 def load_digraph(path: Path) -> DiGraph:
