@@ -1,36 +1,35 @@
-# TODO — backlog
+# TODO: Backlog (Long-Term)
 
-This is the long-term checklist migrated out of `docs/TODO.md` so that `docs/TODO.md` can stay empty (per workflow rule: it should represent the active queue only).
+Lower-priority or dependent items. Review quarterly; move to active TODO.md as capacity allows. Aligned with proving core conjecture and bridging to "Chronology protection as topological invariant" (add causal sets, Alexandrov topology, order invariants).
 
-Phase 1 items were completed in earlier commits; see `docs/TODO-completed.md`.
+## Phase 3: Improve Heuristics & Bridge (Medium Priority)
+- [ ] Improve causal observable in `search.nb`: Add null geodesic ray tracing (solve \ddot{x}^μ + Γ^μ_{αβ} \dot{x}^α \dot{x}^β = 0 numerically). Check focusing via Raychaudhuri equation proxy. Sample Mathematica:
+  ```mathematica
+  geodesicEq = {x''[λ] + Christoffel[x[λ], t[λ]] x'[λ]^2 == 0, ...};  (* Perturbed metric *)
+  NDSolve[geodesicEq, {t, x}, {λ, 0, L}]
+  ```
+- [ ] Add multi-ray analysis: Proxy path-connectedness by continuous overlap of J⁺(p) under parameter sweeps (e.g., vary ε, check homotopy via persistent homology approx in Python).
+- [ ] Explore 2+1D toys: Use cylindrical grid in Mathematica; export to Python for analysis.
+- [ ] Enhance `analyze_candidates.py`: Emit Lean conjectures (e.g., "conjecture Bound : Δ ≤ 1.5"). Add Pareto fronts using scipy.optimize. Sample Python:
+  ```python
+  from scipy.optimize import pareto_front
+  fronts = pareto_front(scores, constraints)
+  with open('lean/GeneratedCandidates.lean', 'a') as f:
+      f.write(f'conjecture FromRun{run_id} : Δ ≤ {max_bound} := sorry\n')
+  ```
+- [ ] Add parameter sweeps: Use numpy.meshgrid for σ, N_basis; log results.
 
-## Phase 2: Formalize Core Concepts in Lean (High Priority)
-- [ ] Formalize basic GR/spacetime structures in `Spacetime.lean` (Lorentzian manifolds, causal curves, future sets J⁺(p), small neighborhoods). Include math: e.g., a curve γ is causal if $g(\dot{\gamma}, \dot{\gamma}) \le 0$.
-- [ ] Complete `StressEnergy.lean`: Define finite-dim stress-energy tensors, mappings to metric perturbations (linearized Einstein).
-- [ ] Complete / expand `AQEI_Cone.lean`: Formalize AQEI-admissible set as intersection of half-spaces from linear functionals (sampling-based cone), prove convexity / cone properties. Use Mathlib for convex sets.
-- [ ] In `CausalStability.lean` (or `Conjecture.lean`): State the conjecture formally (e.g., as ∀ small admissible T, the family of perturbed causal futures is path-connected with fixed homotopy class).
-- [ ] Add basic lemmas: small perturbations preserve local causality, continuity of J⁺ under metric perturbations (use Mathlib topology / continuity).
-- [ ] Create `GeneratedCandidates.lean` stubs for Python-emitted results (e.g., conjectured inequalities from numerical max Δ).
-
-## Phase 3: Improve Heuristics & Bridge (Medium-High Priority)
-- [ ] Replace synthetic/ad-hoc AQEI inequalities in `search.wl` with more faithful proxies (derive from actual AQEI sampling functionals in the manuscript; add non-linear constraints if needed via other optimizers).
-- [ ] Improve causal observable in Mathematica: beyond $\int h\, d\lambda$ along rays — add ray tracing for actual null geodesics in perturbed metric; check focusing/defocusing or horizon formation proxies.
-- [ ] Add multi-ray / multi-point analysis: check path-connectedness proxy (e.g., whether families of J⁺ overlap continuously).
-- [ ] Explore higher-dimensional toy models (start with 2+1D cylindrical or toroidal grid).
-- [ ] Enhance `analyze_candidates.py`: translate high-score candidates into Lean-usable statements (e.g., conjectured bounds on Δ, potential counterexample shapes).
-- [ ] Add Python support for parameter sweeps and Pareto analysis.
-
-## Phase 4: Toward Proof / Disproof (Medium-Long Term)
-- [ ] Run large-scale searches: look for candidates that produce large Δ or qualitative causal changes despite constraints.
-- [ ] If candidates show bounded Δ: formalize bound in Lean as lemma, with proof sketch.
-- [ ] Transition toy → realistic: perturb Minkowski, then simple curved backgrounds.
-- [ ] Incorporate a linearized Einstein solver (or post-Newtonian) in the Mathematica/Python loop.
-- [ ] Attempt Lean proofs of special cases (vacuum perturbations, weak-field limits, 1+1D toy fully formalized).
-- [ ] If counterexample-like behavior appears: refine conjecture (local vs global, neighborhood size).
+## Phase 4: Toward Proof / Disproof & Bridge Conjecture (Long Term)
+- [ ] Large-scale searches: Use cluster runs (if available) for Δ maximization; if bounded, lemma-ize in Lean.
+- [ ] Transition to realistic backgrounds: Start with Minkowski perturbations, then Schwarzschild (use post-Newtonian in Mathematica).
+- [ ] Incorporate linearized Einstein: Full solver in Python/Mathematica loop. Sample:
+  ```mathematica
+  h = DSolve[LinearizedEinsteinEqs == 8 Pi T, h, {t, x}];
+  ```
+- [ ] Prove special cases in Lean: Vacuum (T=0), weak-field (ε<<1), 1+1D toy.
+- [ ] If counterexamples: Refine to local causality or smaller neighborhoods.
+- [ ] Bridge integration: Add causal poset in `Spacetime.lean` (partial order on events), Alexandrov topology; conjecture reformulation as invariant sheaf cohomology.
 
 ## General / Ongoing
-- [ ] Add local test scripts: `run_tests.sh` to execute `test_pipeline.py`, `lake build`, and `wolframscript -file search.wl`.
-- [ ] Integrate / depend on Mathlib more deeply (topology, analysis, differential geometry).
-- [ ] Review / incorporate ideas from history (see `docs/history/`).
-- [ ] License the repo (e.g., MIT).
-- [ ] Add visualization outputs from Mathematica (plots of h, rays, constraints).
+- [ ] Review/incorporate history.md ideas (e.g., non-linear opts, discrete proxies).
+- [ ] Add visualizations: Mathematica ContourPlot[h[t,x]]; export PNGs to docs/.
