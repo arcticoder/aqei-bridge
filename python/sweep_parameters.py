@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
+import sys
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from itertools import product
@@ -78,6 +80,11 @@ def main() -> int:
     parser.add_argument("--full", action="store_true", help="Do not force AQEI_TEST_MODE=1 when executing")
     parser.add_argument("--skip-lean", action="store_true", help="Skip Lean build for each run (recommended for sweeps)")
     parser.add_argument("--jobs", type=int, default=1, help="Parallel jobs when executing (requires --skip-lean)")
+    parser.add_argument(
+        "--analyze",
+        action="store_true",
+        help="After executing a sweep, run python/sweep_analysis.py on the produced index.json",
+    )
 
     args = parser.parse_args()
 
@@ -166,6 +173,18 @@ def main() -> int:
                 index_path.write_text(json.dumps(index_payload, indent=2, sort_keys=True) + "\n")
 
     print(f"Wrote sweep index: {index_path}")
+
+    if args.analyze:
+        out_summary = sweep_dir / "sweep_summary.json"
+        cmd = [
+            sys.executable,
+            str(repo_root / "python" / "sweep_analysis.py"),
+            "--index",
+            str(index_path),
+            "--out",
+            str(out_summary),
+        ]
+        subprocess.run(cmd, check=True)
 
     return 0
 

@@ -115,3 +115,11 @@
 - Proved: `T ∈ ClosedChamber F active` implies `active ⊆ chamberIndex F T`, and on interior points (inactive constraints strict) `chamberIndex F T = active`.
 - Wired the module into `lean/src/AqeiBridge.lean` and noted it in `docs/conjecture.md`.
 - Ran `./run_tests.sh` (passes).
+
+## 2026-02-11 (Phase 4 ramp-up: docs + sweep tooling)
+- Triaged over-scoped Phase 4 items into `docs/TODO-BLOCKED.md` with explicit blockers and next-step concretizations.
+- Added `docs/phase4_searches.md` documenting the bounded sweep + aggregation + multi-ray diagnostics workflow.
+- `python/sweep_parameters.py`: added `--analyze` to run `python/sweep_analysis.py` automatically after executing a sweep.
+- Updated `docs/manuscript.md` with a short “Phase 4: empirical bounds via sweeps (diagnostics)” subsection.
+- Updated `README.md` to link the Phase 4 searches doc and clarify blocked scope.
+- `tests/python_tests.sh`: ensured the sweep planner smoke test accepts `--analyze`.

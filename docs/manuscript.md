@@ -130,6 +130,14 @@ Reproducibility:
 - Replace synthetic constraints with manuscript-derived sampling functionals.
 - Upgrade the causal observable beyond straight-ray integrals.
 
+### Phase 4: empirical bounds via sweeps (diagnostics)
+We treat “large-scale searches” as reproducible diagnostics:
+- run bounded parameter sweeps (`python/sweep_parameters.py`),
+- aggregate maxima (`python/sweep_analysis.py`),
+- inspect active-set overlap / connectedness proxies (`python/multi_ray_analysis.py`).
+
+Workflow details live in `docs/phase4_searches.md`.
+
 Pivot note:
 - If expanded searches fail to produce robust counterexamples (across seeds, grids, and ansatz families),
   treat that as evidence about the *toy proxy* only.

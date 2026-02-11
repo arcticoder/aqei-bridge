@@ -60,6 +60,7 @@ python "$ROOT_DIR/python/sweep_parameters.py" \
   --nbasis 2 \
   --sigmas 0.7 \
   --grid 16 \
+  --analyze \
   --out "$ROOT_DIR/.tmp_test/sweep_plan.json"
 
 python - <<'PY'
