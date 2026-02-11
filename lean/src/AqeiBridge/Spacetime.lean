@@ -1,5 +1,6 @@
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Basic
+import Mathlib.Topology.Basic
 
 /-!
 # Spacetime (toy models)
@@ -32,6 +33,33 @@ abbrev Metric (M : Spacetime) : Type := M.Pt → M.Pt → ℝ
 concrete reachability relation on a discrete spacetime model.
 -/
 abbrev CausalFuture (M : Spacetime) (g : Metric M) (p q : M.Pt) : Prop := True
+
+/-!
+## Causal-structure interface (abstract)
+
+These are intentionally abstract so that we can:
+- keep Lean statements well-typed,
+- later replace them with either a discrete reachability model or a genuine
+  Lorentzian-manifold development.
+-/
+
+/-- A placeholder predicate for existence of a causal curve from `p` to `q`.
+
+In later stages, `CausalCurve` should depend on tangent data and the sign
+condition $g(\dot\gamma,\dot\gamma) \le 0$.
+-/
+abbrev CausalCurve (M : Spacetime) (g : Metric M) (p q : M.Pt) : Prop :=
+  CausalFuture M g p q
+
+/-- The causal future set $J^+(p)$ in the current abstract interface. -/
+def Jplus (M : Spacetime) (g : Metric M) (p : M.Pt) : Set M.Pt := {q | CausalCurve M g p q}
+
+/-- A placeholder for selecting a “small neighborhood” around a point.
+
+In a real manifold development, this can be instantiated with chart-topology
+balls; for now it is an abstract predicate.
+-/
+abbrev SmallNeighborhood (M : Spacetime) : Type := M.Pt → Set M.Pt
 
 /-- A metric perturbation placeholder. -/
 structure MetricPerturbation (M : Spacetime) where

@@ -1,4 +1,5 @@
 import Mathlib.Data.Set.Basic
+import Mathlib.Topology.Connected.PathConnected
 
 import AqeiBridge.Spacetime
 import AqeiBridge.StressEnergy
@@ -54,5 +55,31 @@ replaced with a concrete local/causal statement for discrete spacetimes.
 axiom causal_stability
   {M : Spacetime} (g : Metric M) (p : M.Pt) (F : List (AQEIFunctional n)) :
   True
+
+/-!
+## Parameter-space stability (path-connectedness)
+
+This is the concrete shape we can aim to prove first in the finite-dimensional
+toy model: the admissible region (intersected with a small neighborhood) is
+path-connected.
+
+The stronger statement about invariance of *global causal homotopy class* is
+tracked as backlog work.
+-/
+
+/-- A placeholder predicate for “smallness” of a coefficient vector.
+
+In later phases this can be instantiated by a norm bound or membership in a
+metric ball.
+-/
+abbrev Small (T : StressEnergy n) : Prop := True
+
+/-- A path-connectedness skeleton for the admissible coefficient region.
+
+This is intentionally abstract, but is already a meaningful topological goal in
+the `StressEnergy n = Fin n → ℝ` model.
+-/
+axiom admissible_region_pathConnected (F : List (AQEIFunctional n)) :
+  IsPathConnected {T : StressEnergy n | T ∈ AQEI_cone F ∧ Small (n := n) T}
 
 end AqeiBridge

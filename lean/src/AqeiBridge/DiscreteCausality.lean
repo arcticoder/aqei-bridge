@@ -28,7 +28,7 @@ def Reachable {Pt : Type} (M : DiscreteSpacetime Pt) (p q : Pt) : Prop :=
   Relation.TransGen M.edge p q
 
 /-- Causal future set `J⁺(p)` in the discrete model. -/
-def Jplus {Pt : Type} (M : DiscreteSpacetime Pt) (p : Pt) : Set Pt := {q | Reachable M p q}
+def JplusDiscrete {Pt : Type} (M : DiscreteSpacetime Pt) (p : Pt) : Set Pt := {q | Reachable M p q}
 
 /-- If we add edges (monotone extension), reachability can only increase. -/
 def EdgeExtension {Pt : Type} (M₁ M₂ : DiscreteSpacetime Pt) : Prop :=
@@ -44,7 +44,7 @@ theorem reachable_mono {Pt : Type} {M₁ M₂ : DiscreteSpacetime Pt} (h : EdgeE
       exact Relation.TransGen.tail ih (h _ _ hbq)
 
 theorem jplus_mono {Pt : Type} {M₁ M₂ : DiscreteSpacetime Pt} (h : EdgeExtension M₁ M₂) (p : Pt) :
-    Jplus M₁ p ⊆ Jplus M₂ p := by
+  JplusDiscrete M₁ p ⊆ JplusDiscrete M₂ p := by
   intro q hq
   exact reachable_mono h hq
 

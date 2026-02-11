@@ -21,6 +21,14 @@ structure AQEIFunctional (n : ℕ) where
   L : StressEnergy n →ₗ[ℝ] ℝ
   B : ℝ
 
+/-- Convenience constructor from a list of `(L, B)` pairs.
+
+This supports a “sampling-based” workflow where constraints are harvested from
+finite sets of test functionals.
+-/
+def mkFunctionals {n : ℕ} (pairs : List ((StressEnergy n →ₗ[ℝ] ℝ) × ℝ)) : List (AQEIFunctional n) :=
+  pairs.map (fun p => ⟨p.1, p.2⟩)
+
 /-- The (toy) AQEI cone cut out by finitely many linear inequalities.
 
 `T ∈ AQEI_cone F` means: for every functional `f ∈ F`, `f.L T ≥ -f.B`.
