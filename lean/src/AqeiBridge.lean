@@ -1,4 +1,5 @@
 import AqeiBridge.Spacetime
+import AqeiBridge.CausalPoset
 import AqeiBridge.StressEnergy
 import AqeiBridge.AQEI_Cone
 import AqeiBridge.DiscreteCausality

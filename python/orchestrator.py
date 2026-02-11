@@ -43,6 +43,12 @@ def run_mathematica(repo_root: Path, env: dict[str, str] | None = None) -> None:
     if not script.exists():
         raise FileNotFoundError(script)
 
+    env_final = os.environ.copy()
+    if env:
+        env_final.update(env)
+
+    test_mode = env_final.get("AQEI_TEST_MODE", "").strip().lower() in {"1", "true", "yes"}
+
     # Prefer wolframscript (more stable for file execution), fall back to wolfram.
     if shutil_which("wolframscript"):
         cmd = ["wolframscript", "-file", str(script)]
@@ -51,7 +57,10 @@ def run_mathematica(repo_root: Path, env: dict[str, str] | None = None) -> None:
     else:
         raise RuntimeError("Neither 'wolframscript' nor 'wolfram' found on PATH")
 
-    subprocess.run(cmd, cwd=str(repo_root), check=True, env=env)
+    if test_mode:
+        cmd.append("--test-mode")
+
+    subprocess.run(cmd, cwd=str(repo_root), check=True, env=env_final)
 
 
 def run_analysis(repo_root: Path) -> None:

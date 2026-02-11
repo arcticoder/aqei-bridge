@@ -103,3 +103,7 @@ Or run the single orchestrator:
 - Current search works in a 1+1 grid, builds Gaussian wavepacket basis functions, applies a scalar Fourier-space Green multiplier, then integrates a proxy field along several “null-ish” rays.
 - This is an **ansatz** for quick iteration only.
 - As the bridge paper matures, the constraints and observable must be replaced with ones justified by the manuscript and/or formal derivations.
+
+## License
+
+MIT (see `LICENSE`).

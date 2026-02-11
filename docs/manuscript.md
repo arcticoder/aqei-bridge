@@ -32,7 +32,17 @@ See `docs/conjecture.md` for the current mathematical phrasing and caveats.
 
 ### 2.2. Causality models
 - Discrete reachability toy model: directed edge relation, transitive closure, and `J⁺(p)`.
+- Order-theoretic causal posets: a preorder `p ≤ q` as an abstract reachability relation.
 - Future work: Lorentzian manifold causality and continuity of `J⁺` under small perturbations.
+
+#### 2.2.1. Alexandrov-style topology (order interface)
+We add a minimal bridge from causality to topology:
+
+- Start with a causal preorder `≤` on events.
+- Define the causal future as the upper set $J^+(p) := \{ q \mid p \le q \}$.
+- Put an Alexandrov-style topology on events where *open sets are upper sets*.
+
+This is a deliberately light-weight formal substrate for later “topological obstruction” invariants.
 
 ## 3. Hybrid workflow
 

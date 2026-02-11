@@ -26,3 +26,12 @@
 	- `StressEnergy.lean`: made `StressEnergyTensor` a symmetric matrix; added `LinearizedEinstein` placeholder.
 	- `AQEI_Cone.lean`: added a sampling-based `mkFunctionals` helper.
 	- `CausalStability.lean`: added an `IsPathConnected` skeleton statement for the admissible region.
+
+## 2026-02-11
+- Added MIT `LICENSE` and mentioned it in the README.
+- Added `lean/src/AqeiBridge/CausalPoset.lean` with a causal preorder interface and an Alexandrov-style topology (opens are upper sets).
+- Proved basic lemmas in `CausalPoset.lean`, including that order-futures (`Jplus`) are open and a monotonicity/antitone property.
+- Wired `AqeiBridge.CausalPoset` into `lean/src/AqeiBridge.lean`.
+- Updated `docs/manuscript.md` with a short causal-poset/Alexandrov-topology bridge section.
+- Updated `docs/TODO-BLOCKED.md` to reflect that the topology substrate exists; remaining cohomology/sheaf step is blocked on choosing a target invariant.
+- Made `python/orchestrator.py` pass `--test-mode` to Mathematica when `AQEI_TEST_MODE=1` (used by the end-to-end unit test).

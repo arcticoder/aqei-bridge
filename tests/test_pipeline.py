@@ -21,6 +21,7 @@ class TestPipeline(unittest.TestCase):
         env = os.environ.copy()
         env.update(
             {
+                "AQEI_TEST_MODE": "1",
                 "AQEI_NUM_BASIS": "2",
                 "AQEI_NUM_CONSTRAINTS": "6",
                 "AQEI_GRID": "32",
