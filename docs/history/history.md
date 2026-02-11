@@ -194,3 +194,19 @@ Implemented the next backlog slice and kept TODO/commit hygiene intact.
 to keep pushing toward the conjecture, next good step is to connect this chamber lemma to the *discrete causality* side: formalize a parameter-to-DiscreteSpacetime map that is locally constant on chambers, then conclude a path-connectedness statement about the induced futures in the discrete toy model.
 <!-- ------ -->
 ---
+Implemented the “next good step” as a formal Lean bridge from chambers → discrete futures, and kept TODO hygiene + commits.
+
+**What changed**
+- Added DiscreteChamberStability.lean
+  - Defines `ConstantOn` and `DiscreteFuture (J, p) := JplusDiscrete (J T) p`.
+  - Proves: if `J` is constant on a closed chamber, then the image of `DiscreteFuture` on that chamber is a singleton (so futures don’t “jump” within a chamber).
+- Wired it into AqeiBridge.lean.
+- Added a one-line note to conjecture.md pointing to this discrete-toy implication.
+
+**Validation + workflow**
+- Ran run_tests.sh successfully (Lean/Mathematica/Python OK).
+- Moved the completed items into TODO-completed.md, drained TODO.md back to truly empty (`wc -l` is 0), and committed (`d8e3a3e`).
+
+to push one step further, the natural follow-on is to *define an explicit chamber-indexed discrete model* `J : StressEnergy n → DiscreteSpacetime Pt` that provably factors through the chamber index (so the “constant on chambers” hypothesis becomes a theorem rather than an assumption).
+<!-- ------ -->
+---
