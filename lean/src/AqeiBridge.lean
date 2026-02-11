@@ -4,6 +4,7 @@ import AqeiBridge.SpacetimeCausalPoset
 import AqeiBridge.StressEnergy
 import AqeiBridge.AQEI_Cone
 import AqeiBridge.Chambers
+import AqeiBridge.ChamberIndexedModel
 import AqeiBridge.DiscreteChamberStability
 import AqeiBridge.DiscreteCausality
 import AqeiBridge.CausalStability

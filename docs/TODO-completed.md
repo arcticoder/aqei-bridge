@@ -103,3 +103,9 @@
 - Added `lean/src/AqeiBridge/DiscreteChamberStability.lean`: if a parameter-to-`DiscreteSpacetime` map is constant on a chamber, then the induced discrete futures are constant on that chamber (image is a singleton).
 - Wired the module into `lean/src/AqeiBridge.lean` and added a short note in `docs/conjecture.md`.
 - Ran `./run_tests.sh` (passes).
+
+## 2026-02-11 (chamber-indexed discrete model)
+- Added `lean/src/AqeiBridge/ChamberIndexedModel.lean`: constructs `J : StressEnergy n → DiscreteSpacetime Pt` that factors through a chamber index induced by AQEI functionals.
+- Proved `J` is constant on each chamber by construction and derived the discrete-future singleton corollary.
+- Wired the module into `lean/src/AqeiBridge.lean` and noted it in `docs/conjecture.md`.
+- Ran `./run_tests.sh` (passes).

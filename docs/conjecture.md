@@ -117,6 +117,9 @@ Lean status (toy):
 - Discrete-toy implication: if a parameter-to-`DiscreteSpacetime` map is constant on each chamber,
   then the induced discrete futures are constant on chambers (`lean/src/AqeiBridge/DiscreteChamberStability.lean`).
 
+- Chamber-indexed discrete model: we can *construct* such a locally constant map by factoring through a
+	chamber index induced by the AQEI functionals (`lean/src/AqeiBridge/ChamberIndexedModel.lean`).
+
 ## Lean interface sketch (current repo)
 
 The current Lean repo already contains typed placeholders in:
