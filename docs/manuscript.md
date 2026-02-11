@@ -92,6 +92,39 @@ Candidate ingredients:
 
 This section is a placeholder for a more precise statement once the Lean model of causality is upgraded.
 
+### 4.3. Connectedness proxies (computational evidence)
+
+The conjecture is stated in terms of *path-connectedness* of a family of causal futures.
+Our current toy pipeline cannot compute $J^+(p)$ in a realistic spacetime; instead, it computes
+a proxy observable along a small set of rays and records a heuristic notion of “overlap” via
+active-constraint sets.
+
+For each run we obtain candidates indexed by rays, each with a finite set of active constraints.
+We form a per-ray constraint set $C_i$ by unioning all active constraints seen for ray $i$, then
+compute pairwise Jaccard overlaps
+$$
+\mathrm{Jac}(i,j) := \frac{|C_i \cap C_j|}{|C_i \cup C_j|}.
+$$
+
+From this we define a simple connectedness proxy at threshold $\theta$:
+$$
+\mathrm{Conn}_\theta := \frac{1}{\binom{R}{2}}\sum_{1\le i<j\le R} \mathbf{1}[\mathrm{Jac}(i,j) \ge \theta].
+$$
+
+This is emitted by `python/multi_ray_analysis.py` as:
+- mean pairwise Jaccard,
+- fraction of ray-pairs above `theta`,
+- and (optionally) a crude “connectivity threshold” derived from a threshold sweep.
+
+Interpretation caveat:
+- This proxy is **not** a topological invariant of $\mathcal{J}_p$.
+- It is used only to guide refinement of constraints/observables and to spot regimes where the
+  toy model’s behavior changes sharply.
+
+Reproducibility:
+- Runs persist records under `runs/<timestamp>/run.json`, and key artifacts are copied into
+  `runs/<timestamp>/artifacts/`.
+
 ## 5. Roadmap
 - Tighten Lean statements for the discrete model; prove at least one nontrivial stability theorem there.
 - Replace synthetic constraints with manuscript-derived sampling functionals.

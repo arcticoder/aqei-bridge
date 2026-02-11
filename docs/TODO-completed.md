@@ -74,3 +74,11 @@
 - `python/analyze_candidates.py`: emit `maxScoreUpperRat : Rat` and a placeholder bound theorem in the generated Lean artifact.
 - `python/sweep_parameters.py`: added `--grids` (comma-separated) meshgrid support while preserving `--grid`.
 - Ran `./run_tests.sh` (passes).
+
+## 2026-02-11 (connectedness proxy + docs)
+- `python/multi_ray_analysis.py`: emit an explicit `connectedness` summary (mean pairwise Jaccard; fraction of ray-pairs above `theta`), add `--theta`, and (optionally) derive a crude `connectivityThreshold` from `--thresholds`.
+- `docs/manuscript.md`: document the connectedness proxy as heuristic computational evidence (not a proof/invariant).
+- `README.md`: mention the connectedness proxy and point Phase 4 scope to `docs/TODO-BLOCKED.md`.
+- `docs/TODO-BLOCKED.md`: moved over-scoped Phase 4 items out of the active queue with concrete blockers.
+- `tests/python_tests.sh`: extend the multi-ray smoke test to pass `--theta` and assert the new JSON fields.
+- Drained `docs/TODO.md` back to empty after completion.

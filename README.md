@@ -84,6 +84,14 @@ Or run the single orchestrator:
 - Order-theoretic bridge: causal preorders / causal posets and an Alexandrov-style topology, plus a
   `Spacetime` → `CausalPoset` bridge under explicit axioms.
 - Tests default to fast Mathematica runs (`--test-mode`) so `./run_tests.sh` stays quick.
+- Phase 3 analysis tooling: multi-ray overlap summaries now include a simple “connectedness proxy”
+  (mean pairwise Jaccard; fraction of ray-pairs above a threshold).
+
+### Phase 4 scope (tracked, but currently blocked)
+
+The larger Phase 4 items (large-scale nondeterministic searches, realistic backgrounds, PDE solver-in-loop,
+and a precise continuity topology for $J^+$) are tracked in `docs/TODO-BLOCKED.md` until we choose concrete
+implementations that fit the repo’s reproducibility + CI constraints.
 
 ## Debugging / common failure modes
 

@@ -97,6 +97,7 @@ def main() -> int:
     parser.add_argument("--candidates", required=True, help="Path to top_candidates.json")
     parser.add_argument("--out", required=True, help="Output JSON path")
     parser.add_argument("--threshold", type=float, default=0.0, help="Jaccard threshold for edges (default 0.0)")
+    parser.add_argument("--theta", type=float, default=0.5, help="Connectedness proxy threshold (default 0.5)")
     parser.add_argument(
         "--thresholds",
         default="",
@@ -118,6 +119,8 @@ def main() -> int:
 
     pairs: list[dict[str, object]] = []
     edges: list[tuple[int, int]] = []
+
+    theta = float(args.theta)
 
     for i in range(len(rays)):
         for j in range(i + 1, len(rays)):
@@ -167,6 +170,14 @@ def main() -> int:
         "inputCandidates": str(candidates_path),
         "threshold": float(args.threshold),
         "thresholds": args.thresholds,
+        "connectedness": {
+            "theta": theta,
+            "pairCount": len(pairs),
+            "meanJaccard": (sum(float(p["jaccard"]) for p in pairs) / len(pairs)) if pairs else 0.0,
+            "fractionPairsAboveTheta": (
+                (sum(1 for p in pairs if float(p["jaccard"]) >= theta) / len(pairs)) if pairs else 0.0
+            ),
+        },
         "rays": [
             {
                 "rayIndex": r.ray_index,
@@ -179,6 +190,17 @@ def main() -> int:
         "components": comps,
         "thresholdSweep": threshold_sweep,
     }
+
+    # Optional: if we have a threshold sweep, summarize a crude “connectivity threshold”.
+    if threshold_sweep and len(rays) > 0:
+        ray_count = len(rays)
+        connected_at: float | None = None
+        for item in threshold_sweep:
+            summ = item.get("summary", {})
+            if isinstance(summ, dict) and int(summ.get("largestComponent", 0)) == ray_count:
+                connected_at = float(item.get("threshold", 0.0))
+                break
+        payload["connectedness"]["connectivityThreshold"] = connected_at
 
     _write_json(out_path, payload)
     return 0

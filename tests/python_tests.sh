@@ -74,6 +74,7 @@ python "$ROOT_DIR/python/multi_ray_analysis.py" \
   --candidates "$TMP_DIR/top_candidates.json" \
   --out "$TMP_DIR/multi_ray.json" \
   --threshold 0.2 \
+  --theta 0.2 \
   --thresholds 0.0,0.2,0.5
 
 python - <<'PY'
@@ -88,6 +89,11 @@ pair = data['jaccardPairs'][0]
 assert pair['intersection'] == 1
 assert pair['union'] == 5
 assert len(data['thresholdSweep']) == 3
+conn = data['connectedness']
+assert abs(conn['theta'] - 0.2) < 1e-12
+assert conn['pairCount'] == 1
+assert 0.0 <= conn['meanJaccard'] <= 1.0
+assert conn['fractionPairsAboveTheta'] in (0.0, 1.0)
 PY
 
 # Smoke-test: sweep analysis (reads index + run record + candidates).
