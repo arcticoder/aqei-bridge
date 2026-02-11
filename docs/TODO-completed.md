@@ -98,3 +98,8 @@
 - Proved the toy `AQEI_cone` is path-connected assuming feasibility via nonnegative bounds (`0 ≤ B`).
 - Wired the module into `lean/src/AqeiBridge.lean` and referenced it in `docs/conjecture.md`.
 - Ran `./run_tests.sh` (passes).
+
+## 2026-02-11 (discrete futures constant on chambers)
+- Added `lean/src/AqeiBridge/DiscreteChamberStability.lean`: if a parameter-to-`DiscreteSpacetime` map is constant on a chamber, then the induced discrete futures are constant on that chamber (image is a singleton).
+- Wired the module into `lean/src/AqeiBridge.lean` and added a short note in `docs/conjecture.md`.
+- Ran `./run_tests.sh` (passes).

@@ -114,6 +114,9 @@ Lean status (toy):
 - As a corollary, the toy `AQEI_cone` is path-connected under a mild feasibility assumption
 	(`0 ≤ B` for each bound so that `T=0` is admissible).
 
+- Discrete-toy implication: if a parameter-to-`DiscreteSpacetime` map is constant on each chamber,
+  then the induced discrete futures are constant on chambers (`lean/src/AqeiBridge/DiscreteChamberStability.lean`).
+
 ## Lean interface sketch (current repo)
 
 The current Lean repo already contains typed placeholders in:
