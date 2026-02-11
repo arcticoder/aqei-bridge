@@ -109,3 +109,9 @@
 - Proved `J` is constant on each chamber by construction and derived the discrete-future singleton corollary.
 - Wired the module into `lean/src/AqeiBridge.lean` and noted it in `docs/conjecture.md`.
 - Ran `./run_tests.sh` (passes).
+
+## 2026-02-11 (ClosedChamber ↔ chamberIndex bridge)
+- Added `lean/src/AqeiBridge/ChamberClosedChamberBridge.lean` relating the active-set `ClosedChamber` encoding to the sign-pattern `chamberIndex` encoding.
+- Proved: `T ∈ ClosedChamber F active` implies `active ⊆ chamberIndex F T`, and on interior points (inactive constraints strict) `chamberIndex F T = active`.
+- Wired the module into `lean/src/AqeiBridge.lean` and noted it in `docs/conjecture.md`.
+- Ran `./run_tests.sh` (passes).

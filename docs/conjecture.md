@@ -120,6 +120,10 @@ Lean status (toy):
 - Chamber-indexed discrete model: we can *construct* such a locally constant map by factoring through a
 	chamber index induced by the AQEI functionals (`lean/src/AqeiBridge/ChamberIndexedModel.lean`).
 
+- Active-set vs sign-pattern chambers: `ClosedChamber F active` always implies `active ⊆ chamberIndex F T`,
+  and on interior points (inactive constraints strict) we get `chamberIndex F T = active`
+  (`lean/src/AqeiBridge/ChamberClosedChamberBridge.lean`).
+
 ## Lean interface sketch (current repo)
 
 The current Lean repo already contains typed placeholders in:
