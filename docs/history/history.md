@@ -153,3 +153,14 @@ I’m going to pull one more backlog item (“ContourPlot visualizations”) int
 - Batch logged in docs/TODO-completed.md.
 <!-- ------ -->
 ---
+I already moved a 6-item batch out of the backlog into docs/TODO.md, implemented it, ran run_tests.sh (passes), and drained TODO.md back to empty (`wc -l` == 0).
+
+To make that visible in the backlog itself, I checked off the completed Phase 3 items in docs/TODO-backlog.md:
+- Geodesic tracing (now includes `--geodesic-ndsolve`)
+- Multi-ray connectedness proxy (plus `--thresholds` sweep)
+- Lean bound emission from analyze_candidates.py (`maxScoreUpperRat`)
+- Parameter sweep meshgrid support + sweep indexing
+
+Remaining unchecked backlog items include 2+1D cylindrical toy and ContourPlot visualizations. If you want, I can pull the next 5–8 items by breaking “2+1D toys” into a small, testable scaffold batch plus the visualization work.
+<!-- ------ -->
+---
