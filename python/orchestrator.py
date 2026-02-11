@@ -70,8 +70,23 @@ def run_mathematica(repo_root: Path, env: dict[str, str] | None = None) -> None:
 
 
 def run_analysis(repo_root: Path) -> None:
+    raise NotImplementedError("Use run_analysis_with_paths")
+
+
+def run_analysis_with_paths(repo_root: Path, results_dir: Path, out_path: Path) -> None:
     analyze = repo_root / "python" / "analyze_candidates.py"
-    subprocess.run(["python", str(analyze)], cwd=str(repo_root), check=True)
+    subprocess.run(
+        [
+            "python",
+            str(analyze),
+            "--results-dir",
+            str(results_dir),
+            "--out",
+            str(out_path),
+        ],
+        cwd=str(repo_root),
+        check=True,
+    )
 
 
 def run_lean_build(repo_root: Path) -> None:
@@ -93,7 +108,19 @@ def _utc_timestamp() -> str:
     return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
 
-def run_pipeline(repo_root: Path, env: dict[str, str] | None = None) -> dict[str, str]:
+def _resolve_path(repo_root: Path, maybe_path: str) -> Path:
+    p = Path(maybe_path)
+    return p if p.is_absolute() else (repo_root / p)
+
+
+def run_pipeline(
+    repo_root: Path,
+    env: dict[str, str] | None = None,
+    *,
+    results_dir: Path | None = None,
+    generated_lean: Path | None = None,
+    skip_lean: bool = False,
+) -> dict[str, str]:
     """Run the full 4-stage loop and persist a small run record.
 
     Returns a dict with paths for the produced artifacts.
@@ -103,24 +130,38 @@ def run_pipeline(repo_root: Path, env: dict[str, str] | None = None) -> dict[str
     if env:
         env_final.update(env)
 
-    print("[aqei-bridge] Stage III: running Mathematica search")
-    run_mathematica(repo_root, env=env_final)
-
-    print("[aqei-bridge] Stage IV: generating Lean candidates")
-    run_analysis(repo_root)
-
-    print("[aqei-bridge] Stage I: Lean build (typecheck)")
-    run_lean_build(repo_root)
-
-    # Persist run metadata.
     ts = _utc_timestamp()
     runs_dir = repo_root / "runs" / ts
     runs_dir.mkdir(parents=True, exist_ok=True)
 
-    results_dir = repo_root / "mathematica" / "results"
+    # Allow callers (e.g., sweeps) to isolate outputs per-run.
+    if results_dir is None:
+        if env_final.get("AQEI_RESULTS_DIR", "").strip():
+            results_dir = _resolve_path(repo_root, env_final["AQEI_RESULTS_DIR"])
+        else:
+            results_dir = repo_root / "mathematica" / "results"
+    if generated_lean is None:
+        if env_final.get("AQEI_GENERATED_LEAN_OUT", "").strip():
+            generated_lean = _resolve_path(repo_root, env_final["AQEI_GENERATED_LEAN_OUT"])
+        else:
+            generated_lean = repo_root / "lean" / "src" / "AqeiBridge" / "GeneratedCandidates.lean"
+
+    # Keep Mathematica aligned with our chosen results directory.
+    env_final["AQEI_RESULTS_DIR"] = str(results_dir)
+
+    print("[aqei-bridge] Stage III: running Mathematica search")
+    run_mathematica(repo_root, env=env_final)
+
+    print("[aqei-bridge] Stage IV: generating Lean candidates")
+    run_analysis_with_paths(repo_root, results_dir=results_dir, out_path=generated_lean)
+
+    if not skip_lean:
+        print("[aqei-bridge] Stage I: Lean build (typecheck)")
+        run_lean_build(repo_root)
+
     summary_path = results_dir / "summary.json"
     candidates_path = results_dir / "top_candidates.json"
-    generated_path = repo_root / "lean" / "src" / "AqeiBridge" / "GeneratedCandidates.lean"
+    generated_path = generated_lean
 
     artifacts_dir = runs_dir / "artifacts"
     _copy_if_exists(summary_path, artifacts_dir / "summary.json")
@@ -138,6 +179,7 @@ def run_pipeline(repo_root: Path, env: dict[str, str] | None = None) -> dict[str
         "archivedTopCandidatesJson": str(artifacts_dir / "top_candidates.json"),
         "archivedGeneratedLean": str(artifacts_dir / "GeneratedCandidates.lean"),
         "env": {k: env_final[k] for k in sorted(env_final) if k.startswith("AQEI_")},
+        "skipLean": bool(skip_lean),
     }
     (runs_dir / "run.json").write_text(json.dumps(run_record, indent=2, sort_keys=True) + "\n")
 

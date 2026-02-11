@@ -60,8 +60,13 @@ aMax = getEnvNumber["AQEI_A_MAX", 1.0];
 
 SeedRandom[seed];
 
-resultsDir = FileNameJoin[{DirectoryName[$InputFileName], "results"}];
-If[!DirectoryQ[resultsDir], CreateDirectory[resultsDir]];
+resultsDirEnv = Environment["AQEI_RESULTS_DIR"];
+resultsDir = If[
+  resultsDirEnv === $Failed || resultsDirEnv === None || resultsDirEnv === "",
+  FileNameJoin[{DirectoryName[$InputFileName], "results"}],
+  ExpandFileName[resultsDirEnv]
+];
+If[!DirectoryQ[resultsDir], CreateDirectory[resultsDir, CreateIntermediateDirectories -> True]];
 
 (* Grid in (t,x) *)
 ts = Subdivide[-domainHalf, domainHalf, ngrid - 1];

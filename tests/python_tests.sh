@@ -40,6 +40,20 @@ assert 'aRat' in text
 assert 'maxScoreUpperRat' in text
 PY
 
+# Smoke-test: analyze_candidates CLI supports custom results-dir and out.
+python "$ROOT_DIR/python/analyze_candidates.py" \
+  --results-dir "$ROOT_DIR/.tmp_test" \
+  --out "$ROOT_DIR/.tmp_test/GeneratedCandidatesCli.lean"
+
+python - <<'PY'
+from pathlib import Path
+
+p = Path('.tmp_test') / 'GeneratedCandidatesCli.lean'
+text = p.read_text()
+assert 'structure Candidate' in text
+assert 'def topCandidates' in text
+PY
+
 # Smoke-test: sweep planner (dry-run only).
 python "$ROOT_DIR/python/sweep_parameters.py" \
   --dry-run \
@@ -75,7 +89,8 @@ python "$ROOT_DIR/python/multi_ray_analysis.py" \
   --out "$TMP_DIR/multi_ray.json" \
   --threshold 0.2 \
   --theta 0.2 \
-  --thresholds 0.0,0.2,0.5
+  --thresholds 0.0,0.2,0.5 \
+  --dot-out "$TMP_DIR/multi_ray.dot"
 
 python - <<'PY'
 import json
@@ -94,6 +109,10 @@ assert abs(conn['theta'] - 0.2) < 1e-12
 assert conn['pairCount'] == 1
 assert 0.0 <= conn['meanJaccard'] <= 1.0
 assert conn['fractionPairsAboveTheta'] in (0.0, 1.0)
+
+dot = Path('.tmp_test/multi_ray.dot').read_text()
+assert 'graph Overlap' in dot
+assert '--' in dot
 PY
 
 # Smoke-test: sweep analysis (reads index + run record + candidates).

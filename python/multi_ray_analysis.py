@@ -32,6 +32,37 @@ def _write_json(path: Path, payload: Any) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
 
 
+def _write_dot(path: Path, rays: list[RayConstraints], pairs: list[dict[str, object]], threshold: float) -> None:
+    # Undirected overlap graph at the given threshold.
+    ray_by_index = {r.ray_index: r for r in rays}
+
+    edges: list[tuple[int, int, float]] = []
+    for p in pairs:
+        a = int(p["rayA"])
+        b = int(p["rayB"])
+        jac = float(p["jaccard"])
+        if jac >= threshold:
+            if a == b:
+                continue
+            lo, hi = (a, b) if a < b else (b, a)
+            edges.append((lo, hi, jac))
+    edges = sorted(set(edges))
+
+    lines: list[str] = []
+    lines.append("graph Overlap {")
+    lines.append("  overlap=false;")
+    for r in sorted(rays, key=lambda rr: rr.ray_index):
+        label = f"{r.ray_index}: {r.ray_name}\\n|C|={len(r.constraints)}"
+        lines.append(f"  {r.ray_index} [label={json.dumps(label)}];")
+    for a, b, jac in edges:
+        if a in ray_by_index and b in ray_by_index:
+            lines.append(f"  {a} -- {b} [label={json.dumps(f'{jac:.3f}')}] ;")
+    lines.append("}")
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("\n".join(lines) + "\n")
+
+
 def _parse_csv_floats(s: str) -> list[float]:
     return [float(x.strip()) for x in s.split(",") if x.strip()]
 
@@ -98,6 +129,7 @@ def main() -> int:
     parser.add_argument("--out", required=True, help="Output JSON path")
     parser.add_argument("--threshold", type=float, default=0.0, help="Jaccard threshold for edges (default 0.0)")
     parser.add_argument("--theta", type=float, default=0.5, help="Connectedness proxy threshold (default 0.5)")
+    parser.add_argument("--dot-out", default="", help="Optional Graphviz DOT output path")
     parser.add_argument(
         "--thresholds",
         default="",
@@ -203,6 +235,13 @@ def main() -> int:
         payload["connectedness"]["connectivityThreshold"] = connected_at
 
     _write_json(out_path, payload)
+
+    if args.dot_out.strip():
+        dot_path = Path(args.dot_out)
+        if not dot_path.is_absolute():
+            dot_path = Path(__file__).resolve().parents[1] / dot_path
+        _write_dot(dot_path, rays=rays, pairs=pairs, threshold=float(args.threshold))
+
     return 0
 
 

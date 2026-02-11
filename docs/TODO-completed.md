@@ -82,3 +82,13 @@
 - `docs/TODO-BLOCKED.md`: moved over-scoped Phase 4 items out of the active queue with concrete blockers.
 - `tests/python_tests.sh`: extend the multi-ray smoke test to pass `--theta` and assert the new JSON fields.
 - Drained `docs/TODO.md` back to empty after completion.
+
+## 2026-02-11 (parallel-safe outputs + proof-plan notes)
+- `mathematica/search.wl`: honor `AQEI_RESULTS_DIR` to isolate per-run JSON outputs.
+- `python/analyze_candidates.py`: add `--results-dir` and `--out` CLI args (defaults unchanged).
+- `python/orchestrator.py`: plumb per-run results/output paths and add `skip_lean` plumbing for sweep-friendly execution.
+- `python/sweep_parameters.py`: add `--skip-lean` and `--jobs` (rejects `--jobs>1` without `--skip-lean`).
+- `python/multi_ray_analysis.py`: add `--dot-out` to emit a Graphviz DOT overlap graph at the chosen Jaccard threshold.
+- `docs/conjecture.md`: add a short “toward proof” section connecting chambers/local constancy to the heuristic diagnostics.
+- `tests/python_tests.sh`: smoke-test the new analyze-candidates CLI and DOT output.
+- Ran `./run_tests.sh` (passes).

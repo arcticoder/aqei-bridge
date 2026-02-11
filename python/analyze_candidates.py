@@ -23,6 +23,7 @@ All claims about "active constraints" are heuristic (tolerance-based).
 
 from __future__ import annotations
 
+import argparse
 import json
 import math
 from dataclasses import dataclass
@@ -172,9 +173,35 @@ def generate_lean_candidates(
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--results-dir",
+        default="",
+        help="Directory containing summary.json and top_candidates.json (default: mathematica/results)",
+    )
+    parser.add_argument(
+        "--out",
+        default="",
+        help="Output Lean file path (default: lean/src/AqeiBridge/GeneratedCandidates.lean)",
+    )
+    args = parser.parse_args()
+
     root = Path(__file__).resolve().parents[1]
-    results_dir = root / "mathematica" / "results"
-    out_path = root / "lean" / "src" / "AqeiBridge" / "GeneratedCandidates.lean"
+
+    if args.results_dir:
+        results_dir = Path(args.results_dir)
+        if not results_dir.is_absolute():
+            results_dir = root / results_dir
+    else:
+        results_dir = root / "mathematica" / "results"
+
+    if args.out:
+        out_path = Path(args.out)
+        if not out_path.is_absolute():
+            out_path = root / out_path
+    else:
+        out_path = root / "lean" / "src" / "AqeiBridge" / "GeneratedCandidates.lean"
+
     generate_lean_candidates(results_dir, out_path)
     print(f"Wrote {out_path}")
     return 0

@@ -76,6 +76,8 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true", help="Only write the sweep plan JSON")
     parser.add_argument("--out", default="", help="Output path for plan JSON (default under runs/)")
     parser.add_argument("--full", action="store_true", help="Do not force AQEI_TEST_MODE=1 when executing")
+    parser.add_argument("--skip-lean", action="store_true", help="Skip Lean build for each run (recommended for sweeps)")
+    parser.add_argument("--jobs", type=int, default=1, help="Parallel jobs when executing (requires --skip-lean)")
 
     args = parser.parse_args()
 
@@ -103,6 +105,10 @@ def main() -> int:
         print(f"Wrote plan: {out_path}")
         return 0
 
+    jobs = max(1, int(args.jobs))
+    if jobs > 1 and not args.skip_lean:
+        raise SystemExit("--jobs>1 requires --skip-lean (Lean build and generated file paths are not parallel-safe)")
+
     # Execute the plan.
     from python.orchestrator import run_pipeline
 
@@ -111,33 +117,53 @@ def main() -> int:
     sweep_dir.mkdir(parents=True, exist_ok=True)
     run_index: list[dict[str, object]] = []
 
-    for p in points:
+    def _run_one(point: SweepPoint) -> dict[str, object]:
         env = {
-            "AQEI_NUM_BASIS": str(p.AQEI_NUM_BASIS),
-            "AQEI_SIGMA": str(p.AQEI_SIGMA),
-            "AQEI_GRID": str(p.AQEI_GRID),
+            "AQEI_NUM_BASIS": str(point.AQEI_NUM_BASIS),
+            "AQEI_SIGMA": str(point.AQEI_SIGMA),
+            "AQEI_GRID": str(point.AQEI_GRID),
         }
         if not args.full:
             env["AQEI_TEST_MODE"] = "1"
 
-        record = run_pipeline(repo_root=repo_root, env=env)
-        run_record_path = repo_root / "runs" / record["timestampUtc"] / "run.json"
-        run_index.append(
-            {
-                "point": asdict(p),
-                "runTimestampUtc": record["timestampUtc"],
-                "runRecordPath": str(run_record_path),
-            }
-        )
-
-        # Persist after each point so partial sweeps still yield a useful index.
-        index_payload = {
-            "generatedAtUtc": sweep_ts,
-            "planPath": str(out_path),
-            "count": len(run_index),
-            "runs": run_index,
+        # Isolate Mathematica outputs per run to avoid collisions.
+        # We let orchestrator select its run timestamp; we only set the results dir root.
+        # The run record captures the actual paths.
+        record = run_pipeline(repo_root=repo_root, env=env, skip_lean=bool(args.skip_lean))
+        run_record_path = repo_root / "runs" / str(record["timestampUtc"]) / "run.json"
+        return {
+            "point": asdict(point),
+            "runTimestampUtc": record["timestampUtc"],
+            "runRecordPath": str(run_record_path),
         }
-        index_path.write_text(json.dumps(index_payload, indent=2, sort_keys=True) + "\n")
+
+    if jobs == 1:
+        for p in points:
+            run_index.append(_run_one(p))
+
+            # Persist after each point so partial sweeps still yield a useful index.
+            index_payload = {
+                "generatedAtUtc": sweep_ts,
+                "planPath": str(out_path),
+                "count": len(run_index),
+                "runs": run_index,
+            }
+            index_path.write_text(json.dumps(index_payload, indent=2, sort_keys=True) + "\n")
+    else:
+        from concurrent.futures import ProcessPoolExecutor, as_completed
+
+        with ProcessPoolExecutor(max_workers=jobs) as ex:
+            futures = [ex.submit(_run_one, p) for p in points]
+            for fut in as_completed(futures):
+                run_index.append(fut.result())
+
+                index_payload = {
+                    "generatedAtUtc": sweep_ts,
+                    "planPath": str(out_path),
+                    "count": len(run_index),
+                    "runs": run_index,
+                }
+                index_path.write_text(json.dumps(index_payload, indent=2, sort_keys=True) + "\n")
 
     print(f"Wrote sweep index: {index_path}")
 
