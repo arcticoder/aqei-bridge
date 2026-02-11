@@ -242,6 +242,12 @@ Implemented the `ClosedChamber` ↔ `chamberIndex` connection end-to-end, with t
 - Ran run_tests.sh (passes), drained TODO.md back to empty, logged the batch in TODO-completed.md, and committed (`73aba03`).
 <!-- ------ -->
 ---
-
+I’ve reshaped the active queue into a small 6-item batch and moved the over-scoped Phase 4 items into TODO-BLOCKED.md with concrete blockers. Next I’ll implement the Phase 4 searches doc + the `--analyze` sweep flag + the small README/manuscript updates, then run run_tests.sh, drain TODO.md, and commit.
+<!-- ------ -->
+---
+- Verified the Phase 4 ramp-up work is already implemented: aqei-bridge/docs/phase4_searches.md, `--analyze` in aqei-bridge/python/sweep_parameters.py, and the doc cross-links in aqei-bridge/README.md + aqei-bridge/docs/manuscript.md.
+- Drained the active queue: aqei-bridge/docs/TODO.md is now truly empty (`wc -l` = 0), and logged the batch in aqei-bridge/docs/TODO-completed.md.
+- Ran run_tests.sh in `aqei-bridge`: all tests passed (Lean warnings only; Mathematica emitted non-fatal EGL/MESA warnings as before).
+- Committed the batch: `ae50c80` “Phase 4 ramp-up: sweep docs + auto analysis” (includes docs, `--analyze`, test smoke update, README/manuscript links, TODO hygiene).
 <!-- ------ -->
 ---
