@@ -75,3 +75,13 @@ The `history/` directory has been successfully moved into the docs directory usi
 - `c074df4` — docs: drain active TODO queue (keeps TODO.md empty)
 <!-- ------ -->
 ---
+**Done**
+- Fixed the hanging pipeline test by making Mathematica runs honor `AQEI_TEST_MODE=1` in orchestrator.py, and enabling it in the end-to-end smoke test test_pipeline.py.
+- Added the causal preorder/Alexandrov topology substrate in CausalPoset.lean and wired it into AqeiBridge.lean.
+- Added MIT licensing via LICENSE and updated README/docs, plus moved the finished queue into TODO-completed.md.
+
+**Validation**
+- run_tests.sh now completes successfully (Lean + Mathematica test-mode + Python tests).
+- `wc -l docs/TODO.md` is `0`.
+<!-- ------ -->
+---
