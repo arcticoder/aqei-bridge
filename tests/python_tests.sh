@@ -8,7 +8,8 @@ python -m py_compile \
   "$ROOT_DIR/python/orchestrator.py" \
   "$ROOT_DIR/python/analyze_candidates.py" \
   "$ROOT_DIR/python/multi_ray_analysis.py" \
-  "$ROOT_DIR/python/sweep_analysis.py"
+  "$ROOT_DIR/python/sweep_analysis.py" \
+  "$ROOT_DIR/python/causal_graph_tools.py"
 
 python -m unittest -q tests.test_pipeline
 
@@ -161,6 +162,45 @@ assert data['count'] == 1
 pt0 = data['points'][0]
 assert abs(pt0['maxScore'] - 0.9) < 1e-12
 assert pt0['maxScoreRay'] == 'r2'
+PY
+
+rm -rf "$TMP_DIR"
+
+# Smoke-test: causal graph tools (cycle detection + DOT export).
+TMP_DIR="$ROOT_DIR/.tmp_test"
+rm -rf "$TMP_DIR"
+mkdir -p "$TMP_DIR"
+
+cat >"$TMP_DIR/graph_acyclic.json" <<'JSON'
+{"edges": [["a","b"], ["b","c"]]}
+JSON
+
+cat >"$TMP_DIR/graph_cycle.json" <<'JSON'
+{"edges": [["a","b"], ["b","a"]]}
+JSON
+
+python - <<'PY'
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+root = Path('.').resolve()
+tool = root / 'python' / 'causal_graph_tools.py'
+
+acy = subprocess.check_output([sys.executable, str(tool), 'ctc', str(root / '.tmp_test/graph_acyclic.json'), '--json'])
+cyc = subprocess.check_output([sys.executable, str(tool), 'ctc', str(root / '.tmp_test/graph_cycle.json'), '--json'])
+
+acy_obj = json.loads(acy.decode('utf-8'))
+cyc_obj = json.loads(cyc.decode('utf-8'))
+assert acy_obj['hasCycle'] is False
+assert cyc_obj['hasCycle'] is True
+
+dot_out = root / '.tmp_test' / 'graph.dot'
+subprocess.check_call([sys.executable, str(tool), 'dot', str(root / '.tmp_test/graph_acyclic.json'), '--out', str(dot_out)])
+dot = dot_out.read_text()
+assert 'digraph' in dot
+assert '->' in dot
 PY
 
 rm -rf "$TMP_DIR"

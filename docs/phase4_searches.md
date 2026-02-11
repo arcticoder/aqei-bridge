@@ -57,6 +57,24 @@ Graphviz DOT file:
 
 `python python/multi_ray_analysis.py --candidates runs/<run>/artifacts/top_candidates.json --out runs/<run>/artifacts/multi_ray.json --threshold 0.2 --theta 0.2 --dot-out runs/<run>/artifacts/multi_ray.dot`
 
+## Causal-graph diagnostics (toy)
+
+For future discrete/toy causal-set experiments, `python/causal_graph_tools.py` provides two
+dependency-free helpers:
+
+- **CTC proxy**: detects whether a directed graph contains a cycle.
+- **Visualization**: exports a Graphviz DOT file.
+
+Input JSON format:
+
+`{"edges": [["a","b"], ["b","c"]]}`
+
+Commands:
+
+`python python/causal_graph_tools.py ctc path/to/graph.json`
+
+`python python/causal_graph_tools.py dot path/to/graph.json --out path/to/graph.dot`
+
 ## Reporting guidelines
 
 When writing up Phase 4 results in `docs/manuscript.md`:

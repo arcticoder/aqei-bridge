@@ -123,3 +123,10 @@
 - Updated `docs/manuscript.md` with a short “Phase 4: empirical bounds via sweeps (diagnostics)” subsection.
 - Updated `README.md` to link the Phase 4 searches doc and clarify blocked scope.
 - `tests/python_tests.sh`: ensured the sweep planner smoke test accepts `--analyze`.
+
+## 2026-02-11 (causal-graph diagnostics)
+- Added `python/causal_graph_tools.py` (dependency-free) to detect directed cycles (CTC proxy) and export Graphviz DOT.
+- Documented the JSON edge format + commands in `docs/phase4_searches.md`.
+- Extended `tests/python_tests.sh` with smoke tests for cycle detection and DOT output.
+- Updated `docs/TODO-backlog.md` to note that basic multiprocessing exists via `python/sweep_parameters.py --skip-lean --jobs`.
+- Ran `./run_tests.sh` (passes).

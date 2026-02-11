@@ -28,7 +28,8 @@ Updated with completions (e.g., cdd944a Phase 3 checks; b0e5dd5 visuals/analysis
   ```
 
 ## General / Ongoing
-- [ ] Add cluster support: Extend multiprocessing for searches.
+- [x] Add basic multiprocessing for sweeps (implemented as `python/sweep_parameters.py --skip-lean --jobs N`).
+- [ ] Add cluster support beyond a single machine (job scheduler integration / resumable distributed sweeps).
 - [ ] Visualizations: Add poset graphs. Sample Python:
   ```python
   import networkx as nx
