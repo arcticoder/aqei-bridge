@@ -251,3 +251,20 @@ I’ve reshaped the active queue into a small 6-item batch and moved the over-sc
 - Committed the batch: `ae50c80` “Phase 4 ramp-up: sweep docs + auto analysis” (includes docs, `--analyze`, test smoke update, README/manuscript links, TODO hygiene).
 <!-- ------ -->
 ---
+**Done**
+- Promoted a concrete batch from backlog into TODO, implemented it, ran run_tests.sh (passes), drained TODO back to 0 lines, and committed.
+
+**What changed**
+- Added a dependency-free directed-graph helper: aqei-bridge/python/causal_graph_tools.py
+  - `ctc`: detects directed cycles (CTC proxy)
+  - `dot`: exports Graphviz DOT
+  - JSON input: `{"edges": [[src, dst], ...]}` (also accepts `{"src":..,"dst":..}` entries)
+- Documented usage in aqei-bridge/docs/phase4_searches.md.
+- Extended smoke tests in aqei-bridge/tests/python_tests.sh.
+- Updated aqei-bridge/docs/TODO-backlog.md to mark basic multiprocessing as done (`--jobs` for sweeps with `--skip-lean`).
+- Logged completion in aqei-bridge/docs/TODO-completed.md and drained aqei-bridge/docs/TODO.md.
+
+**Commit**
+- `331f1d4` — “Add causal-graph diagnostics helpers”
+<!-- ------ -->
+---
