@@ -68,13 +68,15 @@ def main() -> int:
     sigmas = _parse_csv_floats(args.sigmas)
     points = build_sweep(nbasis=nbasis, sigmas=sigmas, grid=args.grid)
 
+    sweep_ts = _utc_timestamp()
+
     repo_root = Path(__file__).resolve().parents[1]
     if args.out:
         out_path = Path(args.out)
         if not out_path.is_absolute():
             out_path = repo_root / out_path
     else:
-        out_path = repo_root / "runs" / "sweeps" / _utc_timestamp() / "sweep_plan.json"
+        out_path = repo_root / "runs" / "sweeps" / sweep_ts / "sweep_plan.json"
 
     write_plan(points, out_path)
 
@@ -85,6 +87,11 @@ def main() -> int:
     # Execute the plan.
     from python.orchestrator import run_pipeline
 
+    sweep_dir = repo_root / "runs" / "sweeps" / sweep_ts
+    index_path = sweep_dir / "index.json"
+    sweep_dir.mkdir(parents=True, exist_ok=True)
+    run_index: list[dict[str, object]] = []
+
     for p in points:
         env = {
             "AQEI_NUM_BASIS": str(p.AQEI_NUM_BASIS),
@@ -94,7 +101,26 @@ def main() -> int:
         if not args.full:
             env["AQEI_TEST_MODE"] = "1"
 
-        run_pipeline(repo_root=repo_root, env=env)
+        record = run_pipeline(repo_root=repo_root, env=env)
+        run_record_path = repo_root / "runs" / record["timestampUtc"] / "run.json"
+        run_index.append(
+            {
+                "point": asdict(p),
+                "runTimestampUtc": record["timestampUtc"],
+                "runRecordPath": str(run_record_path),
+            }
+        )
+
+        # Persist after each point so partial sweeps still yield a useful index.
+        index_payload = {
+            "generatedAtUtc": sweep_ts,
+            "planPath": str(out_path),
+            "count": len(run_index),
+            "runs": run_index,
+        }
+        index_path.write_text(json.dumps(index_payload, indent=2, sort_keys=True) + "\n")
+
+    print(f"Wrote sweep index: {index_path}")
 
     return 0
 

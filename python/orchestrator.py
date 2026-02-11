@@ -38,6 +38,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
+def _copy_if_exists(src: Path, dst: Path) -> None:
+    if src.exists():
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        dst.write_bytes(src.read_bytes())
+
+
 def run_mathematica(repo_root: Path, env: dict[str, str] | None = None) -> None:
     script = repo_root / "mathematica" / "search.wl"
     if not script.exists():
@@ -116,12 +122,21 @@ def run_pipeline(repo_root: Path, env: dict[str, str] | None = None) -> dict[str
     candidates_path = results_dir / "top_candidates.json"
     generated_path = repo_root / "lean" / "src" / "AqeiBridge" / "GeneratedCandidates.lean"
 
+    artifacts_dir = runs_dir / "artifacts"
+    _copy_if_exists(summary_path, artifacts_dir / "summary.json")
+    _copy_if_exists(candidates_path, artifacts_dir / "top_candidates.json")
+    _copy_if_exists(generated_path, artifacts_dir / "GeneratedCandidates.lean")
+
     run_record = {
         "timestampUtc": ts,
         "resultsDir": str(results_dir),
         "summaryJson": str(summary_path),
         "topCandidatesJson": str(candidates_path),
         "generatedLean": str(generated_path),
+        "archivedDir": str(artifacts_dir),
+        "archivedSummaryJson": str(artifacts_dir / "summary.json"),
+        "archivedTopCandidatesJson": str(artifacts_dir / "top_candidates.json"),
+        "archivedGeneratedLean": str(artifacts_dir / "GeneratedCandidates.lean"),
         "env": {k: env_final[k] for k in sorted(env_final) if k.startswith("AQEI_")},
     }
     (runs_dir / "run.json").write_text(json.dumps(run_record, indent=2, sort_keys=True) + "\n")

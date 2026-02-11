@@ -122,3 +122,18 @@ Completed: *Commit changes* (5/5)
 - Committed as `a6c2f89` with a bullet-list summary.
 <!-- ------ -->
 ---
+**Implemented**
+- Sweep execution now writes an index at runs/sweeps/<ts>/index.json pointing at each run’s runs/<run_ts>/run.json via python/sweep_parameters.py.
+- Added multi-ray overlap/connectedness proxy (Jaccard over unioned activeConstraints + components) in python/multi_ray_analysis.py.
+- Added sweep aggregation that reads the sweep index + run records and computes per-point maxScore/maxScoreRay from candidates JSON in python/sweep_analysis.py.
+- Orchestrator archives per-run artifacts under runs/<ts>/artifacts/ and records archived paths in run.json (already done) in python/orchestrator.py.
+
+**Tests**
+- Extended bash smoke tests to cover both new analysis scripts in tests/python_tests.sh.
+- Ran run_tests.sh successfully (Lean/Mathematica/Python all OK).
+
+**TODO workflow**
+- Drained docs/TODO.md to 0 lines (`wc -l` == 0).
+- Logged the batch in docs/TODO-completed.md.
+<!-- ------ -->
+---

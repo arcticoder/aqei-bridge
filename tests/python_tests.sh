@@ -6,7 +6,9 @@ cd "$ROOT_DIR"
 
 python -m py_compile \
   "$ROOT_DIR/python/orchestrator.py" \
-  "$ROOT_DIR/python/analyze_candidates.py"
+  "$ROOT_DIR/python/analyze_candidates.py" \
+  "$ROOT_DIR/python/multi_ray_analysis.py" \
+  "$ROOT_DIR/python/sweep_analysis.py"
 
 python -m unittest -q tests.test_pipeline
 
@@ -56,6 +58,80 @@ pt = data['points'][0]
 assert pt['AQEI_NUM_BASIS'] == 2
 assert abs(pt['AQEI_SIGMA'] - 0.7) < 1e-12
 assert pt['AQEI_GRID'] == 16
+PY
+
+# Smoke-test: multi-ray analysis.
+cat >"$TMP_DIR/top_candidates.json" <<'JSON'
+[
+  {"rayIndex": 1, "rayName": "r1", "score": 0.1, "a": [0.1], "activeConstraints": [1,2,3]},
+  {"rayIndex": 2, "rayName": "r2", "score": 0.2, "a": [0.2], "activeConstraints": [3,4]},
+  {"rayIndex": 1, "rayName": "r1", "score": 0.05, "a": [0.3], "activeConstraints": [5]}
+]
+JSON
+
+python "$ROOT_DIR/python/multi_ray_analysis.py" \
+  --candidates "$TMP_DIR/top_candidates.json" \
+  --out "$TMP_DIR/multi_ray.json" \
+  --threshold 0.2
+
+python - <<'PY'
+import json
+from pathlib import Path
+
+data = json.loads(Path('.tmp_test/multi_ray.json').read_text())
+assert data['rays'][0]['rayIndex'] == 1
+assert data['rays'][1]['rayIndex'] == 2
+assert len(data['jaccardPairs']) == 1
+pair = data['jaccardPairs'][0]
+assert pair['intersection'] == 1
+assert pair['union'] == 5
+PY
+
+# Smoke-test: sweep analysis (reads index + run record + candidates).
+RUN_TS="20260101T000000Z"
+mkdir -p "$ROOT_DIR/runs/$RUN_TS/artifacts"
+cat >"$ROOT_DIR/runs/$RUN_TS/artifacts/top_candidates.json" <<'JSON'
+[
+  {"rayIndex": 1, "rayName": "r1", "score": 0.3, "a": [0.1], "activeConstraints": [1]},
+  {"rayIndex": 2, "rayName": "r2", "score": 0.9, "a": [0.2], "activeConstraints": [2]}
+]
+JSON
+
+cat >"$ROOT_DIR/runs/$RUN_TS/run.json" <<JSON
+{
+  "timestampUtc": "$RUN_TS",
+  "archivedTopCandidatesJson": "$ROOT_DIR/runs/$RUN_TS/artifacts/top_candidates.json"
+}
+JSON
+
+cat >"$TMP_DIR/sweep_index.json" <<JSON
+{
+  "generatedAtUtc": "20260101T000000Z",
+  "planPath": "(test)",
+  "count": 1,
+  "runs": [
+    {
+      "point": {"AQEI_NUM_BASIS": 2, "AQEI_SIGMA": 0.7, "AQEI_GRID": 16},
+      "runTimestampUtc": "$RUN_TS",
+      "runRecordPath": "$ROOT_DIR/runs/$RUN_TS/run.json"
+    }
+  ]
+}
+JSON
+
+python "$ROOT_DIR/python/sweep_analysis.py" \
+  --index "$TMP_DIR/sweep_index.json" \
+  --out "$TMP_DIR/sweep_summary.json"
+
+python - <<'PY'
+import json
+from pathlib import Path
+
+data = json.loads(Path('.tmp_test/sweep_summary.json').read_text())
+assert data['count'] == 1
+pt0 = data['points'][0]
+assert abs(pt0['maxScore'] - 0.9) < 1e-12
+assert pt0['maxScoreRay'] == 'r2'
 PY
 
 rm -rf "$TMP_DIR"

@@ -58,3 +58,11 @@
 - Added `mathematica/visualize_results.wl` and extended Mathematica tests to generate a PNG plot.
 - `mathematica/search.wl`: added optional `--geodesic` observable mode (default off; keeps LP structure by per-basis linearization).
 - Ran `./run_tests.sh` (passes).
+
+## 2026-02-11 (multi-ray + sweep aggregation)
+- `python/orchestrator.py`: archive per-run artifacts under `runs/<ts>/artifacts/` and record archived paths in `runs/<ts>/run.json`.
+- `python/sweep_parameters.py`: on execution, write `runs/sweeps/<ts>/index.json` pointing to each run’s `runs/<run_ts>/run.json`.
+- Added `python/multi_ray_analysis.py` (Jaccard overlap + connected components proxy over `activeConstraints`).
+- Added `python/sweep_analysis.py` (reads sweep index + run records; computes per-point `maxScore` from candidates JSON).
+- Extended `tests/python_tests.sh` with smoke tests for both analysis scripts.
+- Ran `./run_tests.sh` (passes).
