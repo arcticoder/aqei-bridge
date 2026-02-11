@@ -41,6 +41,7 @@ ClearAll["Global`*"];
 *)
 scriptArgs = If[ValueQ[$ScriptCommandLine], Rest[$ScriptCommandLine], {}];
 testModeQ = MemberQ[scriptArgs, "--test-mode"];
+geodesicModeQ = MemberQ[scriptArgs, "--geodesic"];
 
 getEnvNumber[name_, default_] := Module[{s = Environment[name]},
   If[s === $Failed || s === None || s === "", default, ToExpression[s]]
@@ -145,10 +146,51 @@ deltaAlongRay[h_, ray_] := Module[{vx, lambdas, vals},
   Total[Most[vals] + Rest[vals]] * (lambdas[[2]] - lambdas[[1]])/2
 ];
 
+(* Optional: a very simple "geodesic-tracing" proxy.
+
+IMPORTANT: This is still a linearized observable.
+We trace a curve using only the single-basis field `h` and treat the resulting
+integral as a weight. The full (nonlinear) dependence of the path on the total
+field is not modeled here.
+
+This mode is OFF by default to preserve performance and the LP structure.
+Enable with `--geodesic`.
+*)
+geodesicAlpha = getEnvNumber["AQEI_GEODESIC_ALPHA", If[testModeQ, 0.1, 0.05]];
+
+deltaAlongRayGeodesic[h_, ray_] := Module[
+  {vx, hI, dhdx, xfun, sol, lambdas, vals, step},
+  vx = ray["vx"];
+  hI = ListInterpolation[h, {{-domainHalf, domainHalf}, {-domainHalf, domainHalf}}];
+  dhdx = Derivative[0, 1][hI];
+  sol = Quiet@Check[
+    NDSolveValue[
+      {
+        x''[λ] == -geodesicAlpha * dhdx[λ, x[λ]],
+        x[-domainHalf] == vx * (-domainHalf),
+        x'[-domainHalf] == vx
+      },
+      x,
+      {λ, -domainHalf, domainHalf},
+      MaxSteps -> If[testModeQ, 2000, 8000]
+    ],
+    $Failed
+  ];
+  If[sol === $Failed, Return[deltaAlongRay[h, ray]]];
+  xfun = sol;
+  lambdas = ts;
+  vals = Table[hI[λ, xfun[λ]], {λ, lambdas}];
+  step = lambdas[[2]] - lambdas[[1]];
+  Total[Most[vals] + Rest[vals]] * step/2
+];
+
 (* Precompute weights w_{i,j} = Δ(ray j, basis i) so Δ_j(a) = Sum_i a_i w_{i,j}. *)
 weights = Table[
   Module[{hi = applyGreen[basisVals[[i]]]},
-    Table[deltaAlongRay[hi, rays[[j]]], {j, Length[rays]}]
+    Table[
+      If[geodesicModeQ, deltaAlongRayGeodesic[hi, rays[[j]]], deltaAlongRay[hi, rays[[j]]]],
+      {j, Length[rays]}
+    ]
   ],
   {i, nBasis}
 ];

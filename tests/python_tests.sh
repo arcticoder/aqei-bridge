@@ -37,6 +37,27 @@ assert 'def topCandidates' in text
 assert 'aRat' in text
 PY
 
+# Smoke-test: sweep planner (dry-run only).
+python "$ROOT_DIR/python/sweep_parameters.py" \
+  --dry-run \
+  --nbasis 2 \
+  --sigmas 0.7 \
+  --grid 16 \
+  --out "$ROOT_DIR/.tmp_test/sweep_plan.json"
+
+python - <<'PY'
+import json
+from pathlib import Path
+
+p = Path('.tmp_test') / 'sweep_plan.json'
+data = json.loads(p.read_text())
+assert data['count'] == 1
+pt = data['points'][0]
+assert pt['AQEI_NUM_BASIS'] == 2
+assert abs(pt['AQEI_SIGMA'] - 0.7) < 1e-12
+assert pt['AQEI_GRID'] == 16
+PY
+
 rm -rf "$TMP_DIR"
 
 echo "Python tests: OK"

@@ -90,6 +90,12 @@ def generate_lean_candidates(
             )
         )
 
+    max_score = max((c.score for c in candidates), default=0.0)
+    max_score_ray = ""
+    if candidates:
+        best = max(candidates, key=lambda c: c.score)
+        max_score_ray = best.ray_name
+
     # Emit Lean.
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -113,6 +119,8 @@ def generate_lean_candidates(
     lines.append("")
     lines.append(f"def nBasis : Nat := {n_basis}")
     lines.append(f"def mConstraints : Nat := {m_constraints}")
+    lines.append(f"def maxScore : Float := {max_score}")
+    lines.append(f"def maxScoreRay : String := {json.dumps(max_score_ray)}")
     lines.append("")
 
     lines.append("def topCandidates : List Candidate := [")

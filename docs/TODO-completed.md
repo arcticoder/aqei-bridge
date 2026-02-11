@@ -50,3 +50,11 @@
 - `docs/manuscript.md`: added an explicit $J^+(p)$ formula and a short “pivot” note about interpreting null results.
 - `README.md`: added a brief “Recent progress” note.
 - Ran `./run_tests.sh` (passes).
+
+## 2026-02-10 (phase-3 helpers)
+- `python/analyze_candidates.py`: emit `maxScore` / `maxScoreRay` metadata into the generated Lean artifact.
+- Added `python/sweep_parameters.py` (supports `--dry-run` and defaults to `AQEI_TEST_MODE=1` when executing).
+- `tests/python_tests.sh`: smoke-test sweep planner in dry-run mode.
+- Added `mathematica/visualize_results.wl` and extended Mathematica tests to generate a PNG plot.
+- `mathematica/search.wl`: added optional `--geodesic` observable mode (default off; keeps LP structure by per-basis linearization).
+- Ran `./run_tests.sh` (passes).

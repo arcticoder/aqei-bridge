@@ -15,8 +15,10 @@ export AQEI_TEST_MODE="1"
 
 if command -v wolframscript >/dev/null 2>&1; then
   wolframscript -file "$ROOT_DIR/mathematica/search.wl" --test-mode
+  wolframscript -file "$ROOT_DIR/mathematica/visualize_results.wl" --test-mode
 elif command -v wolfram >/dev/null 2>&1; then
   wolfram -script "$ROOT_DIR/mathematica/search.wl" --test-mode
+  wolfram -script "$ROOT_DIR/mathematica/visualize_results.wl" --test-mode
 else
   echo "ERROR: neither wolframscript nor wolfram found on PATH" >&2
   exit 1
@@ -29,8 +31,10 @@ from pathlib import Path
 results = Path('mathematica/results')
 summary = results / 'summary.json'
 top = results / 'top_candidates.json'
+png = results / 'plot_scores_test.png'
 assert summary.exists(), 'summary.json missing'
 assert top.exists(), 'top_candidates.json missing'
+assert png.exists(), 'plot_scores_test.png missing'
 
 s = json.loads(summary.read_text())
 assert s['N'] == 2
