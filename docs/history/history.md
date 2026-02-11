@@ -94,3 +94,18 @@ Completed: *Commit changes* (5/5)
 - Verified `wc -l docs/TODO.md` is `0`, and committed the changes (`4b53a0a`).
 <!-- ------ -->
 ---
+- Implemented the Phase 2 TODO items and cleaned up the TODO workflow again.
+- Lean updates:
+  - StressEnergy.lean: added `StressEnergyTensor.toPerturbation` (still a deliberate placeholder via `LinearizedEinstein`).
+  - AQEI_Cone.lean: simplified the convexity proof to avoid simp-lint noise.
+  - CausalStability.lean: added typed placeholders for `PerturbedFutures` + `InvariantHomotopyClass`, and a conjecture-shaped interface axiom mentioning them (no homology dependency yet).
+- Docs/README updates:
+  - manuscript.md: added explicit $J^+(p)$ formula + a short “pivot” note.
+  - README.md: added a brief “Recent progress” section.
+  - TODO-BLOCKED.md: removed the stale “license blocked” item and clarified the real blockers.
+  - TODO-completed.md: logged the completed items.
+- Validation: run_tests.sh passes.
+- Workflow done-criterion: `wc -l docs/TODO.md` is `0`.
+- Committed as `76d1a49` with a bullet-list message.
+<!-- ------ -->
+---
