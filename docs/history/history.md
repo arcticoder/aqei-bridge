@@ -223,3 +223,22 @@ Implemented the chamber-indexed discrete model `J` and made “constant on chamb
 next step: connect this `chamberIndex` notion to the earlier `ClosedChamber` active-set definition (so we can explicitly relate “active constraints” diagnostics to these sign-pattern chambers)
 <!-- ------ -->
 ---
+I’m going to add a small Lean bridge module proving how `ClosedChamber F active` relates to the sign-pattern `chamberIndex` (including the clean equality result under strictness for inactive constraints), then run run_tests.sh, drain TODO.md, and commit.
+<!-- ------ -->
+---
+Bridge lemmas are implemented and wired into Lean + docs; next I’ll run run_tests.sh to confirm everything compiles, then drain TODO.md and commit this batch.
+<!-- ------ -->
+---
+Completed: *Run tests, drain TODO, commit* (4/4)
+
+Implemented the `ClosedChamber` ↔ `chamberIndex` connection end-to-end, with tests + TODO hygiene + commit.
+
+- Added ChamberClosedChamberBridge.lean
+  - `active_subset_chamberIndex_of_mem_closedChamber`: `T ∈ ClosedChamber F active → active ⊆ chamberIndex F T`
+  - `chamberIndex_eq_active_of_mem_closedChamber_of_inactive_strict`: if all inactive constraints are strict, then `chamberIndex F T = active`
+  - `mem_Chamber_of_mem_closedChamber_of_inactive_strict`: packages the equality as membership in `Chamber F active`
+- Wired import in AqeiBridge.lean.
+- Noted the relationship in conjecture.md.
+- Ran run_tests.sh (passes), drained TODO.md back to empty, logged the batch in TODO-completed.md, and committed (`73aba03`).
+<!-- ------ -->
+---
