@@ -164,3 +164,16 @@ To make that visible in the backlog itself, I checked off the completed Phase 3 
 Remaining unchecked backlog items include 2+1D cylindrical toy and ContourPlot visualizations. If you want, I can pull the next 5–8 items by breaking “2+1D toys” into a small, testable scaffold batch plus the visualization work.
 <!-- ------ -->
 ---
+**Done**
+- Drained TODO.md to a true 0 lines and committed two batches (connectedness proxy; then backlog batch). Repo is clean (`git status` empty) and `wc -l docs/TODO.md` is 0.
+
+**Backlog batch implemented**
+- search.wl now honors `AQEI_RESULTS_DIR` so each run can write JSON outputs to an isolated directory.
+- analyze_candidates.py now supports `--results-dir` and `--out` (defaults unchanged).
+- orchestrator.py now plumbs configurable results/output paths and supports `skip_lean` (sweep-friendly).
+- sweep_parameters.py adds `--skip-lean` and `--jobs` (it rejects `--jobs>1` unless `--skip-lean` is set, because Lean + generated files aren’t parallel-safe otherwise).
+- multi_ray_analysis.py adds `--dot-out` to emit a Graphviz DOT overlap graph at the chosen Jaccard `--threshold`.
+- conjecture.md now has a short “toward proof” section that explains how the discrete/toy proof plan (chambers/local constancy/adjacency) relates to the heuristic diagnostics.
+- python_tests.sh smoke-tests the new analyze-candidates CLI and DOT output; run_tests.sh passes.
+<!-- ------ -->
+---
