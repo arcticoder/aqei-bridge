@@ -109,3 +109,16 @@ Completed: *Commit changes* (5/5)
 - Committed as `76d1a49` with a bullet-list message.
 <!-- ------ -->
 ---
+- Pulled 5–8 Phase 3 items from the backlog into docs/TODO.md, implemented them, moved the record into docs/TODO-completed.md, and drained TODO.md back to 0 lines.
+- Implemented:
+  - analyze_candidates.py: emits `maxScore` and `maxScoreRay` into the generated Lean artifact for traceability.
+  - sweep_parameters.py: new sweep helper with `--dry-run` (writes sweep plan JSON) and defaults to `AQEI_TEST_MODE=1` when executing.
+  - visualize_results.wl: new script that reads `mathematica/results/*.json` and exports a PNG bar chart of candidate scores.
+  - search.wl: added optional `--geodesic` observable mode (default off; still linearized per-basis weights so the LP structure remains intact).
+  - python_tests.sh: added a dry-run smoke test for the sweep planner.
+  - mathematica_tests.sh: runs `visualize_results.wl` (test-mode) and asserts `plot_scores_test.png` exists.
+- Validation: run_tests.sh passes.
+- Workflow condition: `wc -l docs/TODO.md` is `0`.
+- Committed as `a6c2f89` with a bullet-list summary.
+<!-- ------ -->
+---
