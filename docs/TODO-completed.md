@@ -92,3 +92,9 @@
 - `docs/conjecture.md`: add a short “toward proof” section connecting chambers/local constancy to the heuristic diagnostics.
 - `tests/python_tests.sh`: smoke-test the new analyze-candidates CLI and DOT output.
 - Ran `./run_tests.sh` (passes).
+
+## 2026-02-11 (Lean chamber lemma)
+- Added `lean/src/AqeiBridge/Chambers.lean` formalizing a closed-chamber model and proving convex ⇒ path-connected.
+- Proved the toy `AQEI_cone` is path-connected assuming feasibility via nonnegative bounds (`0 ≤ B`).
+- Wired the module into `lean/src/AqeiBridge.lean` and referenced it in `docs/conjecture.md`.
+- Ran `./run_tests.sh` (passes).

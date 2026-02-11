@@ -3,6 +3,7 @@ import AqeiBridge.CausalPoset
 import AqeiBridge.SpacetimeCausalPoset
 import AqeiBridge.StressEnergy
 import AqeiBridge.AQEI_Cone
+import AqeiBridge.Chambers
 import AqeiBridge.DiscreteCausality
 import AqeiBridge.CausalStability
 import AqeiBridge.Conjecture
