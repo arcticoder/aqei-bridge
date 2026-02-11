@@ -33,3 +33,9 @@ Lower-priority or dependent items. Review regularly; move to active TODO.md as c
 ## General / Ongoing
 - [ ] Review/incorporate history.md ideas (e.g., non-linear opts, discrete proxies).
 - [ ] Add visualizations: Mathematica ContourPlot[h[t,x]]; export PNGs to docs/.
+
+## Phase 2 (deeper formalization subparts)
+- [ ] Upgrade `Spacetime.lean` from abstract placeholders to a genuine Lorentzian-manifold development (or a refined discrete model) with a nontrivial `CausalCurve` and `J⁺`.
+- [ ] In `CausalStability.lean`: refine the conjecture statement to include *global causal homotopy class invariance* once a concrete causal model exists.
+- [ ] Prove continuity/stability lemmas for `J⁺` under small perturbations (likely via a discrete approximation first, then manifold topology).
+- [ ] Replace `LinearizedEinstein` placeholder with a meaningful interface (and later an implementation or an axiom tied to external analytic results).

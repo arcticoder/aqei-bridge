@@ -17,3 +17,12 @@
 
 ## 2026-02-10
 - Migrated long-term checklist items into `docs/TODO-backlog.md` so `docs/TODO.md` can remain empty as the active-queue file.
+
+## 2026-02-10 (later)
+- Added `--test-mode` flag support in `mathematica/search.wl` and expanded `run_tests.sh` to run explicit smoke checks (`lake build`, Mathematica test-mode, unittest discovery).
+- Started `docs/manuscript.md` with a structured outline aligned to `energy-tensor-cone/papers/` style.
+- Tightened Phase 2 Lean skeletons:
+	- `Spacetime.lean`: added abstract `CausalCurve`/`Jplus` interface and a neighborhood hook.
+	- `StressEnergy.lean`: made `StressEnergyTensor` a symmetric matrix; added `LinearizedEinstein` placeholder.
+	- `AQEI_Cone.lean`: added a sampling-based `mkFunctionals` helper.
+	- `CausalStability.lean`: added an `IsPathConnected` skeleton statement for the admissible region.
