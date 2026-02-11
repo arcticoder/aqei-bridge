@@ -37,6 +37,7 @@ text = out.read_text()
 assert 'structure Candidate' in text
 assert 'def topCandidates' in text
 assert 'aRat' in text
+assert 'maxScoreUpperRat' in text
 PY
 
 # Smoke-test: sweep planner (dry-run only).
@@ -72,7 +73,8 @@ JSON
 python "$ROOT_DIR/python/multi_ray_analysis.py" \
   --candidates "$TMP_DIR/top_candidates.json" \
   --out "$TMP_DIR/multi_ray.json" \
-  --threshold 0.2
+  --threshold 0.2 \
+  --thresholds 0.0,0.2,0.5
 
 python - <<'PY'
 import json
@@ -85,6 +87,7 @@ assert len(data['jaccardPairs']) == 1
 pair = data['jaccardPairs'][0]
 assert pair['intersection'] == 1
 assert pair['union'] == 5
+assert len(data['thresholdSweep']) == 3
 PY
 
 # Smoke-test: sweep analysis (reads index + run record + candidates).

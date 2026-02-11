@@ -137,3 +137,6 @@ Completed: *Commit changes* (5/5)
 - Logged the batch in docs/TODO-completed.md.
 <!-- ------ -->
 ---
+I’m going to pull one more backlog item (“ContourPlot visualizations”) into TODO.md, implement it (new Mathematica contour plot export + test coverage), rerun run_tests.sh, then drain TODO.md back to empty so this iteration truly covers 5+ backlog items.
+<!-- ------ -->
+---

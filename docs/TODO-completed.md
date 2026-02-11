@@ -66,3 +66,11 @@
 - Added `python/sweep_analysis.py` (reads sweep index + run records; computes per-point `maxScore` from candidates JSON).
 - Extended `tests/python_tests.sh` with smoke tests for both analysis scripts.
 - Ran `./run_tests.sh` (passes).
+
+## 2026-02-10 (geodesic ndsolve + bounds + meshgrid)
+- `mathematica/search.wl`: added `--geodesic-ndsolve` mode using an NDSolve ODE proxy closer to $x'' + \Gamma(x) (x')^2 = 0$ (still linearized per-basis weights).
+- `tests/mathematica_tests.sh`: exercised `--geodesic-ndsolve` in `--test-mode`.
+- `python/multi_ray_analysis.py`: added `--thresholds` sweep output (components vs. threshold) as a lightweight 0th-persistence proxy.
+- `python/analyze_candidates.py`: emit `maxScoreUpperRat : Rat` and a placeholder bound theorem in the generated Lean artifact.
+- `python/sweep_parameters.py`: added `--grids` (comma-separated) meshgrid support while preserving `--grid`.
+- Ran `./run_tests.sh` (passes).

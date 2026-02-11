@@ -39,8 +39,22 @@ def _parse_csv_floats(s: str) -> list[float]:
     return [float(x.strip()) for x in s.split(",") if x.strip()]
 
 
-def build_sweep(nbasis: Iterable[int], sigmas: Iterable[float], grid: int) -> list[SweepPoint]:
-    return [SweepPoint(AQEI_NUM_BASIS=n, AQEI_SIGMA=s, AQEI_GRID=grid) for n, s in product(nbasis, sigmas)]
+def _parse_csv_ints_or_empty(s: str) -> list[int]:
+    s = s.strip()
+    if not s:
+        return []
+    return _parse_csv_ints(s)
+
+
+def build_sweep(
+    nbasis: Iterable[int],
+    sigmas: Iterable[float],
+    grids: Iterable[int],
+) -> list[SweepPoint]:
+    return [
+        SweepPoint(AQEI_NUM_BASIS=n, AQEI_SIGMA=s, AQEI_GRID=g)
+        for n, s, g in product(nbasis, sigmas, grids)
+    ]
 
 
 def write_plan(points: list[SweepPoint], out_path: Path) -> None:
@@ -58,6 +72,7 @@ def main() -> int:
     parser.add_argument("--nbasis", default="2,3", help="Comma-separated basis sizes")
     parser.add_argument("--sigmas", default="0.7,0.8", help="Comma-separated sigma values")
     parser.add_argument("--grid", type=int, default=32, help="Grid size")
+    parser.add_argument("--grids", default="", help="Optional comma-separated grid sizes (overrides --grid)")
     parser.add_argument("--dry-run", action="store_true", help="Only write the sweep plan JSON")
     parser.add_argument("--out", default="", help="Output path for plan JSON (default under runs/)")
     parser.add_argument("--full", action="store_true", help="Do not force AQEI_TEST_MODE=1 when executing")
@@ -66,7 +81,11 @@ def main() -> int:
 
     nbasis = _parse_csv_ints(args.nbasis)
     sigmas = _parse_csv_floats(args.sigmas)
-    points = build_sweep(nbasis=nbasis, sigmas=sigmas, grid=args.grid)
+    grids = _parse_csv_ints_or_empty(args.grids)
+    if not grids:
+        grids = [int(args.grid)]
+
+    points = build_sweep(nbasis=nbasis, sigmas=sigmas, grids=grids)
 
     sweep_ts = _utc_timestamp()
 

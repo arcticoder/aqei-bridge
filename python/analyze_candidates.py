@@ -24,6 +24,7 @@ All claims about "active constraints" are heuristic (tolerance-based).
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import dataclass
 from fractions import Fraction
 from pathlib import Path
@@ -96,6 +97,12 @@ def generate_lean_candidates(
         best = max(candidates, key=lambda c: c.score)
         max_score_ray = best.ray_name
 
+    # A conservative rational upper bound on max_score.
+    # We round up at denominator `max_den` to make later “≤ bound” lemmas plausible.
+    if max_den <= 0:
+        max_den = 10**6
+    max_score_upper = Fraction(math.ceil(max_score * max_den), max_den)
+
     # Emit Lean.
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -121,6 +128,7 @@ def generate_lean_candidates(
     lines.append(f"def mConstraints : Nat := {m_constraints}")
     lines.append(f"def maxScore : Float := {max_score}")
     lines.append(f"def maxScoreRay : String := {json.dumps(max_score_ray)}")
+    lines.append(f"def maxScoreUpperRat : Rat := {fraction_to_lean_rat(max_score_upper)}")
     lines.append("")
 
     lines.append("def topCandidates : List Candidate := [")
@@ -148,6 +156,14 @@ def generate_lean_candidates(
     lines.append("Replace `True` with real inequalities once the AQEI functionals are formalized.")
     lines.append("-/")
     lines.append("theorem topCandidates_exported : True := by")
+    lines.append("  trivial")
+
+    lines.append("")
+    lines.append("/--")
+    lines.append("A placeholder 'bound' statement: tie the numeric search output to a rational upper bound.")
+    lines.append("Replace `True` with a real statement once Δ is formalized.")
+    lines.append("-/")
+    lines.append("theorem maxScore_le_maxScoreUpperRat : True := by")
     lines.append("  trivial")
     lines.append("")
     lines.append("end AqeiBridge")

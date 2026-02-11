@@ -32,6 +32,10 @@ def _write_json(path: Path, payload: Any) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
 
 
+def _parse_csv_floats(s: str) -> list[float]:
+    return [float(x.strip()) for x in s.split(",") if x.strip()]
+
+
 @dataclass(frozen=True)
 class RayConstraints:
     ray_index: int
@@ -93,6 +97,11 @@ def main() -> int:
     parser.add_argument("--candidates", required=True, help="Path to top_candidates.json")
     parser.add_argument("--out", required=True, help="Output JSON path")
     parser.add_argument("--threshold", type=float, default=0.0, help="Jaccard threshold for edges (default 0.0)")
+    parser.add_argument(
+        "--thresholds",
+        default="",
+        help="Optional comma-separated thresholds; emits components/edge-count per threshold",
+    )
     args = parser.parse_args()
 
     candidates_path = Path(args.candidates)
@@ -103,6 +112,9 @@ def main() -> int:
         raise TypeError("Expected candidates JSON to be a list")
 
     rays = _union_constraints_by_ray(candidates_raw)
+
+    ray_indices = [r.ray_index for r in rays]
+    ray_index_set = set(ray_indices)
 
     pairs: list[dict[str, object]] = []
     edges: list[tuple[int, int]] = []
@@ -123,12 +135,38 @@ def main() -> int:
             if jac >= float(args.threshold):
                 edges.append((r1.ray_index, r2.ray_index))
 
-    comps = _components([r.ray_index for r in rays], edges)
+    comps = _components(ray_indices, edges)
+
+    threshold_sweep: list[dict[str, object]] = []
+    if args.thresholds.strip():
+        for th in sorted(set(_parse_csv_floats(args.thresholds))):
+            th_edges: list[tuple[int, int]] = []
+            for p in pairs:
+                a = int(p["rayA"])
+                b = int(p["rayB"])
+                if a not in ray_index_set or b not in ray_index_set:
+                    continue
+                if float(p["jaccard"]) >= th:
+                    th_edges.append((a, b))
+
+            th_components = _components(ray_indices, th_edges)
+            threshold_sweep.append(
+                {
+                    "threshold": th,
+                    "edgeCount": len(th_edges),
+                    "components": th_components,
+                    "summary": {
+                        "componentCount": len(th_components),
+                        "largestComponent": max((len(c) for c in th_components), default=0),
+                    },
+                }
+            )
 
     payload = {
         "generatedAtUtc": _utc_timestamp(),
         "inputCandidates": str(candidates_path),
         "threshold": float(args.threshold),
+        "thresholds": args.thresholds,
         "rays": [
             {
                 "rayIndex": r.ray_index,
@@ -139,6 +177,7 @@ def main() -> int:
         ],
         "jaccardPairs": pairs,
         "components": comps,
+        "thresholdSweep": threshold_sweep,
     }
 
     _write_json(out_path, payload)

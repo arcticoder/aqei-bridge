@@ -42,6 +42,7 @@ ClearAll["Global`*"];
 scriptArgs = If[ValueQ[$ScriptCommandLine], Rest[$ScriptCommandLine], {}];
 testModeQ = MemberQ[scriptArgs, "--test-mode"];
 geodesicModeQ = MemberQ[scriptArgs, "--geodesic"];
+geodesicNDSolveModeQ = MemberQ[scriptArgs, "--geodesic-ndsolve"];
 
 getEnvNumber[name_, default_] := Module[{s = Environment[name]},
   If[s === $Failed || s === None || s === "", default, ToExpression[s]]
@@ -157,6 +158,7 @@ This mode is OFF by default to preserve performance and the LP structure.
 Enable with `--geodesic`.
 *)
 geodesicAlpha = getEnvNumber["AQEI_GEODESIC_ALPHA", If[testModeQ, 0.1, 0.05]];
+geodesicBeta = getEnvNumber["AQEI_GEODESIC_BETA", If[testModeQ, 0.02, 0.01]];
 
 deltaAlongRayGeodesic[h_, ray_] := Module[
   {vx, hI, dhdx, xfun, sol, lambdas, vals, step},
@@ -184,11 +186,48 @@ deltaAlongRayGeodesic[h_, ray_] := Module[
   Total[Most[vals] + Rest[vals]] * step/2
 ];
 
+(* Alternative: NDSolve-based proxy closer to x'' + Γ(x) (x')^2 = 0.
+
+We interpret Γ as a small perturbation derived from ∂_x h.
+This remains a per-basis linearized observable and is intended only as a
+diagnostic knob.
+Enable with `--geodesic-ndsolve`.
+*)
+deltaAlongRayGeodesicNDSolve[h_, ray_] := Module[
+  {vx, hI, dhdx, xfun, sol, lambdas, vals, step},
+  vx = ray["vx"];
+  hI = ListInterpolation[h, {{-domainHalf, domainHalf}, {-domainHalf, domainHalf}}];
+  dhdx = Derivative[0, 1][hI];
+  sol = Quiet@Check[
+    NDSolveValue[
+      {
+        x''[λ] + geodesicBeta * dhdx[λ, x[λ]] * (x'[λ])^2 == 0,
+        x[-domainHalf] == vx * (-domainHalf),
+        x'[-domainHalf] == vx
+      },
+      x,
+      {λ, -domainHalf, domainHalf},
+      MaxSteps -> If[testModeQ, 2000, 8000]
+    ],
+    $Failed
+  ];
+  If[sol === $Failed, Return[deltaAlongRay[h, ray]]];
+  xfun = sol;
+  lambdas = ts;
+  vals = Table[hI[λ, xfun[λ]], {λ, lambdas}];
+  step = lambdas[[2]] - lambdas[[1]];
+  Total[Most[vals] + Rest[vals]] * step/2
+];
+
 (* Precompute weights w_{i,j} = Δ(ray j, basis i) so Δ_j(a) = Sum_i a_i w_{i,j}. *)
 weights = Table[
   Module[{hi = applyGreen[basisVals[[i]]]},
     Table[
-      If[geodesicModeQ, deltaAlongRayGeodesic[hi, rays[[j]]], deltaAlongRay[hi, rays[[j]]]],
+      Which[
+        geodesicNDSolveModeQ, deltaAlongRayGeodesicNDSolve[hi, rays[[j]]],
+        geodesicModeQ, deltaAlongRayGeodesic[hi, rays[[j]]],
+        True, deltaAlongRay[hi, rays[[j]]]
+      ],
       {j, Length[rays]}
     ]
   ],
