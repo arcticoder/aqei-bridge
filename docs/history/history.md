@@ -140,3 +140,16 @@ Completed: *Commit changes* (5/5)
 I’m going to pull one more backlog item (“ContourPlot visualizations”) into TODO.md, implement it (new Mathematica contour plot export + test coverage), rerun run_tests.sh, then drain TODO.md back to empty so this iteration truly covers 5+ backlog items.
 <!-- ------ -->
 ---
+**What shipped**
+- Added `--geodesic-ndsolve` (NDSolve ODE proxy) in mathematica/search.wl.
+- Exercised `--geodesic-ndsolve` in tests/mathematica_tests.sh.
+- Added multi-threshold “0th persistence” style output via `--thresholds` in python/multi_ray_analysis.py.
+- Emitted a conservative rational upper bound `maxScoreUpperRat : Rat` into the generated Lean artifact via python/analyze_candidates.py.
+- Added meshgrid support `--grids` (comma-separated) in python/sweep_parameters.py.
+- Extended smoke tests in tests/python_tests.sh and ran run_tests.sh (passes).
+
+**TODO status**
+- docs/TODO.md is empty (`wc -l` == 0).
+- Batch logged in docs/TODO-completed.md.
+<!-- ------ -->
+---
