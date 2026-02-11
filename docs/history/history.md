@@ -177,3 +177,20 @@ Remaining unchecked backlog items include 2+1D cylindrical toy and ContourPlot v
 - python_tests.sh smoke-tests the new analyze-candidates CLI and DOT output; run_tests.sh passes.
 <!-- ------ -->
 ---
+Implemented the next backlog slice and kept TODO/commit hygiene intact.
+
+**What changed**
+- Added a new Lean “toward proof” module: Chambers.lean
+  - Defines a closed-chamber model (`ClosedChamber`) for a finite family of linear AQEI-like constraints.
+  - Proves `Convex → IsPathConnected` for these chambers.
+  - Proves the toy `AQEI_cone` is path-connected assuming feasibility via nonnegative bounds (`0 ≤ B`, so `T=0` is admissible).
+- Wired the new module into AqeiBridge.lean.
+- Updated conjecture.md “Toward proof” with a pointer to the Lean lemma.
+
+**Validation**
+- Ran run_tests.sh successfully (Lean/Mathematica/Python OK).
+- Drained TODO.md back to empty (`wc -l` is 0).
+
+to keep pushing toward the conjecture, next good step is to connect this chamber lemma to the *discrete causality* side: formalize a parameter-to-DiscreteSpacetime map that is locally constant on chambers, then conclude a path-connectedness statement about the induced futures in the discrete toy model.
+<!-- ------ -->
+---
