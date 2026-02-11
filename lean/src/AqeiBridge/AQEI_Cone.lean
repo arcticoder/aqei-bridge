@@ -49,7 +49,7 @@ theorem AQEI_cone_convex {n : ℕ} (F : List (AQEIFunctional n)) : Convex ℝ (A
   -- Use linearity of `f.L` and `linarith`.
   -- `simp` handles `map_add` and `map_smul` for linear maps.
   have : f.L (a • x + b • y) = a * f.L x + b * f.L y := by
-    simp [map_add, map_smul, mul_add, add_mul]
+    simp [map_add, map_smul]
   -- Rewrite goal using the computed expression.
   -- Then use the convex weights assumptions.
   -- (The proof is simple arithmetic; we let `linarith` finish.)
@@ -69,7 +69,7 @@ theorem AQEI_cone_convex {n : ℕ} (F : List (AQEIFunctional n)) : Convex ℝ (A
   --
   --
   -- Finish:
-  simpa [this, hab, mul_assoc, add_comm, add_left_comm, add_assoc, mul_add, add_mul] using
+  simpa [this, hab] using
     (by
       have h1 : a * f.L x ≥ a * (-f.B) := by nlinarith
       have h2 : b * f.L y ≥ b * (-f.B) := by nlinarith

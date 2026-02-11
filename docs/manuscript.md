@@ -19,6 +19,12 @@ We want evidence and eventually a proof (or disproof/refinement) of:
 
 See `docs/conjecture.md` for the current mathematical phrasing and caveats.
 
+We will use the standard causal-future notation:
+
+$$
+J^+(p) = \{ q \mid \exists\,\gamma : p \to q,\; g(\dot\gamma, \dot\gamma) \le 0 \}.
+$$
+
 ### 1.2. What this repository contributes
 - A repeatable candidate generation loop (toy 1+1D) producing structured artifacts.
 - A Lean “interface layer” that keeps speculative/heuristic steps explicitly abstract.
@@ -90,3 +96,9 @@ This section is a placeholder for a more precise statement once the Lean model o
 - Tighten Lean statements for the discrete model; prove at least one nontrivial stability theorem there.
 - Replace synthetic constraints with manuscript-derived sampling functionals.
 - Upgrade the causal observable beyond straight-ray integrals.
+
+Pivot note:
+- If expanded searches fail to produce robust counterexamples (across seeds, grids, and ansatz families),
+  treat that as evidence about the *toy proxy* only.
+- The next step would be to strengthen the model ingredients (constraints + observable) rather than to
+  over-interpret null results as physical causality stability.

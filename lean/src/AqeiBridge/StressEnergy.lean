@@ -52,4 +52,13 @@ Later this should represent (linearized) Einstein: $\delta G = 8\pi\,\delta T$.
 noncomputable def LinearizedEinstein {M : Spacetime} (_T : StressEnergyTensor 4) : MetricPerturbation M :=
   ⟨fun _ _ => 0⟩
 
+/-- Convenience wrapper: interpret a tensor-shaped source as a metric perturbation.
+
+This is intentionally a placeholder; the real content should be a later
+instantiation of the linearized Einstein operator.
+-/
+noncomputable def StressEnergyTensor.toPerturbation {M : Spacetime} (T : StressEnergyTensor 4) :
+    MetricPerturbation M :=
+  LinearizedEinstein (M := M) T
+
 end AqeiBridge

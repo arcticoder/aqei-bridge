@@ -42,3 +42,11 @@
 - Wired `AqeiBridge.SpacetimeCausalPoset` into the top-level import file.
 - Updated `docs/manuscript.md` with an explicit “axioms → Alexandrov topology” implementation note.
 - Made `tests/mathematica_tests.sh` always run `search.wl` in `--test-mode` to keep `./run_tests.sh` fast.
+
+## 2026-02-10 (later)
+- `StressEnergy.lean`: added `StressEnergyTensor.toPerturbation` convenience definition (still a placeholder via `LinearizedEinstein`).
+- `AQEI_Cone.lean`: simplified the convexity proof to avoid unused simp-arg lint noise.
+- `CausalStability.lean`: introduced typed placeholders for `PerturbedFutures` and `InvariantHomotopyClass`, plus a conjecture-shaped interface axiom mentioning them.
+- `docs/manuscript.md`: added an explicit $J^+(p)$ formula and a short “pivot” note about interpreting null results.
+- `README.md`: added a brief “Recent progress” note.
+- Ran `./run_tests.sh` (passes).

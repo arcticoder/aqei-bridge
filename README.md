@@ -78,6 +78,13 @@ Or run the single orchestrator:
 
 - `python python/orchestrator.py`
 
+### Recent progress
+
+- Discrete reachability toy model and typed conjecture skeletons in Lean.
+- Order-theoretic bridge: causal preorders / causal posets and an Alexandrov-style topology, plus a
+  `Spacetime` → `CausalPoset` bridge under explicit axioms.
+- Tests default to fast Mathematica runs (`--test-mode`) so `./run_tests.sh` stays quick.
+
 ## Debugging / common failure modes
 
 - **Mathematica script errors / huge output**
