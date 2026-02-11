@@ -36,17 +36,23 @@
 
 ClearAll["Global`*"];
 
+(* Command-line flags when run via wolframscript.
+  Example: wolframscript -file mathematica/search.wl --test-mode
+*)
+scriptArgs = If[ValueQ[$ScriptCommandLine], Rest[$ScriptCommandLine], {}];
+testModeQ = MemberQ[scriptArgs, "--test-mode"];
+
 getEnvNumber[name_, default_] := Module[{s = Environment[name]},
   If[s === $Failed || s === None || s === "", default, ToExpression[s]]
 ];
 
 (* Avoid protected symbols like N, D. *)
-nBasis = Max[1, Floor@getEnvNumber["AQEI_NUM_BASIS", 3]];
-nConstraints = Max[1, Floor@getEnvNumber["AQEI_NUM_CONSTRAINTS", 12]];
-ngrid = Max[16, Floor@getEnvNumber["AQEI_GRID", 64]];
-domainHalf = N@getEnvNumber["AQEI_DOMAIN", 4.0]; (* numeric half-width, i.e. [-D,D] *)
-sigma = getEnvNumber["AQEI_SIGMA", 0.7];
-seed = Floor@getEnvNumber["AQEI_SEED", 1234];
+nBasis = Max[1, Floor@getEnvNumber["AQEI_NUM_BASIS", If[testModeQ, 2, 3]]];
+nConstraints = Max[1, Floor@getEnvNumber["AQEI_NUM_CONSTRAINTS", If[testModeQ, 6, 12]]];
+ngrid = Max[16, Floor@getEnvNumber["AQEI_GRID", If[testModeQ, 32, 64]]];
+domainHalf = N@getEnvNumber["AQEI_DOMAIN", If[testModeQ, 2.0, 4.0]]; (* numeric half-width, i.e. [-D,D] *)
+sigma = getEnvNumber["AQEI_SIGMA", If[testModeQ, 0.8, 0.7]];
+seed = Floor@getEnvNumber["AQEI_SEED", If[testModeQ, 42, 1234]];
 eps = getEnvNumber["AQEI_EPS", 1.*^-4];
 aMax = getEnvNumber["AQEI_A_MAX", 1.0];
 
