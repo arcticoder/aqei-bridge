@@ -13,6 +13,7 @@ import AqeiBridge.DiscreteCausality
 import AqeiBridge.DiscreteCausalPoset
 import AqeiBridge.DiscreteChronology
 import AqeiBridge.DiscreteHomologyProxy
+import AqeiBridge.PosetHomologyProxy
 import AqeiBridge.CausalStability
 import AqeiBridge.Conjecture
 import AqeiBridge.GlobalConjectures

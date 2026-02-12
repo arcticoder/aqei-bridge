@@ -362,3 +362,15 @@ Implemented a compiling Lean “homology proxy” and got the full run_tests.sh 
 - Verification: run_tests.sh now reports “Lean tests: OK / All tests: OK” (only existing linter warnings remain).
 <!-- ------ -->
 ---
+**Status**
+- Poset chain-complex proxy is compiling again, with `H1 := (posetChainComplex ...).homology 1` working via Mathlib’s homology API in aqei-bridge/lean/src/AqeiBridge/PosetHomologyProxy.lean.
+- run_tests.sh is green (warnings only).
+
+**Next Steps to Stay on Track**
+- **(1) Unblock Homology/Sheaf (Lean / Mathlib chain complexes)**: Extend the low-degree `C₀/C₁` complex toward an actual poset/order-complex chain complex (or a controlled truncation), and add basic lemmas relating your earlier `Z1 := ker ∂₁` proxy to Mathlib notions (`cycles`, `homology`).
+- **(2) Large-Scale Discrete Searches (sweeps → Lean conjectures)**: Run deterministic sweeps over generated causal posets/graphs, compute proxy invariants (cycle counts, ranks, obstruction flags), and emit Lean conjecture stubs automatically (same style as your existing “GeneratedCandidates” pipeline).
+- **(3) Generalize proofs to “continuous limits” (Mathlib topology)**: Connect invariants to Alexandrov/topological structure, then prove invariance under the morphisms you care about (order-embeddings/isomorphisms, suitable continuity notions already present in your causal-poset files).
+- **(4) Manuscript expansion**: Write the invariant definitions + experimental sweep results as a “discrete evidence” section, then a “formal proxy” section that cleanly states what is proved in Lean today vs. what’s conjectural.
+- **(5) Integrate global fragments (Lean global conjecture)**: Replace the placeholder “Homology” in the global conjecture layer with the concrete `H1` (or a functorial wrapper around it), and restate the chronology/obstruction invariance axiom in terms of that object.
+<!-- ------ -->
+---
