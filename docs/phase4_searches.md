@@ -89,6 +89,16 @@ For quick visualization without external dependencies, generate a tiny discrete 
 
 This uses local “future-step” edges (a simple reachability proxy), and is meant for diagnostics only.
 
+### CTC proxy workflow (toy)
+
+Generate a small 1+1 poset and scan it for cycles:
+
+`python python/ctc_scan.py --minkowski --tmax 5 --xmax 5 --out runs/tmp/poset.json`
+
+Or scan an existing graph JSON:
+
+`python python/ctc_scan.py --graph path/to/graph.json`
+
 ## Reporting guidelines
 
 When writing up Phase 4 results in `docs/manuscript.md`:

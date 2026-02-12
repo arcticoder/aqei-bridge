@@ -138,3 +138,10 @@
 - Extended `tests/python_tests.sh` with smoke tests for futures-map input and the poset generator outputs.
 - Updated `docs/TODO-backlog.md` to note futures-map support for the CTC proxy.
 - Ran `./run_tests.sh` (passes).
+
+## 2026-02-11 (CTC proxy wrapper)
+- Added `python/ctc_scan.py` wrapper to scan a graph JSON (edges or futures-map) for directed cycles, or generate a small Minkowski-style poset and confirm it is acyclic.
+- Updated `tests/python_tests.sh` with a smoke test covering the wrapper.
+- Updated `docs/phase4_searches.md` with a minimal “CTC proxy workflow” example.
+- Added a short note to `docs/manuscript.md` pointing at the diagnostic tooling (no new claims).
+- Ran `./run_tests.sh` (passes).

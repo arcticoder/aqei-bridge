@@ -138,6 +138,9 @@ We treat “large-scale searches” as reproducible diagnostics:
 
 Workflow details live in `docs/phase4_searches.md`.
 
+Additional diagnostics (toy):
+- directed-cycle detection as a CTC proxy (`python/ctc_scan.py` on graph JSON inputs)
+
 Pivot note:
 - If expanded searches fail to produce robust counterexamples (across seeds, grids, and ansatz families),
   treat that as evidence about the *toy proxy* only.

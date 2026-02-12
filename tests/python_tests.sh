@@ -10,7 +10,8 @@ python -m py_compile \
   "$ROOT_DIR/python/multi_ray_analysis.py" \
   "$ROOT_DIR/python/sweep_analysis.py" \
   "$ROOT_DIR/python/causal_graph_tools.py" \
-  "$ROOT_DIR/python/minkowski_poset.py"
+  "$ROOT_DIR/python/minkowski_poset.py" \
+  "$ROOT_DIR/python/ctc_scan.py"
 
 python -m unittest -q tests.test_pipeline
 
@@ -247,6 +248,32 @@ assert len(data['edges']) > 0
 dot = Path('.tmp_test/poset.dot').read_text()
 assert 'digraph' in dot
 assert '->' in dot
+PY
+
+rm -rf "$TMP_DIR"
+
+# Smoke-test: ctc_scan wrapper can generate Minkowski poset and reports acyclic.
+TMP_DIR="$ROOT_DIR/.tmp_test"
+rm -rf "$TMP_DIR"
+mkdir -p "$TMP_DIR"
+
+python - <<'PY'
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+root = Path('.').resolve()
+scan = root / 'python' / 'ctc_scan.py'
+out_graph = root / '.tmp_test' / 'poset_scan.json'
+
+out = subprocess.check_output(
+  [sys.executable, str(scan), '--minkowski', '--tmax', '3', '--xmax', '3', '--out', str(out_graph), '--json']
+)
+obj = json.loads(out.decode('utf-8'))
+assert obj['hasCycle'] is False
+assert obj['nodeCount'] > 0
+assert out_graph.exists()
 PY
 
 rm -rf "$TMP_DIR"
