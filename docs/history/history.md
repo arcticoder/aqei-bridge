@@ -199,6 +199,31 @@ Implemented the “next good step” as a formal Lean bridge from chambers → d
 **What changed**
 - Added DiscreteChamberStability.lean
   - Defines `ConstantOn` and `DiscreteFuture (J, p) := JplusDiscrete (J T) p`.
+
+<!-- ------ -->
+---
+**Poset homology proxy + discrete sweeps (compile-safe)**
+
+**Lean**
+- Added a Mathlib-native `ChainComplex (ModuleCat R) ℕ` proxy for a causal poset’s low-degree homology:
+  - lean/src/AqeiBridge/PosetHomologyProxy.lean
+  - Uses `C₀` = formal combinations of points, `C₁` = formal combinations of strict edges, with `∂₁(p<q) = q - p`.
+  - Exposes `H1 := (posetChainComplex ...).homology 1`.
+- Added a generated-artifact module placeholder and wired it into the top-level import:
+  - lean/src/AqeiBridge/GeneratedPosetConjectures.lean (generated/overwritten)
+
+**Python**
+- Added python/poset_homology_proxy.py:
+  - Computes the Z₁ proxy dimension `|E| - |V| + c` (weak components) from graph JSON.
+  - Supports a small Minkowski-ish sweep and emits a Lean data/conjecture stub file.
+
+**Tests / CI hygiene**
+- Updated tests/python_tests.sh to smoke-test the Z₁ proxy on a diamond DAG and verify Lean emission.
+- Updated tests/lean_tests.sh to create a placeholder for GeneratedPosetConjectures.lean when absent.
+- Added GeneratedPosetConjectures.lean to .gitignore.
+
+**Validation**
+- Full run_tests.sh returns green (warnings only).
   - Proves: if `J` is constant on a closed chamber, then the image of `DiscreteFuture` on that chamber is a singleton (so futures don’t “jump” within a chamber).
 - Wired it into AqeiBridge.lean.
 - Added a one-line note to conjecture.md pointing to this discrete-toy implication.
@@ -372,5 +397,27 @@ Implemented a compiling Lean “homology proxy” and got the full run_tests.sh 
 - **(3) Generalize proofs to “continuous limits” (Mathlib topology)**: Connect invariants to Alexandrov/topological structure, then prove invariance under the morphisms you care about (order-embeddings/isomorphisms, suitable continuity notions already present in your causal-poset files).
 - **(4) Manuscript expansion**: Write the invariant definitions + experimental sweep results as a “discrete evidence” section, then a “formal proxy” section that cleanly states what is proved in Lean today vs. what’s conjectural.
 - **(5) Integrate global fragments (Lean global conjecture)**: Replace the placeholder “Homology” in the global conjecture layer with the concrete `H1` (or a functorial wrapper around it), and restate the chronology/obstruction invariance axiom in terms of that object.
+<!-- ------ -->
+---
+**What I did (next steps implementation)**
+- Added a discrete sweep + Lean emission helper: aqei-bridge/python/poset_homology_proxy.py
+  - `z1`: computes the poset/graph $Z_1$ proxy dimension `|E| - |V| + c` (weak components) from graph JSON.
+  - `sweep-minkowski`: generates small Minkowski-ish posets and summarizes the proxy; can also overwrite a generated Lean module.
+- Added a new generated Lean artifact (with a safe placeholder): aqei-bridge/lean/src/AqeiBridge/GeneratedPosetConjectures.lean
+- Wired it into the build by importing it from aqei-bridge/lean/src/AqeiBridge.lean
+- Updated CI/test harness:
+  - aqei-bridge/tests/python_tests.sh now smoke-tests the diamond DAG has `z1Dim = 1` and checks Lean emission.
+  - aqei-bridge/tests/lean_tests.sh now creates a placeholder if the generated file isn’t present.
+  - aqei-bridge/.gitignore ignores the generated file.
+- Logged the batch in aqei-bridge/docs/history/history.md
+
+**Validation**
+- `bash tests/python_tests.sh`: OK
+- run_tests.sh: OK (warnings only)
+
+**How to use**
+- Compute on a graph JSON: `python poset_homology_proxy.py z1 path/to/graph.json --json`
+- Run a small sweep and overwrite the Lean stub:
+  - `python poset_homology_proxy.py sweep-minkowski --tmaxs 1,2 --xmaxs 1 --out-dir runs/tmp/poset --lean-out lean/src/AqeiBridge/GeneratedPosetConjectures.lean`
 <!-- ------ -->
 ---

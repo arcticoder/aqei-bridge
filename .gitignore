@@ -15,6 +15,7 @@ runs/
 
 # Generated Lean artifacts
 lean/src/AqeiBridge/GeneratedCandidates.lean
+lean/src/AqeiBridge/GeneratedPosetConjectures.lean
 
 # Misc
 results/

@@ -9,6 +9,7 @@ python -m py_compile \
   "$ROOT_DIR/python/analyze_candidates.py" \
   "$ROOT_DIR/python/multi_ray_analysis.py" \
   "$ROOT_DIR/python/sweep_analysis.py" \
+  "$ROOT_DIR/python/poset_homology_proxy.py" \
   "$ROOT_DIR/python/causal_graph_tools.py" \
   "$ROOT_DIR/python/minkowski_poset.py" \
   "$ROOT_DIR/python/ctc_scan.py" \
@@ -18,6 +19,59 @@ python -m unittest -q tests.test_pipeline
 
 # Smoke-test: generate Lean candidates from a tiny synthetic JSON.
 TMP_DIR="$ROOT_DIR/.tmp_test"
+rm -rf "$TMP_DIR"
+
+# Smoke-test: poset homology proxy (Z1 dimension) + Lean emission.
+TMP_DIR="$ROOT_DIR/.tmp_test"
+rm -rf "$TMP_DIR"
+mkdir -p "$TMP_DIR"
+
+cat >"$TMP_DIR/diamond.json" <<'JSON'
+{
+  "edges": [
+    ["a","b"],
+    ["a","c"],
+    ["b","d"],
+    ["c","d"]
+  ]
+}
+JSON
+
+python - <<'PY'
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+root = Path('.').resolve()
+tool = root / 'python' / 'poset_homology_proxy.py'
+
+out = subprocess.check_output([sys.executable, str(tool), 'z1', str(root / '.tmp_test/diamond.json'), '--json'])
+obj = json.loads(out.decode('utf-8'))
+assert obj['hasDirectedCycle'] is False
+assert obj['nodeCount'] == 4
+assert obj['edgeCount'] == 4
+assert obj['weakComponentCount'] == 1
+assert obj['z1Dim'] == 1
+PY
+
+python "$ROOT_DIR/python/poset_homology_proxy.py" \
+  sweep-minkowski \
+  --tmaxs 1,2 \
+  --xmaxs 1 \
+  --out-dir "$TMP_DIR/poset_sweep" \
+  --lean-out "$ROOT_DIR/lean/src/AqeiBridge/GeneratedPosetConjectures.lean"
+
+python - <<'PY'
+from pathlib import Path
+
+p = Path('lean/src/AqeiBridge/GeneratedPosetConjectures.lean')
+text = p.read_text()
+assert 'structure PosetZ1Result' in text
+assert 'def posetZ1Results' in text
+assert 'def posetZ1DimMax' in text
+PY
+
 rm -rf "$TMP_DIR"
 mkdir -p "$TMP_DIR"
 
