@@ -275,3 +275,14 @@ I’ve reshaped the active queue into a small 6-item batch and moved the over-sc
 - Logged completion in docs/TODO-completed.md and updated the note in docs/TODO-backlog.md.
 <!-- ------ -->
 ---
+**Closed CTC-proxy batch**
+- Logged completion in TODO-completed.md and drained TODO.md back to `wc -l == 0`.
+- Committed remaining docs/tests updates (the wrapper import fix was already committed earlier).
+
+**Next TODO batch completed (poset/interval viz helper)**
+- Added Alexandrov-style interval tool poset_interval_tools.py (`I(p,q) := { r | p ->* r and r ->* q }`) with optional induced-subgraph DOT export.
+- Documented usage in phase4_searches.md.
+- Added smoke coverage in python_tests.sh.
+- Ran run_tests.sh (All tests: OK), drained TODO.md, and committed.
+<!-- ------ -->
+---
