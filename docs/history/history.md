@@ -286,3 +286,14 @@ I’ve reshaped the active queue into a small 6-item batch and moved the over-sc
 - Ran run_tests.sh (All tests: OK), drained TODO.md, and committed.
 <!-- ------ -->
 ---
+Lean-side “proof substrate” is the higher-likelihood direction here: it directly grows the formal framework we’d actually need for a proof, whereas bigger/distributed sweeps mainly produce more empirical evidence.
+
+What I did next (and closed the TODO loop):
+- Added a Lean module for order-theoretic past sets + intervals: CausalIntervals.lean
+  - `Jminus`, `IsLowerSet`, proved lower sets are closed in the Alexandrov topology (opens are upper sets)
+  - defined `Icc(p,q) := {r | p ≤ r ∧ r ≤ q}` plus basic lemmas
+- Wired it into the top-level import: AqeiBridge.lean
+- Ran run_tests.sh (All tests: OK)
+- Logged completion in TODO-completed.md, drained TODO.md back to `wc -l == 0`, and committed (`e2215b8`)
+<!-- ------ -->
+---
