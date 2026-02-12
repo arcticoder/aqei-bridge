@@ -421,3 +421,14 @@ Implemented a compiling Lean “homology proxy” and got the full run_tests.sh 
   - `python poset_homology_proxy.py sweep-minkowski --tmaxs 1,2 --xmaxs 1 --out-dir runs/tmp/poset --lean-out lean/src/AqeiBridge/GeneratedPosetConjectures.lean`
 <!-- ------ -->
 ---
+**Done**
+- Added a Lean bridge showing the kernel-based `Z1 := LinearMap.ker boundary1` matches Mathlib’s chain-complex `cycles` in degree 1 via a canonical isomorphism `cycles1IsoZ1`.
+- Implemented the bridge in aqei-bridge/lean/src/AqeiBridge/PosetHomologyProxy.lean using:
+  - `HomologicalComplex.cyclesIsoSc'` to avoid non-definitional `ComplexShape.down` `next/prev`
+  - `ShortComplex.cyclesIsoKernel` + `ModuleCat.kernelIsoKer` to land in `LinearMap.ker boundary1` (i.e. `Z1`)
+- Added simp lemmas for `d 1 0` (`posetChainComplex_d_1_0` and `_hom`) to make the rewrite to `boundary1` stable.
+
+**Validation**
+- Ran `cd /home/echo_/Code/asciimath/aqei-bridge && ./run_tests.sh` — all stages completed successfully (warnings only, no errors).
+<!-- ------ -->
+---

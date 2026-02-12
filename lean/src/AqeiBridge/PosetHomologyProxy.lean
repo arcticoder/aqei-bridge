@@ -5,13 +5,15 @@ import Mathlib.Algebra.Module.Submodule.Ker
 
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Abelian
+import Mathlib.Algebra.Category.ModuleCat.Kernels
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
+import Mathlib.Algebra.Homology.ShortComplex.LeftHomology
 
 import AqeiBridge.CausalPoset
 
-open CategoryTheory
+open CategoryTheory Limits
 
 /-!
 # Poset homology proxy (via Mathlib chain complexes)
@@ -96,8 +98,65 @@ noncomputable abbrev posetChainComplex : ChainComplex (ModuleCat R) ℕ :=
       intro n
       simpa using (chainD_squared (P := P) (R := R) n))
 
+@[simp]
+theorem posetChainComplex_d_1_0 :
+    (posetChainComplex (P := P) (R := R)).d 1 0 =
+      ModuleCat.ofHom (boundary1 (P := P) (R := R)) := by
+  -- `posetChainComplex` is built using `ChainComplex.of`, so `d 1 0` is definitional `chainD 0`.
+  dsimp [posetChainComplex]
+  simpa [chainD] using
+    (ChainComplex.of_d (X := chainObj (P := P) (R := R)) (d := chainD (P := P) (R := R))
+        (sq := by
+          intro n
+          simpa using (chainD_squared (P := P) (R := R) n))
+        0)
+
+@[simp]
+theorem posetChainComplex_d_1_0_hom :
+    ((posetChainComplex (P := P) (R := R)).d 1 0).hom =
+      boundary1 (P := P) (R := R) := by
+  simp [posetChainComplex_d_1_0 (P := P) (R := R)]
+
 /-- The first homology object `H₁` of the low-degree proxy chain complex. -/
 noncomputable abbrev H1 : ModuleCat R := (posetChainComplex (P := P) (R := R)).homology 1
+
+section Bridge
+
+/-- In the low-degree proxy chain complex, the degree-1 cycles coincide with the kernel-based
+definition `Z1 := ker ∂₁`.
+
+This is the formal bridge between the earlier `LinearMap.ker boundary1` proxy and Mathlib’s
+`HomologicalComplex.cycles` API. -/
+noncomputable def cycles1IsoZ1 :
+    (posetChainComplex (P := P) (R := R)).cycles 1 ≅
+      ModuleCat.of R (Z1 (P := P) (R := R)) := by
+  let K : ChainComplex (ModuleCat R) ℕ := posetChainComplex (P := P) (R := R)
+
+  -- Work with an explicit choice of predecessor/successor indices for degree `1`.
+  have hrelPrev : (ComplexShape.down ℕ).Rel 2 1 :=
+    ComplexShape.down_mk (α := ℕ) 2 1 (by simp)
+  have hi : (ComplexShape.down ℕ).prev 1 = 2 :=
+    (ComplexShape.down ℕ).prev_eq' hrelPrev
+  have hrelNext : (ComplexShape.down ℕ).Rel 1 0 :=
+    ComplexShape.down_mk (α := ℕ) 1 0 (by simp)
+  have hk : (ComplexShape.down ℕ).next 1 = 0 :=
+    (ComplexShape.down ℕ).next_eq' hrelNext
+
+  -- `K.cycles 1` can be computed using the explicit short complex `K.sc' 2 1 0`.
+  -- Then cycles are the kernel of the right map, i.e. `K.d 1 0`.
+  refine
+      (HomologicalComplex.cyclesIsoSc' (K := K) (i := 2) (j := 1) (k := 0) hi hk)
+        ≪≫
+        (by
+          simpa using (ShortComplex.cyclesIsoKernel (S := K.sc' 2 1 0)))
+        ≪≫
+        ?_
+
+  -- Translate categorical kernel ↔ linear-map kernel and rewrite to `Z1`.
+  simpa [Z1, K, posetChainComplex_d_1_0_hom (P := P) (R := R)] using
+    (ModuleCat.kernelIsoKer (K.d 1 0))
+
+end Bridge
 
 end ChainComplex
 
