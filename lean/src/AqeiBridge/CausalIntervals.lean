@@ -1,0 +1,90 @@
+import Mathlib.Data.Set.Basic
+import Mathlib.Topology.Basic
+
+import AqeiBridge.CausalPoset
+
+/-!
+# Order intervals in a causal preorder (toy substrate)
+
+This file adds a few small, reusable lemmas about *order-theoretic* past sets
+and intervals for `CausalPoset`.
+
+It is intended as a proof substrate for later “topological obstruction” work:
+- the current Alexandrov-style topology uses **upper sets** as opens;
+- in that topology, **lower sets** are closed;
+- and a (toy) Alexandrov interval is the intersection of a future and a past.
+
+Nothing here depends on Lorentzian geometry.
+-/
+
+namespace AqeiBridge
+
+namespace CausalPoset
+
+/-- Order-theoretic causal past set $J^-(q) := \{p \mid p \le q\}$. -/
+def Jminus (C : CausalPoset) (q : C.Pt) : Set C.Pt := {p | p ≤ q}
+
+/-- A set is a lower set if it is closed downward under `≤`. -/
+def IsLowerSet (C : CausalPoset) (s : Set C.Pt) : Prop :=
+  ∀ ⦃b⦄, b ∈ s → ∀ ⦃a⦄, a ≤ b → a ∈ s
+
+/-- The complement of a lower set is an upper set. -/
+theorem isUpperSet_compl_of_isLowerSet (C : CausalPoset) {s : Set C.Pt}
+    (hs : IsLowerSet C s) : IsUpperSet C sᶜ := by
+  intro a ha b hab
+  -- If b were in s, then by downward-closure a would be in s, contradiction.
+  intro hb
+  exact ha (hs hb hab)
+
+/-- In the Alexandrov topology (opens = upper sets), lower sets are closed. -/
+theorem isClosed_of_isLowerSet (C : CausalPoset) {s : Set C.Pt} (hs : IsLowerSet C s) :
+    @IsClosed _ (alexandrovTopology C) s := by
+  classical
+  letI : TopologicalSpace C.Pt := alexandrovTopology C
+  change IsClosed s
+  -- `IsClosed s` is characterized by openness of the complement.
+  refine (isOpen_compl_iff).1 ?_
+  -- In the Alexandrov topology, opens are exactly upper sets.
+  change IsUpperSet C sᶜ
+  exact isUpperSet_compl_of_isLowerSet (C := C) (s := s) hs
+
+/-- The past set `Jminus q` is a lower set. -/
+theorem isLowerSet_Jminus (C : CausalPoset) (q : C.Pt) : IsLowerSet C (Jminus C q) := by
+  intro b hb a hab
+  -- a ≤ b ≤ q
+  exact le_trans hab hb
+
+/-- In the Alexandrov topology, `Jminus q` is closed. -/
+theorem isClosed_Jminus (C : CausalPoset) (q : C.Pt) :
+    @IsClosed _ (alexandrovTopology C) (Jminus C q) :=
+  isClosed_of_isLowerSet C (isLowerSet_Jminus C q)
+
+/-- A toy Alexandrov-style order interval: `p ≤ r ≤ q`. -/
+def Icc (C : CausalPoset) (p q : C.Pt) : Set C.Pt := {r | p ≤ r ∧ r ≤ q}
+
+/-- Interval membership implies future membership. -/
+theorem mem_Jplus_of_mem_Icc {C : CausalPoset} {p q r : C.Pt} (hr : r ∈ Icc C p q) :
+    r ∈ Jplus C p :=
+  hr.1
+
+/-- Interval membership implies past membership. -/
+theorem mem_Jminus_of_mem_Icc {C : CausalPoset} {p q r : C.Pt} (hr : r ∈ Icc C p q) :
+    r ∈ Jminus C q :=
+  hr.2
+
+/-- The interval is the intersection of a future and a past. -/
+theorem Icc_eq_inter (C : CausalPoset) (p q : C.Pt) :
+    Icc C p q = (Jplus C p) ∩ (Jminus C q) := by
+  rfl
+
+/-- If `p ≤ q`, then `p` is in the interval `Icc(p,q)`. -/
+theorem left_mem_Icc {C : CausalPoset} {p q : C.Pt} (hpq : p ≤ q) : p ∈ Icc C p q := by
+  exact ⟨le_rfl, hpq⟩
+
+/-- If `p ≤ q`, then `q` is in the interval `Icc(p,q)`. -/
+theorem right_mem_Icc {C : CausalPoset} {p q : C.Pt} (hpq : p ≤ q) : q ∈ Icc C p q := by
+  exact ⟨hpq, le_rfl⟩
+
+end CausalPoset
+
+end AqeiBridge

@@ -151,3 +151,11 @@
 - Documented usage in `docs/phase4_searches.md`.
 - Extended `tests/python_tests.sh` with a smoke test for interval JSON + DOT output.
 - Ran `./run_tests.sh` (passes).
+
+## 2026-02-11 (Lean: order intervals)
+- Added `lean/src/AqeiBridge/CausalIntervals.lean`:
+	- order-theoretic past sets `Jminus` and lower sets
+	- lower sets are closed in the Alexandrov topology (opens are upper sets)
+	- toy interval `Icc(p,q) := {r | p ≤ r ∧ r ≤ q}` and basic lemmas
+- Wired the module into `lean/src/AqeiBridge.lean`.
+- Ran `./run_tests.sh` (passes).
