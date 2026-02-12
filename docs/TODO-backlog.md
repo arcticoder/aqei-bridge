@@ -1,22 +1,11 @@
-## Replacement for docs/TODO-backlog.md
-```
 # TODO: Backlog (Long-Term)
 
-Refined with completions (e.g., a9a7f64 poset viz/generator; 331f1d4 CTC diagnostics; 9ec13aa Phase 4 docs). Promote unblocked to active. If conjecture holds (no CTCs in searches), pivot to manuscript/arXiv. Review post-active.
+Refined with completions (poset viz/generator; CTC diagnostics; Phase 4 docs). Promote unblocked work into `docs/TODO.md` in small batches.
 
 ## Phase 4: Toward Proof / Disproof & Bridge Conjecture (Long Term)
-- [ ] Full conjecture proof: Generalize chamber stability to continuous. LaTeX: Path-connected family iff \(\forall T, \epsilon: J^+(p; g + h_T) \sim J^+(p; g)\) in homotopy class.
-- [ ] Bridge: Implement full sheaf. Sample Lean:
-  ```lean
-  def SheafOnPoset (P : CausalPoset) : Sheaf (OpenEmbedding AlexandrovTopology P) where
-    presheaf := fun U => SectionsOver U
-  conjecture ChronologyProtection (P : CausalPoset) : NoCTC P ↔ SheafCohomology P 1 = 0 := sorry
-  ```
-- [ ] Cluster support: Beyond multiprocessing (implemented); add job scheduler.
+- [ ] Full conjecture proof: generalize chamber stability beyond discrete toys.
+- [ ] Bridge: sheaf cohomology / chronology protection invariant (blocked until concretized; see `docs/TODO-BLOCKED.md`).
+- [ ] Cluster support: beyond single-machine multiprocessing (job scheduler integration / resumable distributed sweeps).
 
 ## General / Ongoing
-- [ ] Visualizations: Enhance poset graphs with Alexandrov basis. Sample Mathematica:
-  ```mathematica
-  alexandrovPlot = Graphics[Table[Rectangle[MinMax /@ Transpose[interval]], {interval in alexandrovBasis}]];
-  Export["alexandrov.png", alexandrovPlot];
-  ```
+- [ ] Visualizations: enhance poset/interval views (e.g. Alexandrov basis overlays in Mathematica) once we choose a concrete representation compatible with deterministic tests.
