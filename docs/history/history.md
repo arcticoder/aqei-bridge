@@ -297,3 +297,30 @@ What I did next (and closed the TODO loop):
 - Logged completion in TODO-completed.md, drained TODO.md back to `wc -l == 0`, and committed (`e2215b8`)
 <!-- ------ -->
 ---
+I pushed the Lean side toward an actual *obstruction-style* proof step: a discrete “chronology / CTC proxy” that becomes a crisp antisymmetry failure, plus a functorial directed-cycle proxy that composes with graph homomorphisms.
+
+**What I Added (proof-relevant lemmas)**
+- New module: lean/src/AqeiBridge/DiscreteChronology.lean
+  - `HasNontrivialCycle` (distinct points mutually reachable under reflexive-transitive closure)
+  - `IsAntisymmReachableRefl` and lemma `HasNontrivialCycle ↔ ¬ IsAntisymmReachableRefl`
+  - `HasDirectedCycle := ∃ p, Relation.TransGen M.edge p p` (nonempty cycle)
+  - `NoSelfEdges := ∀ p, ¬ edge p p`
+  - `EdgeHom` preserves `HasDirectedCycle`
+  - `NoSelfEdges ∧ HasDirectedCycle → HasNontrivialCycle` (toy “CTCs imply failure of chronology”)
+
+**Wiring + Tests**
+- Wired the new module into lean/src/AqeiBridge.lean
+- Ran run_tests.sh: `All tests: OK` (still just warnings)
+
+**TODO Discipline**
+- Logged both completed Lean mini-batches in docs/TODO-completed.md
+- Confirmed docs/TODO.md is truly empty (`wc -l == 0`)
+
+**Repo State**
+- Uncommitted changes are currently:
+  - docs/TODO-completed.md
+  - lean/src/AqeiBridge.lean
+  - lean/src/AqeiBridge/CausalIntervals.lean
+  - plus new/untracked: `CausalContinuity`, `DiscreteCausalPoset`, `DiscreteChronology`
+<!-- ------ -->
+---

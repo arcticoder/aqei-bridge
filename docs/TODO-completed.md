@@ -159,3 +159,17 @@
 	- toy interval `Icc(p,q) := {r | p ≤ r ∧ r ≤ q}` and basic lemmas
 - Wired the module into `lean/src/AqeiBridge.lean`.
 - Ran `./run_tests.sh` (passes).
+
+## 2026-02-12 (Lean: interval topology + continuity substrate)
+- `lean/src/AqeiBridge/CausalIntervals.lean`: added `intervalTopology := TopologicalSpace.generateFrom` on the interval subbasis and proved `Icc p q` is open.
+- Added `lean/src/AqeiBridge/CausalContinuity.lean`: monotone → continuous for Alexandrov topologies, plus an order-respecting (`le`-based) continuity lemma.
+- Added `lean/src/AqeiBridge/DiscreteCausalPoset.lean`: packaged `DiscreteSpacetime` as a reachability `CausalPoset` and proved edge-homomorphisms induce continuous maps.
+- Wired new modules into `lean/src/AqeiBridge.lean` and ran `./run_tests.sh` (passes).
+
+## 2026-02-11 (Lean: discrete chronology / cycle proxy)
+- Added `lean/src/AqeiBridge/DiscreteChronology.lean`: defined a nontrivial-cycle (CTC proxy) predicate for `DiscreteSpacetime` and proved it is equivalent to failure of antisymmetry for reflexive reachability.
+- Wired `AqeiBridge.DiscreteChronology` into `lean/src/AqeiBridge.lean` and ran `./run_tests.sh` (passes).
+
+## 2026-02-11 (Lean: cycle proxy functoriality)
+- `lean/src/AqeiBridge/DiscreteChronology.lean`: added `HasDirectedCycle`, `NoSelfEdges`, proved `EdgeHom` preserves `HasDirectedCycle`, and proved `NoSelfEdges ∧ HasDirectedCycle → HasNontrivialCycle`.
+- Ran `./run_tests.sh` (passes).

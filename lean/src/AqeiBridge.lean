@@ -1,6 +1,7 @@
 import AqeiBridge.Spacetime
 import AqeiBridge.CausalPoset
 import AqeiBridge.CausalIntervals
+import AqeiBridge.CausalContinuity
 import AqeiBridge.SpacetimeCausalPoset
 import AqeiBridge.StressEnergy
 import AqeiBridge.AQEI_Cone
@@ -9,6 +10,8 @@ import AqeiBridge.ChamberIndexedModel
 import AqeiBridge.ChamberClosedChamberBridge
 import AqeiBridge.DiscreteChamberStability
 import AqeiBridge.DiscreteCausality
+import AqeiBridge.DiscreteCausalPoset
+import AqeiBridge.DiscreteChronology
 import AqeiBridge.CausalStability
 import AqeiBridge.Conjecture
 
