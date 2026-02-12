@@ -89,6 +89,24 @@ For quick visualization without external dependencies, generate a tiny discrete 
 
 This uses local “future-step” edges (a simple reachability proxy), and is meant for diagnostics only.
 
+### Alexandrov interval helper (toy)
+
+Given a finite directed graph JSON, you can compute a toy Alexandrov-style interval
+$$
+I(p,q) := \{ r \mid p \to^* r \text{ and } r \to^* q \}
+$$
+using `python/poset_interval_tools.py`.
+
+Example (on a small generated poset):
+
+`python python/minkowski_poset.py --tmax 3 --xmax 3 --out runs/tmp/poset.json`
+
+`python python/poset_interval_tools.py interval runs/tmp/poset.json --p '[0,0]' --q '[3,0]' --json`
+
+Optionally export an induced-subgraph DOT for the interval:
+
+`python python/poset_interval_tools.py interval runs/tmp/poset.json --p '[0,0]' --q '[3,0]' --dot-out runs/tmp/interval.dot`
+
 ### CTC proxy workflow (toy)
 
 Generate a small 1+1 poset and scan it for cycles:

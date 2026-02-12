@@ -11,7 +11,8 @@ python -m py_compile \
   "$ROOT_DIR/python/sweep_analysis.py" \
   "$ROOT_DIR/python/causal_graph_tools.py" \
   "$ROOT_DIR/python/minkowski_poset.py" \
-  "$ROOT_DIR/python/ctc_scan.py"
+  "$ROOT_DIR/python/ctc_scan.py" \
+  "$ROOT_DIR/python/poset_interval_tools.py"
 
 python -m unittest -q tests.test_pipeline
 
@@ -274,6 +275,44 @@ obj = json.loads(out.decode('utf-8'))
 assert obj['hasCycle'] is False
 assert obj['nodeCount'] > 0
 assert out_graph.exists()
+PY
+
+rm -rf "$TMP_DIR"
+
+# Smoke-test: Alexandrov interval helper computes I(p,q) and can write DOT.
+TMP_DIR="$ROOT_DIR/.tmp_test"
+rm -rf "$TMP_DIR"
+mkdir -p "$TMP_DIR"
+
+cat >"$TMP_DIR/chain.json" <<'JSON'
+{"edges": [["a","b"], ["b","c"]]}
+JSON
+
+python - <<'PY'
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+root = Path('.').resolve()
+tool = root / 'python' / 'poset_interval_tools.py'
+graph = root / '.tmp_test' / 'chain.json'
+
+out = subprocess.check_output(
+  [sys.executable, str(tool), 'interval', str(graph), '--p', 'a', '--q', 'c', '--json']
+)
+obj = json.loads(out.decode('utf-8'))
+assert obj['p'] == 'a'
+assert obj['q'] == 'c'
+assert set(obj['intervalNodes']) == {'a', 'b', 'c'}
+
+dot_out = root / '.tmp_test' / 'interval.dot'
+subprocess.check_call(
+  [sys.executable, str(tool), 'interval', str(graph), '--p', 'a', '--q', 'c', '--dot-out', str(dot_out)]
+)
+dot = dot_out.read_text()
+assert 'digraph' in dot
+assert '->' in dot
 PY
 
 rm -rf "$TMP_DIR"

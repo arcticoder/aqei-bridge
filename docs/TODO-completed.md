@@ -145,3 +145,9 @@
 - Updated `docs/phase4_searches.md` with a minimal “CTC proxy workflow” example.
 - Added a short note to `docs/manuscript.md` pointing at the diagnostic tooling (no new claims).
 - Ran `./run_tests.sh` (passes).
+
+## 2026-02-11 (poset interval helper)
+- Added `python/poset_interval_tools.py` to compute a toy Alexandrov-style interval $I(p,q)$ on a finite directed graph (reachability-based), with optional induced-subgraph DOT export.
+- Documented usage in `docs/phase4_searches.md`.
+- Extended `tests/python_tests.sh` with a smoke test for interval JSON + DOT output.
+- Ran `./run_tests.sh` (passes).
