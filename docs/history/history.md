@@ -324,3 +324,29 @@ I pushed the Lean side toward an actual *obstruction-style* proof step: a discre
   - plus new/untracked: `CausalContinuity`, `DiscreteCausalPoset`, `DiscreteChronology`
 <!-- ------ -->
 ---
+**Chronological Review**
+- Work progressed in small “drain TODO” batches: implement → run run_tests.sh → move items to completed log → ensure active TODO is empty.
+- Phase 4 ramp-up (docs + sweep tooling) landed first, then dependency-free Python diagnostics for cycles/posets/intervals, then a Lean “proof-substrate” push: Alexandrov/interval facts + discrete chronology (cycle ↔ antisymmetry failure).
+- The most recent proof-oriented step in history is the discrete chronology/CTC proxy formalization and its functorial directed-cycle variant.
+
+**Intent Mapping**
+- User goal: “work towards proving our conjecture,” interpreted as prioritizing Lean substrate + obstruction-style invariants (not just larger empirical sweeps).
+- The repo workflow constraint stayed central: keep the active queue empty at rest and keep the history/TODO logs auditable.
+
+**Technical Inventory (what actually exists now)**
+- Lean: discrete chronology + cycle proxies, interval/order substrate, and continuity/topology bridges (logged in aqei-bridge/docs/TODO-completed.md).
+- Python: causal graph cycle detection (CTC proxy), Minkowski-style poset generator, reachability-interval extraction, DOT exporters (described in aqei-bridge/docs/history/history.md).
+- Docs/process: active queue file aqei-bridge/docs/TODO.md + completed log aqei-bridge/docs/TODO-completed.md + narrative history aqei-bridge/docs/history/history.md.
+
+**Most Recent Agent Commands & Tool Results (trigger context)**
+- `git status --porcelain` in `aqei-bridge` returned empty output (working tree clean).
+- `wc -l` on aqei-bridge/docs/TODO.md returned `0` (TODO is truly empty).
+- `tail` on aqei-bridge/docs/history/history.md shows the latest recorded batches: Phase 4 ramp-up + Python CTC/poset tooling + Lean interval substrate + Lean discrete chronology.
+- `git log -n 8 --oneline` shows the tip includes the Lean discrete chronology work at `HEAD` (commit `0d4ccf7`).
+- Verified that the commit hashes referenced inside the history narrative (e.g., `ae50c80`, `331f1d4`, `34966f6`) do exist in this repo (via `git cat-file -t`).
+
+**Current State**
+- Active queue is empty: aqei-bridge/docs/TODO.md.
+- Recent “done” items and the exact claims about what was implemented/tested are captured in aqei-bridge/docs/TODO-completed.md and summarized narratively in aqei-bridge/docs/history/history.md.
+<!-- ------ -->
+---
