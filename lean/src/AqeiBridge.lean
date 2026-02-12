@@ -12,8 +12,10 @@ import AqeiBridge.DiscreteChamberStability
 import AqeiBridge.DiscreteCausality
 import AqeiBridge.DiscreteCausalPoset
 import AqeiBridge.DiscreteChronology
+import AqeiBridge.DiscreteHomologyProxy
 import AqeiBridge.CausalStability
 import AqeiBridge.Conjecture
+import AqeiBridge.GlobalConjectures
 
 /-!
 Top-level import for the aqei-bridge Lean project.

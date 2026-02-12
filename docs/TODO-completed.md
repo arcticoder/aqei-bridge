@@ -173,3 +173,8 @@
 ## 2026-02-11 (Lean: cycle proxy functoriality)
 - `lean/src/AqeiBridge/DiscreteChronology.lean`: added `HasDirectedCycle`, `NoSelfEdges`, proved `EdgeHom` preserves `HasDirectedCycle`, and proved `NoSelfEdges ∧ HasDirectedCycle → HasNontrivialCycle`.
 - Ran `./run_tests.sh` (passes).
+
+## 2026-02-12 (Lean: homology proxy + global conjecture skeleton)
+- Added `lean/src/AqeiBridge/DiscreteHomologyProxy.lean`: defined an incidence boundary `boundary1 : C₁ → C₀` and the 1-cycle space `Z1 := ker boundary1`, plus functoriality under `EdgeHom`.
+- Added `lean/src/AqeiBridge/GlobalConjectures.lean`: compilation-safe placeholder for a global “chronology + invariant preservation” statement.
+- Updated `docs/manuscript.md` and refined `docs/TODO-BLOCKED.md` to reflect the new unblock path.

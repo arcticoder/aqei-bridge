@@ -92,6 +92,18 @@ Candidate ingredients:
 
 This section is a placeholder for a more precise statement once the Lean model of causality is upgraded.
 
+#### 4.2.1. Homology proxy (discrete, chain-level)
+To start unblocking “invariants beyond cycle detection,” we include a minimal chain-level proxy for 1-dimensional homology on a directed graph:
+- 0-chains are formal linear combinations of vertices.
+- 1-chains are formal linear combinations of directed edges.
+- The incidence boundary is `∂(p→q) = q - p`.
+
+We define the 1-cycle space $Z_1 := \ker(\partial_1)$ and prove it is functorial for edge-homomorphisms.
+
+Lean pointers:
+- `lean/src/AqeiBridge/DiscreteHomologyProxy.lean` defines `boundary1` and `Z1`.
+- `lean/src/AqeiBridge/GlobalConjectures.lean` records a compilation-safe “global invariance” statement skeleton (to be refined).
+
 ### 4.3. Connectedness proxies (computational evidence)
 
 The conjecture is stated in terms of *path-connectedness* of a family of causal futures.

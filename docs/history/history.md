@@ -350,3 +350,15 @@ I pushed the Lean side toward an actual *obstruction-style* proof step: a discre
 - Recent “done” items and the exact claims about what was implemented/tested are captured in aqei-bridge/docs/TODO-completed.md and summarized narratively in aqei-bridge/docs/history/history.md.
 <!-- ------ -->
 ---
+Implemented a compiling Lean “homology proxy” and got the full run_tests.sh suite back to green.
+
+- New module: aqei-bridge/lean/src/AqeiBridge/DiscreteHomologyProxy.lean
+  - Defines an `Edge` as data `(src,dst)` + proof, avoiding the `Prop`-as-`Type` blocker.
+  - Defines chain groups `C₀ := Pt →₀ R`, `C₁ := Edge M →₀ R`, boundary `boundary1 : C₁ →ₗ[R] C₀`, and cycle space `Z1 := LinearMap.ker boundary1`.
+  - Adds functorial pushforwards `push0`, `push1` under `EdgeHom` plus naturality (`boundary1_natural`) and “cycles map to cycles” (`push1_mem_Z1`).
+
+- Wired into the project imports: aqei-bridge/lean/src/AqeiBridge.lean
+
+- Verification: run_tests.sh now reports “Lean tests: OK / All tests: OK” (only existing linter warnings remain).
+<!-- ------ -->
+---

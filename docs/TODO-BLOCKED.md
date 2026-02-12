@@ -4,8 +4,9 @@ Minimal after latest commits (e.g., diagnostics/posets unblock proxies). Moved u
 
 - [ ] Full Mathlib sheaf cohomology: Still blocked on infrastructure; use homology alt in active.
 
-- [ ] Poset homology / order complex in Lean: blocked on selecting a concrete (finite) poset representation and a minimal invariant we can compute/prove without pulling in heavy sheaf infrastructure.
-	- Next concretization: start with a finite directed graph/poset representation and prove a small lemma (e.g., acyclic graph ⇒ trivial 1-cycle proxy) before attempting full `Homology`.
+- [ ] Poset homology / order complex in Lean (full): still blocked on selecting a concrete (finite) poset representation + a minimal invariant target (order complex vs graph/CW proxy).
+	- Unblocked starter: a minimal chain-level 1-cycle proxy for directed graphs is now implemented in Lean (`DiscreteHomologyProxy.lean`).
+	- Next concretization: pick one target invariant (e.g. order complex simplicial homology) and prove one lemma tying it to chronology proxies.
 
 - [ ] Replace synthetic AQEI constraints with worldline sampling bumps in Mathematica: blocked on a concrete, test-mode-friendly discretization that preserves linearity (LP structure) and a parameterization consistent with the current toy pipeline.
 	- Next concretization: add an *optional* mode that precomputes bump weights on the existing grid so constraints remain linear in coefficients.
