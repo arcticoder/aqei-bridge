@@ -430,7 +430,7 @@ noncomputable def posetChainMap (f : P.Pt → Q.Pt) (hf : EdgeHom P Q f) :
     match n with
     | 0 => ModuleCat.ofHom (push0 (P := P) (Q := Q) (R := R) f)
     | 1 => ModuleCat.ofHom (push1 (P := P) (Q := Q) (R := R) f hf)
-    | _ + 2 => 0
+    | _ + 2 => 𝟙 _
   comm' i j hij := by
     classical
     have hij' : j + 1 = i := by simpa using hij
@@ -445,7 +445,7 @@ noncomputable def posetChainMap (f : P.Pt → Q.Pt) (hf : EdgeHom P Q f) :
           hNat.symm
     | succ j =>
         -- degrees ≥ 2: all differentials are zero in the proxy complex.
-        -- Also `posetChainMap.f` is zero in degrees ≥ 2.
+        -- Differentials are zero here, so the commutativity square is trivial.
         simp [posetChainComplex_d_succ_succ (P := P) (R := R),
           posetChainComplex_d_succ_succ (P := Q) (R := R)]
 
@@ -455,6 +455,68 @@ This is the honest homology functor applied to `posetChainMap`. -/
 noncomputable def H1Map (f : P.Pt → Q.Pt) (hf : EdgeHom P Q f) :
     H1 (P := P) (R := R) ⟶ H1 (P := Q) (R := R) :=
   HomologicalComplex.homologyMap (posetChainMap (P := P) (Q := Q) (R := R) f hf) 1
+
+@[simp]
+theorem posetChainMap_id (P : AqeiBridge.CausalPoset) [DecidableEq P.Pt] :
+  posetChainMap (P := P) (Q := P) (R := R) (fun p => p)
+    (by intro p q hpq; simpa using hpq)
+    = 𝟙 (posetChainComplex (P := P) (R := R)) := by
+  classical
+  -- Compare components degreewise.
+  apply HomologicalComplex.hom_ext
+  intro n
+  cases n with
+  | zero =>
+      simp [posetChainMap, push0_id, chainObj]
+  | succ n =>
+      cases n with
+      | zero =>
+        simp [posetChainMap, push1_id, chainObj]
+      | succ n =>
+          simp [posetChainMap]
+
+theorem posetChainMap_comp {P Q S : AqeiBridge.CausalPoset} [DecidableEq P.Pt] [DecidableEq Q.Pt]
+  [DecidableEq S.Pt] (f : P.Pt → Q.Pt) (g : Q.Pt → S.Pt) (hf : EdgeHom P Q f)
+  (hg : EdgeHom Q S g) :
+  posetChainMap (P := P) (Q := S) (R := R) (g ∘ f)
+    (EdgeHom.comp (P := P) (Q := Q) (S := S) hf hg)
+    = posetChainMap (P := P) (Q := Q) (R := R) f hf ≫ posetChainMap (P := Q) (Q := S) (R := R) g hg := by
+  classical
+  apply HomologicalComplex.hom_ext
+  intro n
+  cases n with
+  | zero =>
+      simp [posetChainMap, push0_comp]
+  | succ n =>
+      cases n with
+      | zero =>
+        -- Use `push1_comp` at the level of linear maps, then translate via `ModuleCat.ofHom`.
+        simpa [posetChainMap, ModuleCat.ofHom_comp] using
+        congrArg ModuleCat.ofHom (push1_comp (P := P) (Q := Q) (S := S) (R := R) f g hf hg)
+      | succ n =>
+          simp [posetChainMap]
+
+@[simp]
+theorem H1Map_id (P : AqeiBridge.CausalPoset) [DecidableEq P.Pt] :
+  H1Map (P := P) (Q := P) (R := R) (fun p => p) (by intro p q hpq; simpa using hpq) = 𝟙 _ := by
+  classical
+  -- Reduce to the standard `homologyMap_id` via `posetChainMap_id`.
+  simpa [H1Map, posetChainMap_id (R := R) (P := P)] using
+    (HomologicalComplex.homologyMap_id (K := posetChainComplex (P := P) (R := R)) (i := 1))
+
+theorem H1Map_comp {P Q S : AqeiBridge.CausalPoset} [DecidableEq P.Pt] [DecidableEq Q.Pt]
+  [DecidableEq S.Pt] (f : P.Pt → Q.Pt) (g : Q.Pt → S.Pt) (hf : EdgeHom P Q f)
+  (hg : EdgeHom Q S g) :
+  H1Map (P := P) (Q := S) (R := R) (g ∘ f) (EdgeHom.comp (P := P) (Q := Q) (S := S) hf hg)
+    = H1Map (P := P) (Q := Q) (R := R) f hf ≫ H1Map (P := Q) (Q := S) (R := R) g hg := by
+  classical
+  -- Reduce to `homologyMap_comp` via `posetChainMap_comp`.
+  -- First rewrite `posetChainMap (g ∘ f) = posetChainMap f ≫ posetChainMap g`, then apply the lemma.
+  simpa [H1Map, posetChainMap_comp (R := R) (P := P) (Q := Q) (S := S) f g hf hg] using
+    (HomologicalComplex.homologyMap_comp
+      (φ := posetChainMap (P := P) (Q := Q) (R := R) f hf)
+      (ψ := posetChainMap (P := Q) (Q := S) (R := R) g hg)
+      (i := 1))
 
 end ChainMap
 
