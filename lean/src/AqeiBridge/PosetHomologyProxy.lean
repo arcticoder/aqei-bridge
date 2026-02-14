@@ -69,6 +69,205 @@ noncomputable def Z1 : Submodule R (Edge P →₀ R) :=
 
 end Boundary
 
+section Functorial
+
+variable {P Q : AqeiBridge.CausalPoset}
+variable (R : Type) [CommRing R]
+
+/-- A map of causal posets that preserves strict edges (`<`) and hence sends strict edges to strict
+edges.
+
+We use `<` from the `Preorder` instance on `CausalPoset.Pt`. -/
+def EdgeHom (P Q : AqeiBridge.CausalPoset) (f : P.Pt → Q.Pt) : Prop :=
+  ∀ ⦃p q : P.Pt⦄, p < q → f p < f q
+
+noncomputable def mapEdge (P Q : AqeiBridge.CausalPoset) (f : P.Pt → Q.Pt) (hf : EdgeHom P Q f) :
+    Edge P → Edge Q :=
+  fun e => ⟨f e.src, f e.dst, hf e.ok⟩
+
+/-- Pushforward of `0`-chains along a point-map. -/
+noncomputable def push0 (P Q : AqeiBridge.CausalPoset) (f : P.Pt → Q.Pt) :
+    (P.Pt →₀ R) →ₗ[R] (Q.Pt →₀ R) := by
+  classical
+  refine Finsupp.lsum R (fun p => ?_)
+  refine
+    { toFun := fun r => Finsupp.single (f p) r
+      map_add' := by intro a b; simp
+      map_smul' := by intro a b; simp }
+
+@[simp]
+theorem push0_single (P Q : AqeiBridge.CausalPoset) (f : P.Pt → Q.Pt) (p : P.Pt) (r : R) :
+    push0 (P := P) (Q := Q) (R := R) f (Finsupp.single p r) = Finsupp.single (f p) r := by
+  classical
+  simp [push0]
+
+/-- Pushforward of `1`-chains along an edge-homomorphism. -/
+noncomputable def push1 (P Q : AqeiBridge.CausalPoset) (f : P.Pt → Q.Pt) (hf : EdgeHom P Q f) :
+    (Edge P →₀ R) →ₗ[R] (Edge Q →₀ R) := by
+  classical
+  refine Finsupp.lsum R (fun e => ?_)
+  refine
+    { toFun := fun r => Finsupp.single (mapEdge (P := P) (Q := Q) f hf e) r
+      map_add' := by intro a b; simp
+      map_smul' := by intro a b; simp }
+
+@[simp]
+theorem push1_single (P Q : AqeiBridge.CausalPoset) (f : P.Pt → Q.Pt) (hf : EdgeHom P Q f)
+    (e : Edge P) (r : R) :
+    push1 (P := P) (Q := Q) (R := R) f hf (Finsupp.single e r)
+      = Finsupp.single (mapEdge (P := P) (Q := Q) f hf e) r := by
+  classical
+  simp [push1]
+
+@[simp]
+theorem boundary1_single (P : AqeiBridge.CausalPoset) [DecidableEq P.Pt] (e : Edge P) (r : R) :
+    boundary1 (P := P) (R := R) (Finsupp.single e r) = r • edgeBoundary (P := P) (R := R) e := by
+  classical
+  simp [boundary1, edgeBoundaryMap]
+
+@[simp]
+theorem push0_edgeBoundary (P Q : AqeiBridge.CausalPoset) [DecidableEq P.Pt] [DecidableEq Q.Pt]
+    (f : P.Pt → Q.Pt) (hf : EdgeHom P Q f) (e : Edge P) :
+    push0 (P := P) (Q := Q) (R := R) f (edgeBoundary (P := P) (R := R) e)
+      = edgeBoundary (P := Q) (R := R) (mapEdge (P := P) (Q := Q) f hf e) := by
+  classical
+  simp [edgeBoundary, mapEdge, push0_single, sub_eq_add_neg]
+
+/-- Naturality of the degree-1 boundary under strict-edge-preserving maps. -/
+theorem boundary1_natural (P Q : AqeiBridge.CausalPoset) [DecidableEq P.Pt] [DecidableEq Q.Pt]
+    (f : P.Pt → Q.Pt) (hf : EdgeHom P Q f) :
+    (push0 (P := P) (Q := Q) (R := R) f).comp (boundary1 (P := P) (R := R))
+      = (boundary1 (P := Q) (R := R)).comp (push1 (P := P) (Q := Q) (R := R) f hf) := by
+  classical
+  -- Prove by extensionality on `1`-chains, then induction on finite support.
+  apply LinearMap.ext
+  intro x
+  refine Finsupp.induction x ?_ ?_
+  · simp [LinearMap.comp_apply]
+  · intro e r x he hr0 hx
+    have hsingle :
+        push0 (P := P) (Q := Q) (R := R) f (boundary1 (P := P) (R := R) (Finsupp.single e r))
+          = boundary1 (P := Q) (R := R)
+              (push1 (P := P) (Q := Q) (R := R) f hf (Finsupp.single e r)) := by
+      -- Compute both sides on a generator using the boundary formula.
+      simp [boundary1_single, push0_edgeBoundary (P := P) (Q := Q) (R := R) f hf,
+        push1_single]
+    -- Extend from generators using additivity.
+    simpa [LinearMap.comp_apply, map_add, hx, hsingle,
+      push0_edgeBoundary (P := P) (Q := Q) (R := R) f hf]
+
+/-- Pushforward of `1`-cycles: strict-edge-preserving maps send `Z₁` to `Z₁`. -/
+theorem push1_mem_Z1 (P Q : AqeiBridge.CausalPoset) [DecidableEq P.Pt] [DecidableEq Q.Pt]
+    (f : P.Pt → Q.Pt) (hf : EdgeHom P Q f) (x : Edge P →₀ R)
+    (hx : x ∈ Z1 (P := P) (R := R)) :
+    push1 (P := P) (Q := Q) (R := R) f hf x ∈ Z1 (P := Q) (R := R) := by
+  classical
+  -- Unfold membership in the kernel and use boundary naturality.
+  have hx0 : boundary1 (P := P) (R := R) x = 0 := hx
+  show boundary1 (P := Q) (R := R) (push1 (P := P) (Q := Q) (R := R) f hf x) = 0
+  have hNat := congrArg (fun g => g x) (boundary1_natural (P := P) (Q := Q) (R := R) f hf)
+  -- `hNat` is an equality in `C₀`; rewrite with `hx0`.
+  simpa [LinearMap.comp_apply, hx0] using hNat.symm
+
+/-- The induced map on 1-cycles `Z₁` from an edge-preserving map. -/
+noncomputable def pushZ1 (P Q : AqeiBridge.CausalPoset) [DecidableEq P.Pt] [DecidableEq Q.Pt]
+    (f : P.Pt → Q.Pt) (hf : EdgeHom P Q f) :
+    Z1 (P := P) (R := R) →ₗ[R] Z1 (P := Q) (R := R) where
+  toFun x :=
+    ⟨push1 (P := P) (Q := Q) (R := R) f hf x.1,
+      push1_mem_Z1 (P := P) (Q := Q) (R := R) f hf x.1 x.2⟩
+  map_add' x y := by
+    apply Subtype.ext
+    simp
+  map_smul' a x := by
+    apply Subtype.ext
+    simp
+
+/-- An isomorphism of causal posets at the level of strict edges.
+
+This is intentionally minimal: we only assume the point-equivalence preserves strict edges in
+both directions. -/
+structure EdgeIso (P Q : AqeiBridge.CausalPoset) where
+  toEquiv : P.Pt ≃ Q.Pt
+  map_lt' : EdgeHom P Q toEquiv
+  inv_map_lt' : EdgeHom Q P toEquiv.symm
+
+attribute [simp] EdgeIso.toEquiv
+
+@[simp]
+theorem mapEdge_left_inv {P Q : AqeiBridge.CausalPoset} (e : Edge P) (f : P.Pt ≃ Q.Pt)
+    (hf : EdgeHom P Q f) (hg : EdgeHom Q P f.symm) :
+  mapEdge (P := Q) (Q := P) f.symm hg (mapEdge (P := P) (Q := Q) f hf e) = e := by
+  cases e with
+  | mk src dst ok =>
+  -- Reduce to equality of records with identical data fields (proof fields are in `Prop`).
+  simp [mapEdge]
+
+@[simp]
+theorem mapEdge_right_inv {P Q : AqeiBridge.CausalPoset} (e : Edge Q) (f : P.Pt ≃ Q.Pt)
+    (hf : EdgeHom P Q f) (hg : EdgeHom Q P f.symm) :
+  mapEdge (P := P) (Q := Q) f hf (mapEdge (P := Q) (Q := P) f.symm hg e) = e := by
+  cases e with
+  | mk src dst ok =>
+  simp [mapEdge]
+
+theorem push1_left_inv {P Q : AqeiBridge.CausalPoset} (f : P.Pt ≃ Q.Pt)
+    (hf : EdgeHom P Q f) (hg : EdgeHom Q P f.symm) (x : Edge P →₀ R) :
+    push1 (P := Q) (Q := P) (R := R) f.symm hg
+        (push1 (P := P) (Q := Q) (R := R) f hf x) = x := by
+  classical
+  refine Finsupp.induction x ?_ ?_
+  · simp
+  · intro e r x he hr0 hx
+    -- Pushforward respects addition, and on generators reduces via `mapEdge_left_inv`.
+    simp [hx, push1_single, mapEdge_left_inv (e := e) (f := f) (hf := hf) (hg := hg),
+      he, add_assoc, add_left_comm, add_comm]
+
+theorem push1_right_inv {P Q : AqeiBridge.CausalPoset} (f : P.Pt ≃ Q.Pt)
+    (hf : EdgeHom P Q f) (hg : EdgeHom Q P f.symm) (x : Edge Q →₀ R) :
+    push1 (P := P) (Q := Q) (R := R) f hf
+        (push1 (P := Q) (Q := P) (R := R) f.symm hg x) = x := by
+  classical
+  refine Finsupp.induction x ?_ ?_
+  · simp
+  · intro e r x he hr0 hx
+    simp [hx, push1_single, mapEdge_right_inv (e := e) (f := f) (hf := hf) (hg := hg),
+      he, add_assoc, add_left_comm, add_comm]
+
+/-- `Z₁` is invariant under strict-edge isomorphisms. -/
+noncomputable def pushZ1Equiv (P Q : AqeiBridge.CausalPoset) [DecidableEq P.Pt] [DecidableEq Q.Pt]
+    (e : EdgeIso P Q) :
+    Z1 (P := P) (R := R) ≃ₗ[R] Z1 (P := Q) (R := R) where
+  toLinearMap := pushZ1 (P := P) (Q := Q) (R := R) e.toEquiv e.map_lt'
+  invFun := (pushZ1 (P := Q) (Q := P) (R := R) e.toEquiv.symm e.inv_map_lt')
+  left_inv x := by
+    apply Subtype.ext
+    simpa [pushZ1] using
+      (push1_left_inv (R := R) (P := P) (Q := Q) e.toEquiv e.map_lt' e.inv_map_lt' x.1)
+  right_inv x := by
+    apply Subtype.ext
+    simpa [pushZ1] using
+      (push1_right_inv (R := R) (P := P) (Q := Q) e.toEquiv e.map_lt' e.inv_map_lt' x.1)
+
+/-- The corresponding `ModuleCat` isomorphism between cycle modules. -/
+noncomputable def Z1ModuleIso (P Q : AqeiBridge.CausalPoset) [DecidableEq P.Pt] [DecidableEq Q.Pt]
+    (e : EdgeIso P Q) :
+    ModuleCat.of R (Z1 (P := P) (R := R)) ≅ ModuleCat.of R (Z1 (P := Q) (R := R)) := by
+  classical
+  let eZ : Z1 (P := P) (R := R) ≃ₗ[R] Z1 (P := Q) (R := R) :=
+    pushZ1Equiv (P := P) (Q := Q) (R := R) e
+  refine
+    { hom := ModuleCat.ofHom eZ.toLinearMap
+      inv := ModuleCat.ofHom eZ.symm.toLinearMap
+      hom_inv_id := by
+        ext x
+        simp [eZ]
+      inv_hom_id := by
+        ext x
+        simp [eZ] }
+
+end Functorial
+
 section ChainComplex
 
 variable (P : AqeiBridge.CausalPoset)
@@ -231,6 +430,25 @@ noncomputable def H1IsoZ1 :
 end Bridge
 
 end ChainComplex
+
+section Invariance
+
+variable {P Q : AqeiBridge.CausalPoset}
+variable (R : Type) [CommRing R]
+variable [DecidableEq P.Pt] [DecidableEq Q.Pt]
+
+/-- Invariance of the proxy `H₁` under strict-edge isomorphisms.
+
+This uses the bridge `H₁ ≅ Z₁` for the low-degree proxy chain complex. -/
+noncomputable def H1IsoOfEdgeIso (e : EdgeIso P Q) :
+    H1 (P := P) (R := R) ≅ H1 (P := Q) (R := R) := by
+  -- `H1IsoZ1` is the proxy result for each poset; transport along `Z₁`.
+  refine
+    H1IsoZ1 (P := P) (R := R)
+      ≪≫ Z1ModuleIso (P := P) (Q := Q) (R := R) e
+      ≪≫ (H1IsoZ1 (P := Q) (R := R)).symm
+
+end Invariance
 
 end CausalPoset
 

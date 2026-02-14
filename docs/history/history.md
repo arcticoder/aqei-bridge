@@ -450,5 +450,17 @@ Implemented a compiling Lean “homology proxy” and got the full run_tests.sh 
 
 **Validation**
 - Ran `cd /home/echo_/Code/asciimath/aqei-bridge && ./run_tests.sh` — green (warnings only).
+
+**Note on scope**
+- This is a strengthening of the *poset homology proxy* (a clean formal fact about the truncated `C₀/C₁` chain complex). It is **not** the main AQEI/causal-stability conjecture.
+<!-- ------ -->
+---
+Implemented the next “invariance layer” on top of the poset homology proxy.
+
+- Added an induced pushforward `pushZ1 : Z1(P) →ₗ[R] Z1(Q)` for any strict-edge-preserving map, using `push1_mem_Z1` (aqei-bridge/lean/src/AqeiBridge/PosetHomologyProxy.lean).
+- Defined `EdgeIso` (a point equivalence preserving `<` both ways) and proved `Z₁` invariance as a `LinearEquiv` `pushZ1Equiv` plus a `ModuleCat`-level isomorphism `Z1ModuleIso` ([PosetHomologyProxy invariance core](aqei-bridge/lean/src/AqeiBridge/PosetHomologyProxy.lean#L186-L268)).
+- Derived `H₁` invariance `H1IsoOfEdgeIso` by transporting along the existing bridge `H1IsoZ1` ([H1 invariance](aqei-bridge/lean/src/AqeiBridge/PosetHomologyProxy.lean#L434-L449)).
+
+run_tests.sh in `aqei-bridge/` is green (warnings only). This still doesn’t prove the global conjecture—this is infrastructure to let the proxy behave like an actual invariant under (edge-)isomorphisms.
 <!-- ------ -->
 ---
