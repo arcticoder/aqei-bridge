@@ -81,9 +81,30 @@ We use `<` from the `Preorder` instance on `CausalPoset.Pt`. -/
 def EdgeHom (P Q : AqeiBridge.CausalPoset) (f : P.Pt → Q.Pt) : Prop :=
   ∀ ⦃p q : P.Pt⦄, p < q → f p < f q
 
+theorem EdgeHom.comp {P Q S : AqeiBridge.CausalPoset} {f : P.Pt → Q.Pt} {g : Q.Pt → S.Pt}
+    (hf : EdgeHom P Q f) (hg : EdgeHom Q S g) : EdgeHom P S (g ∘ f) := by
+  intro p q hpq
+  exact hg (hf hpq)
+
 noncomputable def mapEdge (P Q : AqeiBridge.CausalPoset) (f : P.Pt → Q.Pt) (hf : EdgeHom P Q f) :
     Edge P → Edge Q :=
   fun e => ⟨f e.src, f e.dst, hf e.ok⟩
+
+@[simp]
+theorem mapEdge_id (P : AqeiBridge.CausalPoset) (hf : EdgeHom P P (fun p => p)) (e : Edge P) :
+    mapEdge (P := P) (Q := P) (fun p => p) hf e = e := by
+  cases e with
+  | mk src dst ok =>
+    simp [mapEdge]
+
+@[simp]
+theorem mapEdge_comp {P Q S : AqeiBridge.CausalPoset} (f : P.Pt → Q.Pt) (g : Q.Pt → S.Pt)
+    (hf : EdgeHom P Q f) (hg : EdgeHom Q S g) (e : Edge P) :
+    mapEdge (P := P) (Q := S) (g ∘ f) (EdgeHom.comp (P := P) (Q := Q) (S := S) hf hg) e
+      = mapEdge (P := Q) (Q := S) g hg (mapEdge (P := P) (Q := Q) f hf e) := by
+  cases e with
+  | mk src dst ok =>
+    simp [mapEdge, Function.comp]
 
 /-- Pushforward of `0`-chains along a point-map. -/
 noncomputable def push0 (P Q : AqeiBridge.CausalPoset) (f : P.Pt → Q.Pt) :
@@ -100,6 +121,28 @@ theorem push0_single (P Q : AqeiBridge.CausalPoset) (f : P.Pt → Q.Pt) (p : P.P
     push0 (P := P) (Q := Q) (R := R) f (Finsupp.single p r) = Finsupp.single (f p) r := by
   classical
   simp [push0]
+
+@[simp]
+theorem push0_id (P : AqeiBridge.CausalPoset) :
+    push0 (P := P) (Q := P) (R := R) (fun p => p) = LinearMap.id := by
+  classical
+  apply LinearMap.ext
+  intro x
+  refine Finsupp.induction x ?_ ?_
+  · simp
+  · intro p r x hp hr0 hx
+    simp [push0_single, hx]
+
+theorem push0_comp {P Q S : AqeiBridge.CausalPoset} (f : P.Pt → Q.Pt) (g : Q.Pt → S.Pt) :
+    push0 (P := P) (Q := S) (R := R) (g ∘ f)
+      = (push0 (P := Q) (Q := S) (R := R) g).comp (push0 (P := P) (Q := Q) (R := R) f) := by
+  classical
+  apply LinearMap.ext
+  intro x
+  refine Finsupp.induction x ?_ ?_
+  · simp [LinearMap.comp_apply]
+  · intro p r x hp hr0 hx
+    simp [LinearMap.comp_apply, push0_single, hx, Function.comp]
 
 /-- Pushforward of `1`-chains along an edge-homomorphism. -/
 noncomputable def push1 (P Q : AqeiBridge.CausalPoset) (f : P.Pt → Q.Pt) (hf : EdgeHom P Q f) :
@@ -118,6 +161,31 @@ theorem push1_single (P Q : AqeiBridge.CausalPoset) (f : P.Pt → Q.Pt) (hf : Ed
       = Finsupp.single (mapEdge (P := P) (Q := Q) f hf e) r := by
   classical
   simp [push1]
+
+@[simp]
+theorem push1_id (P : AqeiBridge.CausalPoset) :
+    push1 (P := P) (Q := P) (R := R) (fun p => p) (by intro p q hpq; simpa using hpq)
+      = LinearMap.id := by
+  classical
+  apply LinearMap.ext
+  intro x
+  refine Finsupp.induction x ?_ ?_
+  · simp
+  · intro e r x he hr0 hx
+    simp [push1_single, hx]
+
+theorem push1_comp {P Q S : AqeiBridge.CausalPoset} (f : P.Pt → Q.Pt) (g : Q.Pt → S.Pt)
+    (hf : EdgeHom P Q f) (hg : EdgeHom Q S g) :
+    push1 (P := P) (Q := S) (R := R) (g ∘ f) (EdgeHom.comp (P := P) (Q := Q) (S := S) hf hg)
+      = (push1 (P := Q) (Q := S) (R := R) g hg).comp (push1 (P := P) (Q := Q) (R := R) f hf) := by
+  classical
+  apply LinearMap.ext
+  intro x
+  refine Finsupp.induction x ?_ ?_
+  · simp [LinearMap.comp_apply]
+  · intro e r x he hr0 hx
+    -- Unfold `mapEdge`/`EdgeHom.comp` so the edge targets become definitional.
+    simp [LinearMap.comp_apply, push1_single, hx, mapEdge, EdgeHom.comp, Function.comp]
 
 @[simp]
 theorem boundary1_single (P : AqeiBridge.CausalPoset) [DecidableEq P.Pt] (e : Edge P) (r : R) :
@@ -327,8 +395,68 @@ theorem posetChainComplex_d_2_1 :
           simpa using (chainD_squared (P := P) (R := R) n))
         1)
 
+@[simp]
+theorem posetChainComplex_d_succ_succ (n : ℕ) :
+    (posetChainComplex (P := P) (R := R)).d (n + 2) (n + 1) = 0 := by
+  cases n with
+  | zero =>
+      simpa using (posetChainComplex_d_2_1 (P := P) (R := R))
+  | succ n =>
+      -- For `n+3 → n+2`, this differential is definitional `chainD (n+2) = 0`.
+      dsimp [posetChainComplex]
+      simpa [Nat.succ_eq_add_one, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm, chainD] using
+        (ChainComplex.of_d (X := chainObj (P := P) (R := R)) (d := chainD (P := P) (R := R))
+            (sq := by
+              intro m
+              simpa using (chainD_squared (P := P) (R := R) m))
+            (n + 2))
+
 /-- The first homology object `H₁` of the low-degree proxy chain complex. -/
 noncomputable abbrev H1 : ModuleCat R := (posetChainComplex (P := P) (R := R)).homology 1
+
+section ChainMap
+
+variable {P Q : AqeiBridge.CausalPoset}
+variable (R : Type) [CommRing R]
+variable [DecidableEq P.Pt] [DecidableEq Q.Pt]
+
+/-- The chain map induced by a strict-edge-preserving point-map.
+
+Degree `0` uses `push0`, degree `1` uses `push1`, and higher degrees are sent to zero
+(`Cₙ = 0` in our low-degree proxy anyway). -/
+noncomputable def posetChainMap (f : P.Pt → Q.Pt) (hf : EdgeHom P Q f) :
+    posetChainComplex (P := P) (R := R) ⟶ posetChainComplex (P := Q) (R := R) where
+  f n :=
+    match n with
+    | 0 => ModuleCat.ofHom (push0 (P := P) (Q := Q) (R := R) f)
+    | 1 => ModuleCat.ofHom (push1 (P := P) (Q := Q) (R := R) f hf)
+    | _ + 2 => 0
+  comm' i j hij := by
+    classical
+    have hij' : j + 1 = i := by simpa using hij
+    subst hij'
+    cases j with
+    | zero =>
+        -- degree 1 → 0: boundary naturality.
+        ext x
+        have hNat := congrArg (fun g => g x) (boundary1_natural (P := P) (Q := Q) (R := R) f hf)
+        -- `boundary1_natural` is stated for linear maps; translate via `.hom`.
+        simpa [ModuleCat.hom_comp, posetChainComplex_d_1_0_hom, LinearMap.comp_apply] using
+          hNat.symm
+    | succ j =>
+        -- degrees ≥ 2: all differentials are zero in the proxy complex.
+        -- Also `posetChainMap.f` is zero in degrees ≥ 2.
+        simp [posetChainComplex_d_succ_succ (P := P) (R := R),
+          posetChainComplex_d_succ_succ (P := Q) (R := R)]
+
+/-- The induced map on `H₁` from a strict-edge-preserving point-map.
+
+This is the honest homology functor applied to `posetChainMap`. -/
+noncomputable def H1Map (f : P.Pt → Q.Pt) (hf : EdgeHom P Q f) :
+    H1 (P := P) (R := R) ⟶ H1 (P := Q) (R := R) :=
+  HomologicalComplex.homologyMap (posetChainMap (P := P) (Q := Q) (R := R) f hf) 1
+
+end ChainMap
 
 section Bridge
 
@@ -447,6 +575,40 @@ noncomputable def H1IsoOfEdgeIso (e : EdgeIso P Q) :
     H1IsoZ1 (P := P) (R := R)
       ≪≫ Z1ModuleIso (P := P) (Q := Q) (R := R) e
       ≪≫ (H1IsoZ1 (P := Q) (R := R)).symm
+
+section OrderIso
+
+/-- An `OrderIso` of point-types induces an `EdgeHom` (it preserves `<`). -/
+theorem edgeHom_of_orderIso (e : P.Pt ≃o Q.Pt) :
+    EdgeHom P Q (fun p => e p) := by
+  intro p q hpq
+  refine ⟨?_, ?_⟩
+  · exact e.monotone hpq.1
+  · intro hle
+    have : q ≤ p := by
+      simpa using e.symm.monotone hle
+    exact hpq.2 this
+
+/-- An `OrderIso` of point-types induces an `EdgeIso` (preserves `<` both ways). -/
+noncomputable def edgeIsoOfOrderIso (e : P.Pt ≃o Q.Pt) : EdgeIso P Q where
+  toEquiv := e.toEquiv
+  map_lt' := edgeHom_of_orderIso (P := P) (Q := Q) e
+  inv_map_lt' := edgeHom_of_orderIso (P := Q) (Q := P) e.symm
+
+/-- `Z₁` is invariant under `OrderIso` of point-types. -/
+noncomputable def Z1ModuleIsoOfOrderIso (e : P.Pt ≃o Q.Pt) :
+    ModuleCat.of R (Z1 (P := P) (R := R)) ≅ ModuleCat.of R (Z1 (P := Q) (R := R)) := by
+  exact Z1ModuleIso (P := P) (Q := Q) (R := R) (edgeIsoOfOrderIso (P := P) (Q := Q) e)
+
+/-- Invariance of the proxy `H₁` under `OrderIso` of point-types.
+
+This is the most convenient formulation: no manual edge-preservation proofs required. -/
+noncomputable def H1IsoOfOrderIso (e : P.Pt ≃o Q.Pt) :
+    H1 (P := P) (R := R) ≅ H1 (P := Q) (R := R) := by
+  exact H1IsoOfEdgeIso (P := P) (Q := Q) (R := R)
+    (edgeIsoOfOrderIso (P := P) (Q := Q) e)
+
+end OrderIso
 
 end Invariance
 
