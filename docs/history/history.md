@@ -202,6 +202,18 @@ Implemented the “next good step” as a formal Lean bridge from chambers → d
 
 <!-- ------ -->
 ---
+**Poset homology proxy (functorial, canonical) — 2026-02-14**
+
+**What changed**
+- Extended `lean/src/AqeiBridge/PosetHomologyProxy.lean` with a bona-fide chain map `posetChainMap` induced by an `EdgeHom` (degree 0 uses `push0`, degree 1 uses `push1`).
+- Defined the induced morphism on proxy homology `H1Map := HomologicalComplex.homologyMap (posetChainMap …) 1` and proved functoriality lemmas (`posetChainMap_id/comp`, `H1Map_id/comp`).
+- Refactored proxy invariance under `EdgeIso` to be canonical: `H1IsoOfEdgeIso` is now `asIso (H1MapOfEdgeIso …)` by proving `IsIso` using the inverse edge-map, instead of transporting through the `H₁ ≅ Z₁` bridge.
+
+**Validation**
+- `./run_tests.sh` passes (warnings only).
+
+<!-- ------ -->
+---
 **Poset homology proxy + discrete sweeps (compile-safe)**
 
 **Lean**

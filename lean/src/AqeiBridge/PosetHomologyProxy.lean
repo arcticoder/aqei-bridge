@@ -629,14 +629,75 @@ variable [DecidableEq P.Pt] [DecidableEq Q.Pt]
 
 /-- Invariance of the proxy `H₁` under strict-edge isomorphisms.
 
-This uses the bridge `H₁ ≅ Z₁` for the low-degree proxy chain complex. -/
+This is the canonical formulation: use the honest chain map induced by the point-equivalence
+and take the induced map on `H₁`. -/
+noncomputable def H1MapOfEdgeIso (e : EdgeIso P Q) :
+    H1 (P := P) (R := R) ⟶ H1 (P := Q) (R := R) :=
+  H1Map (P := P) (Q := Q) (R := R) e.toEquiv e.map_lt'
+
+instance (e : EdgeIso P Q) : IsIso (H1MapOfEdgeIso (P := P) (Q := Q) (R := R) e) := by
+  classical
+  let eSymm : EdgeIso Q P :=
+    { toEquiv := e.toEquiv.symm
+      map_lt' := e.inv_map_lt'
+      inv_map_lt' := by
+        simpa using e.map_lt' }
+  refine ⟨⟨H1MapOfEdgeIso (P := Q) (Q := P) (R := R) eSymm, ?_, ?_⟩⟩
+  · -- hom_inv_id
+    have hcomp : (e.toEquiv.symm ∘ e.toEquiv) = (fun p : P.Pt => p) := by
+      funext p
+      simp
+    have hidFromE : EdgeHom P P (fun p : P.Pt => p) := by
+      simpa [hcomp] using
+        (EdgeHom.comp (P := P) (Q := Q) (S := P) e.map_lt' e.inv_map_lt')
+    have hid0 : EdgeHom P P (fun p : P.Pt => p) := by
+      intro p q hpq
+      simpa using hpq
+    have hIdMap : H1Map (P := P) (Q := P) (R := R) (fun p : P.Pt => p) hidFromE = 𝟙 _ := by
+      have : hidFromE = hid0 := Subsingleton.elim _ _
+      simpa [this] using (H1Map_id (R := R) (P := P))
+    have h :=
+      H1Map_comp (P := P) (Q := Q) (S := P) (R := R)
+        (f := e.toEquiv) (g := e.toEquiv.symm)
+        (hf := e.map_lt') (hg := e.inv_map_lt')
+    calc
+      H1MapOfEdgeIso (P := P) (Q := Q) (R := R) e ≫ H1MapOfEdgeIso (P := Q) (Q := P) (R := R) eSymm
+          = H1Map (P := P) (Q := P) (R := R) (e.toEquiv.symm ∘ e.toEquiv)
+              (EdgeHom.comp (P := P) (Q := Q) (S := P) e.map_lt' e.inv_map_lt') := by
+              simpa [H1MapOfEdgeIso] using h.symm
+      _ = H1Map (P := P) (Q := P) (R := R) (fun p : P.Pt => p) hidFromE := by
+            simpa [hcomp]
+      _ = 𝟙 _ := hIdMap
+  · -- inv_hom_id
+    have hcomp : (e.toEquiv ∘ e.toEquiv.symm) = (fun q : Q.Pt => q) := by
+      funext q
+      simp
+    have hidFromE : EdgeHom Q Q (fun q : Q.Pt => q) := by
+      simpa [hcomp] using
+        (EdgeHom.comp (P := Q) (Q := P) (S := Q) e.inv_map_lt' e.map_lt')
+    have hid0 : EdgeHom Q Q (fun q : Q.Pt => q) := by
+      intro p q hpq
+      simpa using hpq
+    have hIdMap : H1Map (P := Q) (Q := Q) (R := R) (fun q : Q.Pt => q) hidFromE = 𝟙 _ := by
+      have : hidFromE = hid0 := Subsingleton.elim _ _
+      simpa [this] using (H1Map_id (R := R) (P := Q))
+    have h :=
+      H1Map_comp (P := Q) (Q := P) (S := Q) (R := R)
+        (f := e.toEquiv.symm) (g := e.toEquiv)
+        (hf := e.inv_map_lt') (hg := e.map_lt')
+    calc
+      H1MapOfEdgeIso (P := Q) (Q := P) (R := R) eSymm ≫ H1MapOfEdgeIso (P := P) (Q := Q) (R := R) e
+          = H1Map (P := Q) (Q := Q) (R := R) (e.toEquiv ∘ e.toEquiv.symm)
+              (EdgeHom.comp (P := Q) (Q := P) (S := Q) e.inv_map_lt' e.map_lt') := by
+              simpa [H1MapOfEdgeIso] using h.symm
+      _ = H1Map (P := Q) (Q := Q) (R := R) (fun q : Q.Pt => q) hidFromE := by
+        simpa [hcomp]
+      _ = 𝟙 _ := hIdMap
+
 noncomputable def H1IsoOfEdgeIso (e : EdgeIso P Q) :
     H1 (P := P) (R := R) ≅ H1 (P := Q) (R := R) := by
-  -- `H1IsoZ1` is the proxy result for each poset; transport along `Z₁`.
-  refine
-    H1IsoZ1 (P := P) (R := R)
-      ≪≫ Z1ModuleIso (P := P) (Q := Q) (R := R) e
-      ≪≫ (H1IsoZ1 (P := Q) (R := R)).symm
+  classical
+  exact asIso (H1MapOfEdgeIso (P := P) (Q := Q) (R := R) e)
 
 section OrderIso
 
