@@ -117,6 +117,17 @@ theorem posetChainComplex_d_1_0_hom :
       boundary1 (P := P) (R := R) := by
   simp [posetChainComplex_d_1_0 (P := P) (R := R)]
 
+@[simp]
+theorem posetChainComplex_d_2_1 :
+    (posetChainComplex (P := P) (R := R)).d 2 1 = 0 := by
+  dsimp [posetChainComplex]
+  simpa [chainD] using
+    (ChainComplex.of_d (X := chainObj (P := P) (R := R)) (d := chainD (P := P) (R := R))
+        (sq := by
+          intro n
+          simpa using (chainD_squared (P := P) (R := R) n))
+        1)
+
 /-- The first homology object `H₁` of the low-degree proxy chain complex. -/
 noncomputable abbrev H1 : ModuleCat R := (posetChainComplex (P := P) (R := R)).homology 1
 
@@ -155,6 +166,67 @@ noncomputable def cycles1IsoZ1 :
   -- Translate categorical kernel ↔ linear-map kernel and rewrite to `Z1`.
   simpa [Z1, K, posetChainComplex_d_1_0_hom (P := P) (R := R)] using
     (ModuleCat.kernelIsoKer (K.d 1 0))
+
+/-- In the low-degree proxy chain complex, the map `toCycles 2 1` is zero.
+
+This is the core input for reducing `H₁` to `cycles 1`. -/
+theorem toCycles_2_1_eq_zero :
+    (posetChainComplex (P := P) (R := R)).toCycles 2 1 = 0 := by
+  classical
+  let K : ChainComplex (ModuleCat R) ℕ := posetChainComplex (P := P) (R := R)
+  haveI : K.HasHomology 1 := by infer_instance
+  -- Cancel against the mono `iCycles` and use the simp lemma `toCycles_i`.
+  apply (cancel_mono (K.iCycles 1)).1
+  simp [K, posetChainComplex_d_2_1 (P := P) (R := R)]
+
+/-- In the low-degree proxy chain complex, `H₁` is isomorphic to the degree-1 cycles.
+
+This uses the cokernel description of homology and the fact that `toCycles 2 1 = 0`. -/
+noncomputable def H1IsoCycles1 :
+    H1 (P := P) (R := R) ≅ (posetChainComplex (P := P) (R := R)).cycles 1 := by
+  classical
+  let K : ChainComplex (ModuleCat R) ℕ := posetChainComplex (P := P) (R := R)
+
+  have hrelPrev : (ComplexShape.down ℕ).Rel 2 1 :=
+    ComplexShape.down_mk (α := ℕ) 2 1 (by simp)
+  have hi : (ComplexShape.down ℕ).prev 1 = 2 :=
+    (ComplexShape.down ℕ).prev_eq' hrelPrev
+
+  haveI : K.HasHomology 1 := by infer_instance
+  have hToCycles : K.toCycles 2 1 = 0 := by
+    simpa [K] using (toCycles_2_1_eq_zero (P := P) (R := R))
+
+  haveI : HasCokernel (K.toCycles 2 1) := by infer_instance
+
+  let ccHom : CokernelCofork (K.toCycles 2 1) :=
+    CokernelCofork.ofπ (K.homologyπ 1) (K.toCycles_comp_homologyπ (i := 2) (j := 1))
+  have hcHom : IsColimit ccHom := by
+    simpa [ccHom] using (K.homologyIsCokernel (i := 2) (j := 1) hi)
+
+  let ccCok : CokernelCofork (K.toCycles 2 1) :=
+    Cofork.ofπ (cokernel.π (K.toCycles 2 1))
+      ((cokernel.condition (K.toCycles 2 1)).trans zero_comp.symm)
+  have hcCok : IsColimit ccCok := by
+    simpa [ccCok] using (cokernelIsCokernel (K.toCycles 2 1))
+
+  let isoHomCok : K.homology 1 ≅ cokernel (K.toCycles 2 1) := by
+    simpa [ccHom, ccCok] using
+      (CokernelCofork.mapIsoOfIsColimit (hf := hcHom) (hf' := hcCok)
+        (Iso.refl (Arrow.mk (K.toCycles 2 1))))
+
+  have isoCokCycles : cokernel (K.toCycles 2 1) ≅ K.cycles 1 := by
+    simpa [hToCycles] using (cokernelZeroIsoTarget (X := K.X 2) (Y := K.cycles 1))
+
+  simpa [H1, K] using (isoHomCok ≪≫ isoCokCycles)
+
+/-- In the low-degree proxy chain complex, the incoming differential to degree `1` is zero.
+
+As a result, `H₁` is (canonically) isomorphic to the degree-1 cycles, hence to `Z₁`.
+-/
+noncomputable def H1IsoZ1 :
+    H1 (P := P) (R := R) ≅ ModuleCat.of R (Z1 (P := P) (R := R)) := by
+  simpa using
+    (H1IsoCycles1 (P := P) (R := R) ≪≫ cycles1IsoZ1 (P := P) (R := R))
 
 end Bridge
 

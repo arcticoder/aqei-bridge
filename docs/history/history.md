@@ -432,3 +432,23 @@ Implemented a compiling Lean “homology proxy” and got the full run_tests.sh 
 - Ran `cd /home/echo_/Code/asciimath/aqei-bridge && ./run_tests.sh` — all stages completed successfully (warnings only, no errors).
 <!-- ------ -->
 ---
+
+**Poset homology proxy: `H₁ ≅ Z₁` (low-degree truncation)**
+
+**Lean**
+- Strengthened the earlier bridge `cycles 1 ≅ Z1` into a full homology-level statement:
+  - In the low-degree proxy chain complex (where `d₂ = 0` by construction), proved `H₁ ≅ Z₁`.
+  - Implemented as `H1IsoZ1` in `aqei-bridge/lean/src/AqeiBridge/PosetHomologyProxy.lean`.
+- Added a simp lemma fixing the “incoming differential is zero” fact in a stable way:
+  - `posetChainComplex_d_2_1 : d 2 1 = 0`.
+
+**Key idea**
+- Use Mathlib’s characterization of homology as a cokernel:
+  - `homologyIsCokernel` gives `H₁` as the cokernel of `toCycles 2 1 : C₂ ⟶ cycles 1`.
+  - Since `d 2 1 = 0`, we show `toCycles 2 1 = 0`, hence `cokernel (0) ≅ cycles 1` via `cokernelZeroIsoTarget`.
+  - Compose `H₁ ≅ cycles 1` with the existing `cycles1IsoZ1`.
+
+**Validation**
+- Ran `cd /home/echo_/Code/asciimath/aqei-bridge && ./run_tests.sh` — green (warnings only).
+<!-- ------ -->
+---
