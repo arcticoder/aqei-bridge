@@ -117,6 +117,39 @@ Or scan an existing graph JSON:
 
 `python python/ctc_scan.py --graph path/to/graph.json`
 
+## Poset homology perturbation stability (toy)
+
+If you want a fast “smoke detector” for whether small-ish perturbations change the low-degree proxy
+homology (specifically `z1Dim = dim ker(∂₁)` via `|E| - |V| + c`), use the helpers in
+`python/poset_homology_proxy.py`.
+
+### Edge-dropping perturbation (generic graph)
+
+Given any graph JSON (in `{"edges": ...}` or `{"futures": ...}` format), apply a deterministic toy
+“FFT-like” perturbation (low-pass smoothed noise on edges) and drop edges below a threshold:
+
+`python python/poset_homology_proxy.py perturb-fft runs/tmp/poset.json --trials 50 --epsilon 0.05 --threshold 0.5 --window 9 --seed 0 --out runs/tmp/perturb_fft.json`
+
+Interpretation: if `fractionUnchanged` is near 1.0 across a range of parameters, you have evidence
+that *this specific perturbation model* does not change the proxy `H₁` (in the sense of `z1Dim`).
+
+### Minkowski-ish cone-widening perturbation
+
+This is a slightly more “metric-ish” toy: a low-pass node field locally widens the step-cone
+(radius 1 → 2) when `epsilon*z >= cutoff`.
+
+Single run:
+
+`python python/poset_homology_proxy.py sweep-minkowski-perturb --tmax 6 --xmax 6 --trials 50 --epsilon 0.2 --cutoff 0.0 --window 9 --seed 0 --out runs/tmp/minkowski_perturb.json`
+
+Parameter scan (writes a single JSON):
+
+`python python/poset_homology_proxy.py scan-minkowski-perturb --tmax 6 --xmax 6 --trials 20 --epsilons 0.0,0.1,0.2 --cutoffs -0.1,0.0,0.1 --windows 5,9 --out runs/tmp/minkowski_scan.json`
+
+For plotting, also export CSV:
+
+`python python/poset_homology_proxy.py scan-minkowski-perturb --tmax 6 --xmax 6 --trials 20 --epsilons 0.0,0.1,0.2 --cutoffs -0.1,0.0,0.1 --windows 5,9 --csv-out runs/tmp/minkowski_scan.csv`
+
 ## Reporting guidelines
 
 When writing up Phase 4 results in `docs/manuscript.md`:

@@ -232,6 +232,7 @@ Implemented the “next good step” as a formal Lean bridge from chambers → d
 - Extended `python/poset_homology_proxy.py` with `scan-minkowski-perturb`: runs `sweep-minkowski-perturb` over a small grid of `(epsilon, cutoff, window)` values and emits a single summary JSON for quick “stability region” mapping.
 - Added smoke coverage for the scan harness in `tests/python_tests.sh`.
 - Added optional `--csv-out` export for `scan-minkowski-perturb` to make plotting stability regions easy.
+- Documented the perturbation stability commands in `docs/phase4_searches.md`.
 
 <!-- ------ -->
 ---
