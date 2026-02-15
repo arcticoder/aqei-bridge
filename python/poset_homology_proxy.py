@@ -208,6 +208,89 @@ def _minkowski_edges_step_cone(*, tmax: int, xmax: int, radius_fn: callable | No
     return edges
 
 
+def _parse_csv_floats(s: str) -> list[float]:
+    items = [x.strip() for x in str(s).split(",") if x.strip()]
+    return [float(x) for x in items]
+
+
+def _parse_csv_ints(s: str) -> list[int]:
+    items = [x.strip() for x in str(s).split(",") if x.strip()]
+    return [int(x) for x in items]
+
+
+def _minkowski_perturb_payload(
+    *,
+    tmax: int,
+    xmax: int,
+    trials: int,
+    epsilon: float,
+    cutoff: float,
+    window: int,
+    seed: int,
+) -> dict[str, Any]:
+    nodes0 = _minkowski_nodes(tmax, xmax)
+
+    base_edges = _minkowski_edges_step_cone(tmax=tmax, xmax=xmax)
+    base_g = _digraph_from_nodes_edges(nodes0, base_edges)
+    base = compute_z1_proxy(base_g, name=f"minkowski_t{tmax}_x{xmax}_baseline")
+
+    rng = random.Random(int(seed))
+    trial_rows: list[dict[str, Any]] = []
+    deltas: list[int] = []
+
+    node_count = len(nodes0)
+    for trial in range(int(trials)):
+        noise = [rng.normalvariate(0.0, 1.0) for _ in range(node_count)]
+        smooth = _lowpass_smooth_cyclic(noise, window=int(window))
+
+        def radius_fn(t: int, x: int) -> int:
+            idx = t * (xmax + 1) + x
+            z = smooth[idx]
+            return 2 if (float(epsilon) * z) >= float(cutoff) else 1
+
+        edges = _minkowski_edges_step_cone(tmax=tmax, xmax=xmax, radius_fn=radius_fn)
+        g1 = _digraph_from_nodes_edges(nodes0, edges)
+        res = compute_z1_proxy(g1, name=f"trial_{trial}")
+
+        dz = int(res.z1_dim - base.z1_dim)
+        deltas.append(abs(dz))
+        trial_rows.append(
+            {
+                "trial": int(trial),
+                "edgeCount": int(res.edge_count),
+                "weakComponentCount": int(res.weak_component_count),
+                "z1Dim": int(res.z1_dim),
+                "deltaZ1": int(dz),
+                "hasDirectedCycle": bool(res.has_directed_cycle),
+            }
+        )
+
+    mean_delta = (sum(deltas) / float(len(deltas))) if deltas else 0.0
+    max_delta = max(deltas) if deltas else 0
+    unchanged = sum(1 for d in deltas if d == 0)
+    frac_unchanged = (unchanged / float(len(deltas))) if deltas else 0.0
+
+    return {
+        "generatedAtUtc": _utc_timestamp(),
+        "baseline": base.to_json_obj(),
+        "grid": {"tmax": int(tmax), "xmax": int(xmax)},
+        "params": {
+            "trials": int(trials),
+            "epsilon": float(epsilon),
+            "cutoff": float(cutoff),
+            "window": int(window),
+            "seed": int(seed),
+            "radius": {"base": 1, "perturbed": 2},
+        },
+        "trialsData": trial_rows,
+        "summary": {
+            "meanAbsDeltaZ1": float(mean_delta),
+            "maxAbsDeltaZ1": int(max_delta),
+            "fractionUnchanged": float(frac_unchanged),
+        },
+    }
+
+
 def _emit_lean(results: list[Z1Proxy], out_path: Path) -> None:
     max_z1 = max((r.z1_dim for r in results), default=0)
 
@@ -460,69 +543,15 @@ def cmd_sweep_minkowski_perturb(args: argparse.Namespace) -> int:
     window = int(args.window)
     seed = int(args.seed)
 
-    nodes0 = _minkowski_nodes(tmax, xmax)
-
-    # Baseline: radius 1 everywhere.
-    base_edges = _minkowski_edges_step_cone(tmax=tmax, xmax=xmax)
-    base_g = _digraph_from_nodes_edges(nodes0, base_edges)
-    base = compute_z1_proxy(base_g, name=f"minkowski_t{tmax}_x{xmax}_baseline")
-
-    rng = random.Random(seed)
-    trial_rows: list[dict[str, Any]] = []
-    deltas: list[int] = []
-
-    node_count = len(nodes0)
-    for trial in range(trials):
-        noise = [rng.normalvariate(0.0, 1.0) for _ in range(node_count)]
-        smooth = _lowpass_smooth_cyclic(noise, window=window)
-
-        # Index nodes in the same order as _minkowski_nodes (t-major, then x).
-        def radius_fn(t: int, x: int) -> int:
-            idx = t * (xmax + 1) + x
-            z = smooth[idx]
-            return 2 if (epsilon * z) >= cutoff else 1
-
-        edges = _minkowski_edges_step_cone(tmax=tmax, xmax=xmax, radius_fn=radius_fn)
-        g1 = _digraph_from_nodes_edges(nodes0, edges)
-        res = compute_z1_proxy(g1, name=f"trial_{trial}")
-
-        dz = int(res.z1_dim - base.z1_dim)
-        deltas.append(abs(dz))
-        trial_rows.append(
-            {
-                "trial": int(trial),
-                "edgeCount": int(res.edge_count),
-                "weakComponentCount": int(res.weak_component_count),
-                "z1Dim": int(res.z1_dim),
-                "deltaZ1": int(dz),
-                "hasDirectedCycle": bool(res.has_directed_cycle),
-            }
-        )
-
-    mean_delta = (sum(deltas) / float(len(deltas))) if deltas else 0.0
-    max_delta = max(deltas) if deltas else 0
-    unchanged = sum(1 for d in deltas if d == 0)
-    frac_unchanged = (unchanged / float(len(deltas))) if deltas else 0.0
-
-    payload: dict[str, Any] = {
-        "generatedAtUtc": _utc_timestamp(),
-        "baseline": base.to_json_obj(),
-        "grid": {"tmax": int(tmax), "xmax": int(xmax)},
-        "params": {
-            "trials": int(trials),
-            "epsilon": float(epsilon),
-            "cutoff": float(cutoff),
-            "window": int(window),
-            "seed": int(seed),
-            "radius": {"base": 1, "perturbed": 2},
-        },
-        "trialsData": trial_rows,
-        "summary": {
-            "meanAbsDeltaZ1": float(mean_delta),
-            "maxAbsDeltaZ1": int(max_delta),
-            "fractionUnchanged": float(frac_unchanged),
-        },
-    }
+    payload = _minkowski_perturb_payload(
+        tmax=tmax,
+        xmax=xmax,
+        trials=trials,
+        epsilon=epsilon,
+        cutoff=cutoff,
+        window=window,
+        seed=seed,
+    )
 
     if args.out:
         _write_json(Path(args.out), payload)
@@ -531,6 +560,68 @@ def cmd_sweep_minkowski_perturb(args: argparse.Namespace) -> int:
 
     if args.json or not args.out:
         print(json.dumps(payload, sort_keys=True))
+
+    return 0
+
+
+def cmd_scan_minkowski_perturb(args: argparse.Namespace) -> int:
+    tmax = int(args.tmax)
+    xmax = int(args.xmax)
+    trials = int(args.trials)
+    if tmax < 0 or xmax < 0:
+        raise SystemExit("--tmax and --xmax must be nonnegative")
+    if trials <= 0:
+        raise SystemExit("--trials must be positive")
+
+    epsilons = _parse_csv_floats(args.epsilons)
+    cutoffs = _parse_csv_floats(args.cutoffs)
+    windows = _parse_csv_ints(args.windows)
+    seed = int(args.seed)
+
+    points: list[dict[str, Any]] = []
+    idx = 0
+    for epsilon in epsilons:
+        for cutoff in cutoffs:
+            for window in windows:
+                point_seed = seed + 1000003 * idx
+                payload = _minkowski_perturb_payload(
+                    tmax=tmax,
+                    xmax=xmax,
+                    trials=trials,
+                    epsilon=float(epsilon),
+                    cutoff=float(cutoff),
+                    window=int(window),
+                    seed=int(point_seed),
+                )
+                points.append(
+                    {
+                        "params": payload["params"],
+                        "summary": payload["summary"],
+                    }
+                )
+                idx += 1
+
+    out_payload: dict[str, Any] = {
+        "generatedAtUtc": _utc_timestamp(),
+        "grid": {"tmax": int(tmax), "xmax": int(xmax)},
+        "sweep": {
+            "trials": int(trials),
+            "epsilons": epsilons,
+            "cutoffs": cutoffs,
+            "windows": windows,
+            "seed": int(seed),
+        },
+        "count": int(len(points)),
+        "points": points,
+    }
+
+    if args.out:
+        _write_json(Path(args.out), out_payload)
+        if not args.json:
+            print(f"Wrote: {args.out}")
+
+    if args.json or not args.out:
+        print(json.dumps(out_payload, sort_keys=True))
 
     return 0
 
@@ -597,6 +688,21 @@ def build_parser() -> argparse.ArgumentParser:
     p_mink_pert.add_argument("--out", default="", help="Write output JSON to this path")
     p_mink_pert.add_argument("--json", action="store_true", help="Emit machine-readable JSON to stdout")
     p_mink_pert.set_defaults(func=cmd_sweep_minkowski_perturb)
+
+    p_scan = sub.add_parser(
+        "scan-minkowski-perturb",
+        help="Scan (epsilon, cutoff, window) grids for Minkowski perturbation stability",
+    )
+    p_scan.add_argument("--tmax", type=int, default=3, help="Max time coordinate (inclusive)")
+    p_scan.add_argument("--xmax", type=int, default=3, help="Max space coordinate (inclusive)")
+    p_scan.add_argument("--trials", type=int, default=20, help="Trials per grid point")
+    p_scan.add_argument("--epsilons", default="0.0,0.2", help="Comma-separated epsilon values")
+    p_scan.add_argument("--cutoffs", default="0.0", help="Comma-separated cutoff values")
+    p_scan.add_argument("--windows", default="9", help="Comma-separated smoothing-window values")
+    p_scan.add_argument("--seed", type=int, default=0, help="Master PRNG seed")
+    p_scan.add_argument("--out", default="", help="Write output JSON to this path")
+    p_scan.add_argument("--json", action="store_true", help="Emit machine-readable JSON to stdout")
+    p_scan.set_defaults(func=cmd_scan_minkowski_perturb)
 
     return p
 
