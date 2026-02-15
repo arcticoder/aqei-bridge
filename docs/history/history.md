@@ -214,6 +214,14 @@ Implemented the “next good step” as a formal Lean bridge from chambers → d
 
 <!-- ------ -->
 ---
+**Discrete “FFT perturbation” stability sweep (poset proxy) — 2026-02-14**
+
+**What changed**
+- Extended `python/poset_homology_proxy.py` with `perturb-fft`: a deterministic, dependency-free toy “FFT-like” (low-pass) perturbation that drops edges after smoothed noise and reports stability stats for `z1Dim`.
+- Extended `tests/python_tests.sh` with a smoke test exercising `perturb-fft` on the diamond graph.
+
+<!-- ------ -->
+---
 **Poset homology proxy + discrete sweeps (compile-safe)**
 
 **Lean**

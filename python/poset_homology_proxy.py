@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 import sys
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
@@ -121,6 +122,54 @@ def compute_z1_proxy(g: DiGraph, *, name: str = "") -> Z1Proxy:
         z1_dim=z1,
         has_directed_cycle=has_directed_cycle(g),
     )
+
+
+def _digraph_from_nodes_edges(nodes: Iterable[str], edges: Iterable[tuple[str, str]]) -> DiGraph:
+    # Preserve isolated nodes (important for comparing perturbations).
+    node_set = frozenset(nodes)
+    tmp_adj: dict[str, set[str]] = {n: set() for n in node_set}
+    for src, dst in edges:
+        if src not in tmp_adj:
+            tmp_adj[src] = set()
+        tmp_adj[src].add(dst)
+    adj: dict[str, frozenset[str]] = {n: frozenset(tmp_adj.get(n, set())) for n in node_set}
+    return DiGraph(nodes=node_set, adj=adj)
+
+
+def _sorted_edges(g: DiGraph) -> list[tuple[str, str]]:
+    edges: list[tuple[str, str]] = []
+    for src in sorted(g.nodes):
+        for dst in sorted(g.adj.get(src, frozenset())):
+            edges.append((src, dst))
+    return edges
+
+
+def _lowpass_smooth_cyclic(values: list[float], *, window: int) -> list[float]:
+    """Toy FFT-like smoothing, implemented dependency-free.
+
+    This is a simple cyclic moving-average low-pass filter.
+    """
+
+    n = len(values)
+    if n == 0:
+        return []
+    if window <= 1:
+        return list(values)
+    if window > n:
+        window = n
+    if window % 2 == 0:
+        window += 1
+        if window > n:
+            window = n if n % 2 == 1 else max(1, n - 1)
+
+    k = window // 2
+    out: list[float] = []
+    for i in range(n):
+        s = 0.0
+        for j in range(-k, k + 1):
+            s += values[(i + j) % n]
+        out.append(s / float(2 * k + 1))
+    return out
 
 
 def _emit_lean(results: list[Z1Proxy], out_path: Path) -> None:
@@ -258,6 +307,97 @@ def cmd_emit_lean(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_perturb_fft(args: argparse.Namespace) -> int:
+    """Empirical stability sweep for Z1 under toy "FFT" perturbations.
+
+    We model a perturbation as: assign each edge a baseline weight 1.0, add
+    smoothed (low-pass) noise, then *drop* edges whose perturbed weight falls
+    below a threshold. This changes the edge set, hence changes the boundary
+    matrix and its kernel dimension.
+    """
+
+    g0 = load_digraph(Path(args.graph_json))
+    base = compute_z1_proxy(g0, name=str(args.name or ""))
+
+    nodes0 = sorted(g0.nodes)
+    edges0 = _sorted_edges(g0)
+    m0 = len(edges0)
+
+    trials = int(args.trials)
+    if trials <= 0:
+        raise SystemExit("--trials must be positive")
+
+    epsilon = float(args.epsilon)
+    threshold = float(args.threshold)
+    window = int(args.window)
+    seed = int(args.seed)
+
+    rng = random.Random(seed)
+
+    trial_rows: list[dict[str, Any]] = []
+    deltas: list[int] = []
+
+    for trial in range(trials):
+        noise = [rng.normalvariate(0.0, 1.0) for _ in range(m0)]
+        smooth = _lowpass_smooth_cyclic(noise, window=window)
+
+        kept: list[tuple[str, str]] = []
+        for (src, dst), z in zip(edges0, smooth):
+            w = 1.0 + epsilon * z
+            if w >= threshold:
+                kept.append((src, dst))
+
+        g1 = _digraph_from_nodes_edges(nodes0, kept)
+        res = compute_z1_proxy(g1, name=f"trial_{trial}")
+        dz = int(res.z1_dim - base.z1_dim)
+        deltas.append(abs(dz))
+
+        trial_rows.append(
+            {
+                "trial": int(trial),
+                "edgeCount": int(res.edge_count),
+                "weakComponentCount": int(res.weak_component_count),
+                "z1Dim": int(res.z1_dim),
+                "deltaZ1": int(dz),
+                "hasDirectedCycle": bool(res.has_directed_cycle),
+            }
+        )
+
+    mean_delta = (sum(deltas) / float(len(deltas))) if deltas else 0.0
+    max_delta = max(deltas) if deltas else 0
+    unchanged = sum(1 for d in deltas if d == 0)
+    frac_unchanged = (unchanged / float(len(deltas))) if deltas else 0.0
+
+    payload: dict[str, Any] = {
+        "generatedAtUtc": _utc_timestamp(),
+        "name": str(args.name or ""),
+        "baseline": base.to_json_obj(),
+        "params": {
+            "trials": int(trials),
+            "epsilon": float(epsilon),
+            "threshold": float(threshold),
+            "window": int(window),
+            "seed": int(seed),
+        },
+        "trialsData": trial_rows,
+        "summary": {
+            "meanAbsDeltaZ1": float(mean_delta),
+            "maxAbsDeltaZ1": int(max_delta),
+            "fractionUnchanged": float(frac_unchanged),
+        },
+    }
+
+    if args.out:
+        _write_json(Path(args.out), payload)
+        if not args.json:
+            print(f"Wrote: {args.out}")
+
+    if args.json or not args.out:
+        print(json.dumps(payload, sort_keys=True))
+
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser()
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -285,6 +425,26 @@ def build_parser() -> argparse.ArgumentParser:
     p_lean.add_argument("summary_json", help="Path to summary JSON produced by sweep-minkowski")
     p_lean.add_argument("--out", required=True, help="Output Lean file path")
     p_lean.set_defaults(func=cmd_emit_lean)
+
+    p_pert = sub.add_parser(
+        "perturb-fft",
+        help="Toy FFT-like perturbation sweep: drop edges after low-pass noise and measure Z1 stability",
+    )
+    p_pert.add_argument("graph_json", help="Path to a graph JSON (edges or futures-map)")
+    p_pert.add_argument("--name", default="", help="Optional name label")
+    p_pert.add_argument("--trials", type=int, default=20, help="Number of perturbation trials")
+    p_pert.add_argument("--epsilon", type=float, default=0.05, help="Noise amplitude")
+    p_pert.add_argument(
+        "--threshold",
+        type=float,
+        default=0.5,
+        help="Keep an edge iff perturbed weight >= threshold (baseline weight is 1.0)",
+    )
+    p_pert.add_argument("--window", type=int, default=9, help="Low-pass smoothing window (odd preferred)")
+    p_pert.add_argument("--seed", type=int, default=0, help="PRNG seed (deterministic)")
+    p_pert.add_argument("--out", default="", help="Write output JSON to this path")
+    p_pert.add_argument("--json", action="store_true", help="Emit machine-readable JSON to stdout")
+    p_pert.set_defaults(func=cmd_perturb_fft)
 
     return p
 

@@ -55,6 +55,39 @@ assert obj['weakComponentCount'] == 1
 assert obj['z1Dim'] == 1
 PY
 
+python - <<'PY'
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+root = Path('.').resolve()
+tool = root / 'python' / 'poset_homology_proxy.py'
+
+out = subprocess.check_output(
+  [
+    sys.executable,
+    str(tool),
+    'perturb-fft',
+    str(root / '.tmp_test/diamond.json'),
+    '--trials', '3',
+    '--epsilon', '0.01',
+    '--threshold', '0.5',
+    '--window', '5',
+    '--seed', '0',
+    '--json',
+  ]
+)
+obj = json.loads(out.decode('utf-8'))
+assert obj['baseline']['z1Dim'] == 1
+assert obj['params']['trials'] == 3
+
+summ = obj['summary']
+assert abs(summ['meanAbsDeltaZ1'] - 0.0) < 1e-12
+assert summ['maxAbsDeltaZ1'] == 0
+assert abs(summ['fractionUnchanged'] - 1.0) < 1e-12
+PY
+
 python "$ROOT_DIR/python/poset_homology_proxy.py" \
   sweep-minkowski \
   --tmaxs 1,2 \
