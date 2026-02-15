@@ -124,6 +124,59 @@ Lean status (toy):
   and on interior points (inactive constraints strict) we get `chamberIndex F T = active`
   (`lean/src/AqeiBridge/ChamberClosedChamberBridge.lean`).
 
+## Step 2: tie-ins to “topology / reachability / flow” themes (toy)
+
+The repo does **not** prove any warp-drive feasibility statement. What it *can* do today is support
+evidence-building for a structured narrative:
+
+- **Theme A (global causality as topological obstruction).**
+	- Proxy object: a directed graph / causal poset representing a toy causal structure.
+	- Proxy invariant: `z1Dim = dim ker(∂₁)` computed by `python/poset_homology_proxy.py` (graph formula `|E|-|V|+c`).
+	- Interpretation: if a perturbation leaves `z1Dim` unchanged across a neighborhood of parameters, that’s evidence
+		that *this* low-degree proxy invariant is stable under that perturbation family.
+	- Caveat: `Z₁` is **not** equivalent to “CTCs exist” (a DAG can have nontrivial `Z₁`). Treat it as a coarse
+		“cycle-space” detector, not as chronology protection.
+
+- **Theme B (reachability theorems).**
+	- In this repo’s discrete toys, “reachability” is just graph reachability (a stand-in for $J^+(p)$).
+	- The cone-widening perturbation (`sweep-minkowski-perturb`) is a toy for “making more events timelike-reachable”
+		by locally widening the allowed step set. If reachability expands but `z1Dim` stays stable, that’s a toy analogue
+		of “more reachability without changing a low-degree causal invariant.”
+	- Caveat: this is not a Lorentzian theorem; it’s a discrete diagnostic.
+
+- **Theme C (Einstein equations as a flow on metric space).**
+	- The scan harness (`scan-minkowski-perturb`) is a practical stand-in for exploring a parameter family of
+		“metric deformations” and asking where low-degree invariants are stable.
+	- It’s not a geometric flow solver. It’s a *map* from a parameter tuple `(epsilon, cutoff, window)` to a distribution
+		of toy causal graphs. This is still useful, because it lets you empirically identify stable “basins” where the toy
+		invariant doesn’t jump.
+
+Pointers:
+- How to run these scans is documented in `docs/phase4_searches.md`.
+
+## Step 3: optimize for personal evidence (not publication)
+
+If your goal is “enough evidence to decide next engineering steps” rather than a publication-grade proof, optimize for:
+
+1. **Reproducibility first.** Always run with explicit seeds and save JSON/CSV artifacts.
+2. **Stability regions, not single runs.** Prefer `scan-minkowski-perturb` over one-off runs.
+3. **Two metrics, not one.** Track both:
+	 - `fractionUnchanged` for `z1Dim`, and
+	 - a separate cycle/CTC proxy (`python/ctc_scan.py` or `python/causal_graph_tools.py ctc`) when relevant.
+4. **Define a stop condition.** For example: “move on if `fractionUnchanged ≥ 0.9` across a 3×3×2 parameter grid
+	 for two grid sizes and two seeds.”
+5. **Escalate the toy only when it breaks.** If stability is too fragile, adjust the perturbation model
+	 (e.g. smaller `epsilon`, larger smoothing `window`, or a different local rule). If stability is overly robust,
+	 increase model fidelity (beyond step-cone widening).
+
+Suggested minimal runbook:
+- Start with `tmax=xmax=6`, `trials=20`, 2–3 seeds.
+- Grid: `epsilons 0.0,0.1,0.2`, `cutoffs -0.1,0.0,0.1`, `windows 5,9`.
+- Export CSV (`--csv-out`) and plot `fractionUnchanged` vs parameters.
+
+This is deliberately framed as a disciplined *diagnostics loop*: it helps decide what to formalize next in Lean
+(e.g. which perturbation families plausibly preserve invariants), without overclaiming physics.
+
 ## Lean interface sketch (current repo)
 
 The current Lean repo already contains typed placeholders in:

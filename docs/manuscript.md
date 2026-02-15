@@ -153,6 +153,13 @@ Workflow details live in `docs/phase4_searches.md`.
 Additional diagnostics (toy):
 - directed-cycle detection as a CTC proxy (`python/ctc_scan.py` on graph JSON inputs)
 
+Homology-adjacent stability diagnostics (toy):
+- `python/poset_homology_proxy.py perturb-fft`: edge-dropping low-pass perturbation with `z1Dim` stability stats.
+- `python/poset_homology_proxy.py sweep-minkowski-perturb` and `scan-minkowski-perturb`: “cone widening” perturbations on a 1+1 grid poset, including scan + CSV export for mapping stability regions.
+
+These are intended as evidence-building tools only; they do not establish Lorentzian $J^+$ continuity.
+They help decide which perturbation families are worth elevating into Lean interface statements next.
+
 Pivot note:
 - If expanded searches fail to produce robust counterexamples (across seeds, grids, and ansatz families),
   treat that as evidence about the *toy proxy* only.

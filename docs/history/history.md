@@ -233,6 +233,8 @@ Implemented the “next good step” as a formal Lean bridge from chambers → d
 - Added smoke coverage for the scan harness in `tests/python_tests.sh`.
 - Added optional `--csv-out` export for `scan-minkowski-perturb` to make plotting stability regions easy.
 - Documented the perturbation stability commands in `docs/phase4_searches.md`.
+- Added Step-2/3 interpretive guidance and a personal-evidence runbook in `docs/conjecture.md` (ties the toy stability stats to the “topology/reachability/flow” themes without overclaiming physics).
+- Added a brief roadmap note in `docs/manuscript.md` referencing the new stability diagnostics.
 
 <!-- ------ -->
 ---
