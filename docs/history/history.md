@@ -220,6 +220,12 @@ Implemented the “next good step” as a formal Lean bridge from chambers → d
 - Extended `python/poset_homology_proxy.py` with `perturb-fft`: a deterministic, dependency-free toy “FFT-like” (low-pass) perturbation that drops edges after smoothed noise and reports stability stats for `z1Dim`.
 - Extended `tests/python_tests.sh` with a smoke test exercising `perturb-fft` on the diamond graph.
 
+**Minkowski perturbation sweep (cone widening) — 2026-02-14**
+
+**What changed**
+- Extended `python/poset_homology_proxy.py` with `sweep-minkowski-perturb`: generates a 1+1 grid poset where a low-pass node field locally widens the step-cone (radius 1 → 2) and reports `z1Dim` stability statistics.
+- Extended `tests/python_tests.sh` with a deterministic smoke test (using `epsilon=0` to force baseline equality).
+
 <!-- ------ -->
 ---
 **Poset homology proxy + discrete sweeps (compile-safe)**

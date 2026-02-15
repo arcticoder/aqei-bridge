@@ -88,6 +88,44 @@ assert summ['maxAbsDeltaZ1'] == 0
 assert abs(summ['fractionUnchanged'] - 1.0) < 1e-12
 PY
 
+python - <<'PY'
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+root = Path('.').resolve()
+tool = root / 'python' / 'poset_homology_proxy.py'
+
+# With epsilon=0 and positive cutoff, the local cone never widens, so the
+# perturbed graphs equal baseline.
+out = subprocess.check_output(
+  [
+    sys.executable,
+    str(tool),
+    'sweep-minkowski-perturb',
+    '--tmax', '2',
+    '--xmax', '2',
+    '--trials', '3',
+    '--epsilon', '0.0',
+    '--cutoff', '0.1',
+    '--window', '5',
+    '--seed', '0',
+    '--json',
+  ]
+)
+obj = json.loads(out.decode('utf-8'))
+assert obj['grid']['tmax'] == 2
+assert obj['grid']['xmax'] == 2
+assert obj['baseline']['nodeCount'] == 9
+assert obj['params']['trials'] == 3
+
+summ = obj['summary']
+assert abs(summ['meanAbsDeltaZ1'] - 0.0) < 1e-12
+assert summ['maxAbsDeltaZ1'] == 0
+assert abs(summ['fractionUnchanged'] - 1.0) < 1e-12
+PY
+
 python "$ROOT_DIR/python/poset_homology_proxy.py" \
   sweep-minkowski \
   --tmaxs 1,2 \

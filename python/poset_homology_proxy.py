@@ -172,6 +172,42 @@ def _lowpass_smooth_cyclic(values: list[float], *, window: int) -> list[float]:
     return out
 
 
+def _event_node_id(t: int, x: int) -> str:
+    # Match causal_graph_tools._to_node_id for non-string nodes.
+    return json.dumps([int(t), int(x)], sort_keys=True)
+
+
+def _minkowski_nodes(tmax: int, xmax: int) -> list[str]:
+    nodes: list[str] = []
+    for t in range(tmax + 1):
+        for x in range(xmax + 1):
+            nodes.append(_event_node_id(t, x))
+    return nodes
+
+
+def _minkowski_edges_step_cone(*, tmax: int, xmax: int, radius_fn: callable | None = None) -> list[tuple[str, str]]:
+    """Build directed edges (t increases by 1) with a local step-cone radius.
+
+    Baseline corresponds to radius 1 everywhere, matching minkowski_poset.build_edges.
+    """
+
+    edges: list[tuple[str, str]] = []
+    for t in range(tmax + 1):
+        for x in range(xmax + 1):
+            if t == tmax:
+                continue
+            r = int(radius_fn(t, x)) if radius_fn is not None else 1
+            if r < 0:
+                r = 0
+            for dx in range(-r, r + 1):
+                xx = x + dx
+                if 0 <= xx <= xmax:
+                    edges.append((_event_node_id(t, x), _event_node_id(t + 1, xx)))
+
+    edges.sort(key=lambda e: (e[0], e[1]))
+    return edges
+
+
 def _emit_lean(results: list[Z1Proxy], out_path: Path) -> None:
     max_z1 = max((r.z1_dim for r in results), default=0)
 
@@ -398,6 +434,107 @@ def cmd_perturb_fft(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_sweep_minkowski_perturb(args: argparse.Namespace) -> int:
+    """Empirical sweep: Minkowski-ish grid posets under a toy smooth perturbation.
+
+    The perturbation is intentionally simple and computable:
+    - Sample i.i.d. Gaussian noise on nodes.
+    - Apply a cyclic moving-average low-pass filter ("FFT-like") to the node field.
+    - Widen the local step-cone from radius 1 to radius 2 when the filtered field
+      crosses a cutoff.
+
+    This changes the edge set, and therefore changes Z1 via |E|-|V|+c.
+    """
+
+    tmax = int(args.tmax)
+    xmax = int(args.xmax)
+    if tmax < 0 or xmax < 0:
+        raise SystemExit("--tmax and --xmax must be nonnegative")
+
+    trials = int(args.trials)
+    if trials <= 0:
+        raise SystemExit("--trials must be positive")
+
+    epsilon = float(args.epsilon)
+    cutoff = float(args.cutoff)
+    window = int(args.window)
+    seed = int(args.seed)
+
+    nodes0 = _minkowski_nodes(tmax, xmax)
+
+    # Baseline: radius 1 everywhere.
+    base_edges = _minkowski_edges_step_cone(tmax=tmax, xmax=xmax)
+    base_g = _digraph_from_nodes_edges(nodes0, base_edges)
+    base = compute_z1_proxy(base_g, name=f"minkowski_t{tmax}_x{xmax}_baseline")
+
+    rng = random.Random(seed)
+    trial_rows: list[dict[str, Any]] = []
+    deltas: list[int] = []
+
+    node_count = len(nodes0)
+    for trial in range(trials):
+        noise = [rng.normalvariate(0.0, 1.0) for _ in range(node_count)]
+        smooth = _lowpass_smooth_cyclic(noise, window=window)
+
+        # Index nodes in the same order as _minkowski_nodes (t-major, then x).
+        def radius_fn(t: int, x: int) -> int:
+            idx = t * (xmax + 1) + x
+            z = smooth[idx]
+            return 2 if (epsilon * z) >= cutoff else 1
+
+        edges = _minkowski_edges_step_cone(tmax=tmax, xmax=xmax, radius_fn=radius_fn)
+        g1 = _digraph_from_nodes_edges(nodes0, edges)
+        res = compute_z1_proxy(g1, name=f"trial_{trial}")
+
+        dz = int(res.z1_dim - base.z1_dim)
+        deltas.append(abs(dz))
+        trial_rows.append(
+            {
+                "trial": int(trial),
+                "edgeCount": int(res.edge_count),
+                "weakComponentCount": int(res.weak_component_count),
+                "z1Dim": int(res.z1_dim),
+                "deltaZ1": int(dz),
+                "hasDirectedCycle": bool(res.has_directed_cycle),
+            }
+        )
+
+    mean_delta = (sum(deltas) / float(len(deltas))) if deltas else 0.0
+    max_delta = max(deltas) if deltas else 0
+    unchanged = sum(1 for d in deltas if d == 0)
+    frac_unchanged = (unchanged / float(len(deltas))) if deltas else 0.0
+
+    payload: dict[str, Any] = {
+        "generatedAtUtc": _utc_timestamp(),
+        "baseline": base.to_json_obj(),
+        "grid": {"tmax": int(tmax), "xmax": int(xmax)},
+        "params": {
+            "trials": int(trials),
+            "epsilon": float(epsilon),
+            "cutoff": float(cutoff),
+            "window": int(window),
+            "seed": int(seed),
+            "radius": {"base": 1, "perturbed": 2},
+        },
+        "trialsData": trial_rows,
+        "summary": {
+            "meanAbsDeltaZ1": float(mean_delta),
+            "maxAbsDeltaZ1": int(max_delta),
+            "fractionUnchanged": float(frac_unchanged),
+        },
+    }
+
+    if args.out:
+        _write_json(Path(args.out), payload)
+        if not args.json:
+            print(f"Wrote: {args.out}")
+
+    if args.json or not args.out:
+        print(json.dumps(payload, sort_keys=True))
+
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser()
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -445,6 +582,21 @@ def build_parser() -> argparse.ArgumentParser:
     p_pert.add_argument("--out", default="", help="Write output JSON to this path")
     p_pert.add_argument("--json", action="store_true", help="Emit machine-readable JSON to stdout")
     p_pert.set_defaults(func=cmd_perturb_fft)
+
+    p_mink_pert = sub.add_parser(
+        "sweep-minkowski-perturb",
+        help="Minkowski-ish sweep under smooth perturbations (local cone widening) and Z1 stability stats",
+    )
+    p_mink_pert.add_argument("--tmax", type=int, default=3, help="Max time coordinate (inclusive)")
+    p_mink_pert.add_argument("--xmax", type=int, default=3, help="Max space coordinate (inclusive)")
+    p_mink_pert.add_argument("--trials", type=int, default=20, help="Number of perturbation trials")
+    p_mink_pert.add_argument("--epsilon", type=float, default=0.2, help="Noise amplitude")
+    p_mink_pert.add_argument("--cutoff", type=float, default=0.0, help="Widen cone when epsilon*z >= cutoff")
+    p_mink_pert.add_argument("--window", type=int, default=9, help="Low-pass smoothing window")
+    p_mink_pert.add_argument("--seed", type=int, default=0, help="PRNG seed (deterministic)")
+    p_mink_pert.add_argument("--out", default="", help="Write output JSON to this path")
+    p_mink_pert.add_argument("--json", action="store_true", help="Emit machine-readable JSON to stdout")
+    p_mink_pert.set_defaults(func=cmd_sweep_minkowski_perturb)
 
     return p
 
