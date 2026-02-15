@@ -127,7 +127,7 @@ theorem boundary1_natural_single (f : Pt₁ → Pt₂) (hf : EdgeHom M₁ M₂ f
     _ = r • push0 (R := R) f (edgeBoundary (M := M₁) (R := R) e) := by
           simpa using hSmul.symm
     _ = push0 (R := R) f (r • edgeBoundary (M := M₁) (R := R) e) := by
-          simp [LinearMap.map_smul]
+          simp
     _ = push0 (R := R) f (boundary1 (M := M₁) (R := R) (Finsupp.single e r)) := by
           simp [boundary1_single]
 

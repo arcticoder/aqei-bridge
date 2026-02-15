@@ -32,7 +32,7 @@ abbrev Metric (M : Spacetime) : Type := M.Pt → M.Pt → ℝ
 **NOTE:** This is deliberately abstract. In later stages it can be refined to a
 concrete reachability relation on a discrete spacetime model.
 -/
-abbrev CausalFuture (M : Spacetime) (g : Metric M) (p q : M.Pt) : Prop := True
+abbrev CausalFuture (M : Spacetime) (_g : Metric M) (_p _q : M.Pt) : Prop := True
 
 /-!
 ## Causal-structure interface (abstract)

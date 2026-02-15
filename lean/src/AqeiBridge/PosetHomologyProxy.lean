@@ -185,7 +185,7 @@ theorem push1_comp {P Q S : AqeiBridge.CausalPoset} (f : P.Pt → Q.Pt) (g : Q.P
   · simp [LinearMap.comp_apply]
   · intro e r x he hr0 hx
     -- Unfold `mapEdge`/`EdgeHom.comp` so the edge targets become definitional.
-    simp [LinearMap.comp_apply, push1_single, hx, mapEdge, EdgeHom.comp, Function.comp]
+    simp [LinearMap.comp_apply, push1_single, hx, mapEdge, Function.comp]
 
 @[simp]
 theorem boundary1_single (P : AqeiBridge.CausalPoset) [DecidableEq P.Pt] (e : Edge P) (r : R) :
@@ -288,8 +288,7 @@ theorem push1_left_inv {P Q : AqeiBridge.CausalPoset} (f : P.Pt ≃ Q.Pt)
   · simp
   · intro e r x he hr0 hx
     -- Pushforward respects addition, and on generators reduces via `mapEdge_left_inv`.
-    simp [hx, push1_single, mapEdge_left_inv (e := e) (f := f) (hf := hf) (hg := hg),
-      he, add_assoc, add_left_comm, add_comm]
+    simp [hx, push1_single, mapEdge_left_inv (e := e) (f := f) (hf := hf) (hg := hg)]
 
 theorem push1_right_inv {P Q : AqeiBridge.CausalPoset} (f : P.Pt ≃ Q.Pt)
     (hf : EdgeHom P Q f) (hg : EdgeHom Q P f.symm) (x : Edge Q →₀ R) :
@@ -299,8 +298,7 @@ theorem push1_right_inv {P Q : AqeiBridge.CausalPoset} (f : P.Pt ≃ Q.Pt)
   refine Finsupp.induction x ?_ ?_
   · simp
   · intro e r x he hr0 hx
-    simp [hx, push1_single, mapEdge_right_inv (e := e) (f := f) (hf := hf) (hg := hg),
-      he, add_assoc, add_left_comm, add_comm]
+    simp [hx, push1_single, mapEdge_right_inv (e := e) (f := f) (hf := hf) (hg := hg)]
 
 /-- `Z₁` is invariant under strict-edge isomorphisms. -/
 noncomputable def pushZ1Equiv (P Q : AqeiBridge.CausalPoset) [DecidableEq P.Pt] [DecidableEq Q.Pt]

@@ -25,7 +25,7 @@ variable {n : ℕ}
 
 In the current toy phase this is left abstract to keep later models pluggable.
 -/
-noncomputable def linearized_solution {M : Spacetime} (T : StressEnergy n) : MetricPerturbation M :=
+noncomputable def linearized_solution {M : Spacetime} (_T : StressEnergy n) : MetricPerturbation M :=
   ⟨fun _ _ => 0⟩
 
 /-- A toy notion of causal gain: `q` becomes causally reachable from `p` after
@@ -72,7 +72,7 @@ tracked as backlog work.
 In later phases this can be instantiated by a norm bound or membership in a
 metric ball.
 -/
-abbrev Small (T : StressEnergy n) : Prop := True
+abbrev Small (_T : StressEnergy n) : Prop := True
 
 /-- A path-connectedness skeleton for the admissible coefficient region.
 
