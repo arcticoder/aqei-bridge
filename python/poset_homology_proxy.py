@@ -33,6 +33,7 @@ All outputs are deterministic.
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import random
 import sys
@@ -579,6 +580,7 @@ def cmd_scan_minkowski_perturb(args: argparse.Namespace) -> int:
     seed = int(args.seed)
 
     points: list[dict[str, Any]] = []
+    csv_rows: list[dict[str, Any]] = []
     idx = 0
     for epsilon in epsilons:
         for cutoff in cutoffs:
@@ -597,6 +599,18 @@ def cmd_scan_minkowski_perturb(args: argparse.Namespace) -> int:
                     {
                         "params": payload["params"],
                         "summary": payload["summary"],
+                    }
+                )
+                csv_rows.append(
+                    {
+                        "epsilon": float(epsilon),
+                        "cutoff": float(cutoff),
+                        "window": int(window),
+                        "trials": int(trials),
+                        "seed": int(point_seed),
+                        "fractionUnchanged": float(payload["summary"]["fractionUnchanged"]),
+                        "meanAbsDeltaZ1": float(payload["summary"]["meanAbsDeltaZ1"]),
+                        "maxAbsDeltaZ1": int(payload["summary"]["maxAbsDeltaZ1"]),
                     }
                 )
                 idx += 1
@@ -619,6 +633,27 @@ def cmd_scan_minkowski_perturb(args: argparse.Namespace) -> int:
         _write_json(Path(args.out), out_payload)
         if not args.json:
             print(f"Wrote: {args.out}")
+
+    if args.csv_out:
+        csv_path = Path(args.csv_out)
+        csv_path.parent.mkdir(parents=True, exist_ok=True)
+        fieldnames = [
+            "epsilon",
+            "cutoff",
+            "window",
+            "trials",
+            "seed",
+            "fractionUnchanged",
+            "meanAbsDeltaZ1",
+            "maxAbsDeltaZ1",
+        ]
+        with csv_path.open("w", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=fieldnames)
+            w.writeheader()
+            for row in csv_rows:
+                w.writerow(row)
+        if not args.json:
+            print(f"Wrote: {csv_path}")
 
     if args.json or not args.out:
         print(json.dumps(out_payload, sort_keys=True))
@@ -701,6 +736,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_scan.add_argument("--windows", default="9", help="Comma-separated smoothing-window values")
     p_scan.add_argument("--seed", type=int, default=0, help="Master PRNG seed")
     p_scan.add_argument("--out", default="", help="Write output JSON to this path")
+    p_scan.add_argument("--csv-out", default="", help="Optional CSV output path for plotting")
     p_scan.add_argument("--json", action="store_true", help="Emit machine-readable JSON to stdout")
     p_scan.set_defaults(func=cmd_scan_minkowski_perturb)
 

@@ -164,6 +164,52 @@ for pt in obj['points']:
     assert int(summ['maxAbsDeltaZ1']) >= 0
 PY
 
+python - <<'PY'
+import csv
+import subprocess
+import sys
+from pathlib import Path
+
+root = Path('.').resolve()
+tool = root / 'python' / 'poset_homology_proxy.py'
+
+tmp_dir = root / '.tmp_test'
+tmp_dir.mkdir(parents=True, exist_ok=True)
+csv_out = tmp_dir / 'scan.csv'
+if csv_out.exists():
+    csv_out.unlink()
+
+subprocess.check_call(
+  [
+    sys.executable,
+    str(tool),
+    'scan-minkowski-perturb',
+    '--tmax', '2',
+    '--xmax', '2',
+    '--trials', '2',
+    '--epsilons', '0.0,0.2',
+    '--cutoffs', '0.0',
+    '--windows', '5',
+    '--seed', '0',
+    '--csv-out', str(csv_out),
+  ]
+)
+
+assert csv_out.exists()
+rows = list(csv.DictReader(csv_out.read_text().splitlines()))
+assert len(rows) == 2
+assert set(rows[0].keys()) == {
+    'epsilon',
+    'cutoff',
+    'window',
+    'trials',
+    'seed',
+    'fractionUnchanged',
+    'meanAbsDeltaZ1',
+    'maxAbsDeltaZ1',
+}
+PY
+
 python "$ROOT_DIR/python/poset_homology_proxy.py" \
   sweep-minkowski \
   --tmaxs 1,2 \
