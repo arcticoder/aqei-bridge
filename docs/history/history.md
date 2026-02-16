@@ -572,4 +572,51 @@ Tasks 1-2 from the immediate checklist are complete. Remaining high-priority tas
 - Implement MATLAB scripts (`LorentzianFlow.m`, `SymbolicRicci2D.m`)
 - Build COMSOL acoustic horizon model
 <!-- ------ -->
----
+------
+
+**2026-02-16: Publication track reorganization & comprehensive documentation**
+
+**Publication Strategy Shift**
+- Separated single manuscript into dual publication tracks:
+  - **Track 1 (Formal Methods):** `papers/aqei-lean-formalization.tex`
+    - Target venue: Theorem proving conference (CPP, ITP)
+    - Focus: Lean 4 formalization, AQEI cone convexity proofs, discrete causal stability theorems, Alexandrov topology bridge
+    - Status: Draft with 300 sorries remaining; 15 theorems proven, 8 conjectures formalized
+  - **Track 2 (Computational Physics):** `papers/aqei-numerical-validation.tex`
+    - Target venue: Computational physics journal (CPC, JCP)
+    - Focus: Hybrid symbolic-numeric pipeline, FFT perturbation testing, multi-ray overlap analysis, MATLAB/COMSOL integration
+    - Status: Draft with core Python pipeline complete, MATLAB/COMSOL skeleton code documented
+
+- Moved `docs/manuscript.md` → `papers/aqei-bridge-hybrid-workflow.md`
+  - Living draft overview for both publication tracks
+  - Markdown format for easy iteration
+
+**Documentation Overhaul**
+- Updated `README.md`:
+  - Added comprehensive code inventory (20+ Lean modules, 12 Python scripts, Mathematica pipeline)
+  - Detailed repo layout with per-file descriptions
+  - Code statistics: ~2500 lines Lean, ~3000 lines Python, ~800 lines Mathematica
+  - Publication track descriptions with target venues and current status
+  - Updated recent progress section with 2026-02-16 milestone
+
+- Created `docs/code-overview.md` (complete newcomer guide):
+  - Guided tour of all Lean modules: purpose, key types/theorems, status, dependencies
+  - Python pipeline architecture: subcommands, algorithms, output formats
+  - Mathematica search workflow walkthrough
+  - Test infrastructure documentation (3267 jobs)
+  - Contributing workflow for new developers
+  - Further reading section with references
+
+**Strategic Intent**
+- Transition from home lab prototyping to publication-ready work
+- Dual-track approach enables:
+  - Formal verification community engagement (rigorous proofs)
+  - Computational physics community engagement (numerical evidence)
+- Tracks synergize: computational results guide proof attempts; formal statements ensure computational correctness
+
+**Validation**
+- All tests remain green (3267 jobs)
+- Working tree clean, changes committed and pushed
+
+**Commit:** `2ab62a1` — "Reorganize for dual publication tracks: formal verification + numerical validation"
+<!-- ------ -->
