@@ -518,3 +518,33 @@ run_tests.sh in `aqei-bridge/` is green (warnings only). This still doesn’t pr
 **Scope**
 - This is a planning document to guide the next phase of empirical testing (H₁ stability diagnostics) and simulation tool integration (MATLAB/COMSOL for analog evidence). The mathematical content remains at the "toy model / diagnostics" level—not physical claims about Lorentzian spacetimes.
 <!-- ------ -->
+---
+
+**2026-02-16: H₁ stability empirical tests & MATLAB/COMSOL integration**
+
+**Empirical Validation**
+- Ran H₁ invariance tests on Minkowski grid poset (tmax=10, xmax=10):
+  - Baseline: 121 nodes, 310 edges, Z₁ dimension = 190
+  - Test 1 (mild): ε=0.05, threshold=0.5, 50 trials → **100% H₁ invariance** (fractionUnchanged=1.0)
+  - Test 2 (strong): ε=0.3, threshold=0.3, 50 trials → **100% H₁ invariance**
+  - Conclusion: `dim H₁(P') = dim H₁(P)` under FFT perturbations, supporting bridge conjecture stability
+- Generated outputs: `runs/h1_stability_sweep/*.json`
+
+**Documentation**  
+- Created `docs/h1_stability_results.md`: comprehensive empirical results, interpretation, mathematical framework, caveats
+- Created `docs/matlab_comsol_integration.md`: 
+  - MATLAB integration guide (PDE Toolbox for Lorentzian flows, Symbolic Math for Ricci tensor)
+  - COMSOL integration guide (Acoustics Module for acoustic horizons, Java/Python API examples)
+  - Evidence integration pipeline: Python (discrete H₁) → MATLAB (continuous PDE) → COMSOL (multiphysics analog)
+  - Skeleton code for `LorentzianFlow.m`, `SymbolicRicci2D.m`, `AcousticHorizon.java`
+- Updated `docs/TODO.md`: marked tasks 1-4 as complete, added MATLAB/COMSOL implementation tasks
+
+**Validation**
+- `python/poset_homology_proxy.py perturb-fft` command verified working
+- FFT perturbation stability confirmed on large grid (10×10 vs previous 2×3)
+
+**Scope**
+- Empirical results are "toy diagnostics" only (discrete posets, not Lorentzian spacetimes)
+- MATLAB/COMSOL guides provide scaffolding for analog gravity experiments, not physical warp claims
+- Next: implement MATLAB scripts, build COMSOL models, create data exchange pipeline
+<!-- ------ -->

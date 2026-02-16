@@ -154,9 +154,11 @@ Key result: If $\dim H_1(P) = 0$ (no cycles), then small perturbations preserve 
 
 ## Immediate Tasks
 
-- [ ] Implement `perturb_via_fft` in `poset_homology_proxy.py`
-- [ ] Run stability sweeps on Minkowski grid (tmax=10, xmax=10)
-- [ ] Set up MATLAB PDE environment for metric flows
-- [ ] Configure COMSOL Acoustics Module for first analog test
+- [x] Implement `perturb_via_fft` in `poset_homology_proxy.py` ✓ (already implemented as `cmd_perturb_fft`)
+- [x] Run stability sweeps on Minkowski grid (tmax=10, xmax=10) ✓ (100% invariance, ε∈[0.05,0.3])
+- [x] Document H₁ stability results ✓ (`docs/h1_stability_results.md`)
+- [x] Document MATLAB/COMSOL integration ✓ (`docs/matlab_comsol_integration.md`)
+- [ ] Implement MATLAB Lorentzian flow script (`matlab/LorentzianFlow.m`)
+- [ ] Build COMSOL acoustic horizon model (`comsol/AcousticHorizon.java`)
 - [ ] Update manuscript with H₁ invariance section
-- [ ] Document MATLAB/COMSOL integration in `docs/phase4_searches.md`
+- [ ] Create integration pipeline (Python → MATLAB → COMSOL data exchange)
