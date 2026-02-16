@@ -499,4 +499,22 @@ Implemented the next “invariance layer” on top of the poset homology proxy.
 
 run_tests.sh in `aqei-bridge/` is green (warnings only). This still doesn’t prove the global conjecture—this is infrastructure to let the proxy behave like an actual invariant under (edge-)isomorphisms.
 <!-- ------ -->
----
+------
+
+**2026-02-15: TODO.md comprehensive update**
+
+**Documentation**
+- Updated `docs/TODO.md` with detailed next-steps plan:
+  - Four high-priority tasks: H₁ invariance under FFT perturbations, discrete poset sweeps, generalization to continuous topology, manuscript expansion
+  - Tool migration guidance: MATLAB for PDE flows/reachability, COMSOL for analog gravity multiphysics
+  - Code examples in Python (FFT perturbation), Mathematica (poset viz), Lean (invariance lemmas), MATLAB (Lorentzian flow), COMSOL (acoustic horizon analog)
+  - Mathematical framework: H₁ isomorphism preservation under small perturbations
+  - Recommended COMSOL modules (Acoustics, CFD, AC/DC, Optimization, Particle Tracing) and MATLAB toolboxes (all installed: PDE, Symbolic, Optimization, Global Optimization, Control, Robust Control)
+  - Immediate tasks checklist for implementation
+
+**Validation**
+- No code changes; documentation only
+
+**Scope**
+- This is a planning document to guide the next phase of empirical testing (H₁ stability diagnostics) and simulation tool integration (MATLAB/COMSOL for analog evidence). The mathematical content remains at the "toy model / diagnostics" level—not physical claims about Lorentzian spacetimes.
+<!-- ------ -->
