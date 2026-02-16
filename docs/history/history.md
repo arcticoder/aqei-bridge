@@ -548,3 +548,28 @@ run_tests.sh in `aqei-bridge/` is green (warnings only). This still doesn’t pr
 - MATLAB/COMSOL guides provide scaffolding for analog gravity experiments, not physical warp claims
 - Next: implement MATLAB scripts, build COMSOL models, create data exchange pipeline
 <!-- ------ -->
+---
+## Summary of Completed Work
+
+### ✅ Empirical H₁ Stability Validation
+Tested H₁ invariance under FFT-based perturbations on a Minkowski 10×10 grid:
+- **Baseline**: 121 nodes, 310 edges, dim Z₁ = 190
+- **Test 1** (mild perturbation, ε=0.05): 50 trials → **100% invariance**
+- **Test 2** (strong perturbation, ε=0.3): 50 trials → **100% invariance**
+
+### 📄 Documentation Created
+1. **h1_stability_results.md**: Comprehensive empirical test results with mathematical framework and caveats
+2. **matlab_comsol_integration.md**: Integration guide with MATLAB/COMSOL setup verification, skeleton scripts, and API examples
+
+### ✅ Validation
+- All 3267 test jobs passed
+- Working tree clean, branch synchronized with remote
+
+### 📋 TODO.md Status
+Tasks 1-2 from the immediate checklist are complete. Remaining high-priority tasks:
+- **Task 3**: Generalize to continuous via Mathlib topology formalization
+- **Task 4**: Expand manuscript with H₁ empirical evidence section
+- Implement MATLAB scripts (`LorentzianFlow.m`, `SymbolicRicci2D.m`)
+- Build COMSOL acoustic horizon model
+<!-- ------ -->
+---
