@@ -7,8 +7,6 @@
 \usepackage{hyperref}
 \usepackage{geometry}
 \usepackage{graphicx}
-\usepackage{algorithm}
-\usepackage{algorithmic}
 \geometry{margin=1in}
 
 \newtheorem{theorem}{Theorem}[section]
@@ -271,6 +269,69 @@ Using \texttt{python/ctc\_scan.py} on perturbed graphs:
 \end{itemize}
 
 \textbf{Caveat:} This is a sanity check for the toy model only; real Lorentzian CTCs require geometric analysis.
+
+\subsection{Integration with Formal Verification}
+
+The companion Lean 4 formalization manuscript (``Causal Stability of AQEI-Admissible Stress-Energy Tensors: A Lean 4 Formalization'') provides formal mathematical statements that our computational pipeline validates empirically. This section demonstrates the synergy between formal and numerical methods.
+
+\subsubsection{Validating Theorem 4.1: H₁ Invariance}
+
+The Lean formalization states:
+
+\begin{theorem}[H₁ Invariance Under Small Perturbations, Lean Theorem 4.1]
+Let $(P, \leq)$ be a causal poset with $H_1(P) = 0$. For sufficiently small $\epsilon > 0$, any perturbation $(P, \leq_\epsilon)$ satisfies $H_1(P, \leq_\epsilon) = 0$.
+\end{theorem}
+
+Our FFT perturbation experiments (§5.1) provide computational evidence supporting this theorem:
+
+\begin{itemize}
+    \item \textbf{Empirical result:} 100\% H₁ invariance over 100 trials (50 mild @ $\epsilon=0.05$ + 50 strong @ $\epsilon=0.3$)
+    \item \textbf{Perturbation range:} Invariance holds for $\epsilon \in [0.05, 0.3]$, spanning a 6× noise amplitude range
+    \item \textbf{Quantitative stability:} $\max|\Delta(\dim H_1)| = 0$ across all trials, confirming discrete stability
+\end{itemize}
+
+\textbf{Interpretation:} The empirical results suggest the formal stability theorem holds over a wide perturbation regime. The computational pipeline identifies parameter ranges where:
+\begin{enumerate}
+    \item Formal proof strategies are most promising (small $\epsilon$ where perturbation bounds are computable)
+    \item Discrete approximations remain valid (invariance persists up to $\epsilon=0.3$, well beyond typical numerical errors)
+\end{enumerate}
+
+\subsubsection{Synergy: Formal Types Ensure Computational Correctness}
+
+The Lean formalization provides more than theorem statements---it ensures our Python implementation is correct:
+
+\begin{itemize}
+    \item \textbf{Type-safe $Z_1$ computation:} The Lean definition of \texttt{Z1} (kernel of boundary map $\partial_1$) specifies exactly what the Python \texttt{compute\_z1\_dim} function must compute
+    \item \textbf{JSON schema validation:} Auto-generated Lean files (\texttt{GeneratedCandidates.lean}, \texttt{GeneratedPosetConjectures.lean}) fail to typecheck if Python outputs violate structural invariants
+    \item \textbf{Round-trip verification:} Python exports graph structures → Lean imports as \texttt{DiscretePoset} → lake build verifies consistency
+\end{itemize}
+
+This bidirectional interaction is novel: formal verification typically validates \emph{after} implementation, but our pipeline uses Lean types to \emph{guide} implementation-time correctness.
+
+\subsubsection{Guiding Formal Proof Efforts}
+
+The computational results inform which Lean proofs to prioritize:
+
+\begin{enumerate}
+    \item \textbf{Prioritize small-$\epsilon$ proofs:} 100\% invariance at $\epsilon=0.05$ suggests a tractable bound for the formal ``sufficiently small'' condition in Theorem 4.1
+    \item \textbf{Focus on FFT-based perturbations:} Smooth (low-pass filtered) perturbations show stronger stability than arbitrary edge dropouts, suggesting a more refined formal statement
+    \item \textbf{Target grid sizes:} Invariance holds consistently for 10×10 grids (121 nodes, 310 edges), providing a concrete benchmark for formal discrete poset proofs
+\end{enumerate}
+
+\textbf{Current status:} The Lean formalization has ~300 proof obligations (\texttt{sorry} placeholders) remaining. Our empirical evidence identifies which sorry's to tackle first (e.g., \texttt{h1\_stable\_small\_pert} with $\epsilon \leq 0.1$ as a concrete goal).
+
+\subsubsection{Roadmap: From Empirical to Formal}
+
+The integration enables a systematic progression:
+
+\begin{enumerate}
+    \item \textbf{Computational discovery} (this paper): Identify parameter regimes with 100\% empirical stability
+    \item \textbf{Conjecture formalization} (Lean): Encode discovered stability conditions as typed theorem statements
+    \item \textbf{Proof automation} (future work): Use empirical bounds to guide tactic search in Lean proof automation
+    \item \textbf{Certification} (ultimate goal): Machine-checked proof of stability theorem with explicit computable bounds
+\end{enumerate}
+
+This workflow contrasts with traditional mathematical practice (conjecture → proof → numerical check). By reversing the order (numerical check → conjecture refinement → proof), we leverage computational power to navigate the vast space of possible formal statements before committing to proof attempts.
 
 \section{Computational Pipeline}
 

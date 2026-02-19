@@ -19,3 +19,13 @@ lean/src/AqeiBridge/GeneratedPosetConjectures.lean
 
 # Misc
 results/
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.bbl
+*.blg
+

@@ -178,3 +178,40 @@
 - Added `lean/src/AqeiBridge/DiscreteHomologyProxy.lean`: defined an incidence boundary `boundary1 : C₁ → C₀` and the 1-cycle space `Z1 := ker boundary1`, plus functoriality under `EdgeHom`.
 - Added `lean/src/AqeiBridge/GlobalConjectures.lean`: compilation-safe placeholder for a global “chronology + invariant preservation” statement.
 - Updated `docs/manuscript.md` and refined `docs/TODO-BLOCKED.md` to reflect the new unblock path.
+
+## 2026-02-18
+- **Publication track manuscript enhancements:**
+  - Added "Real-World Applications and Broader Impact" section to `papers/aqei-lean-formalization.tex`
+    - Numerical relativity verification (LIGO/VIRGO): H₁ invariance theorem for simulation stability
+    - High-precision time synchronization (Deep Space Navigation): Alexandrov topology for certified clock protocols
+    - Quantum communication network verification: AQEI cone convexity for causal tampering prevention
+  - Added "Integration with Formal Verification" subsection to `papers/aqei-numerical-validation.tex`
+    - Documented empirical validation of Lean Theorem 4.1 (100% H₁ invariance over 100 trials)
+    - Explained synergy: Lean types ensure Python correctness; empirical results guide proof prioritization
+    - Outlined roadmap: computational discovery → conjecture formalization → proof automation → certification
+  - Fixed LaTeX compilation issues (removed unused algorithm package)
+  - Both manuscripts compile successfully:
+    - `aqei-lean-formalization.pdf`: 10 pages
+    - `aqei-numerical-validation.pdf`: 12 pages
+- **Documentation:**
+  - Updated `docs/TODO.md` with Gemini 3 Pro expert analysis of incremental real-world applications
+  - Reorganized TODO priorities: manuscript enhancement critical, MATLAB/COMSOL implementation medium priority
+
+## 2026-02-18
+- **Publication track manuscript enhancements:**
+  - Added "Real-World Applications and Broader Impact" section to papers/aqei-lean-formalization.tex
+    - Numerical relativity verification (LIGO/VIRGO): H₁ invariance theorem for simulation stability
+    - High-precision time synchronization (Deep Space Navigation): Alexandrov topology for certified clock protocols
+    - Quantum communication network verification: AQEI cone convexity for causal tampering prevention
+  - Added "Integration with Formal Verification" subsection to papers/aqei-numerical-validation.tex
+    - Documented empirical validation of Lean Theorem 4.1 (100% H₁ invariance over 100 trials)
+    - Explained synergy: Lean types ensure Python correctness; empirical results guide proof prioritization
+    - Outlined roadmap: computational discovery → conjecture formalization → proof automation → certification
+  - Fixed LaTeX compilation issues (removed unused algorithm package)
+  - Both manuscripts compile successfully:
+    - aqei-lean-formalization.pdf: 10 pages
+    - aqei-numerical-validation.pdf: 12 pages
+- **Documentation:**
+  - Updated docs/TODO.md with Gemini 3 Pro expert analysis of incremental real-world applications
+  - Reorganized TODO priorities: manuscript enhancement critical, MATLAB/COMSOL implementation medium priority
+
