@@ -6,11 +6,11 @@ This repository supports **two parallel publication tracks**:
 2. **Numerical validation** (computational methods): `papers/aqei-numerical-validation.tex`
 
 See `papers/aqei-bridge-hybrid-workflow.md` for the living draft overview.
-This repository is intentionally **independent** from the (still-in-review) CQG manuscript. When referencing prior work, prefer citing the unpublished manuscript rather than re-deriving or duplicating it:
+This repository is intentionally **independent** from the (submitted to PRD) companion manuscript. When referencing prior work, prefer citing the submitted manuscript rather than re-deriving or duplicating it:
 
 - Related repo (reference only): https://github.com/DawsonInstitute/energy-tensor-cone
 - Local directory: `~/Code/asciimath/energy-tensor-cone`
-- Unpublished manuscript (CQG review): `~/Code/asciimath/energy-tensor-cone/papers/aqei-cone-formalization-cqg.tex`
+- Submitted manuscript (Physical Review D, February 2026): `~/Code/asciimath/energy-tensor-cone/papers/aqei-cone-formalization-prd.tex`
 
 ## What is formal vs heuristic
 
