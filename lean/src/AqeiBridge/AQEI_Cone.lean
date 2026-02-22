@@ -98,8 +98,7 @@ theorem AQEI_cone_isClosed {n : ℕ} (F : List (AQEIFunctional n)) :
   induction F with
   | nil =>
     -- empty list ⟹ whole space, which is closed
-    simp only [AQEI_cone, List.not_mem_nil, IsEmpty.forall_iff, setOf_true]
-    exact isClosed_univ
+    simpa [AQEI_cone] using (isClosed_univ : IsClosed (Set.univ : Set (StressEnergy n)))
   | cons f fs ih =>
     -- split head constraint off
     have h : AQEI_cone (f :: fs) = {T : StressEnergy n | f.L T ≥ -f.B} ∩ AQEI_cone fs := by

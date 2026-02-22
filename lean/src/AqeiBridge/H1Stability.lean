@@ -83,14 +83,16 @@ theorem push1_apply_mapEdge {f : Pt → Pt} (hf : EdgeHom M₁ M₂ f)
   refine Finsupp.induction x ?_ ?_
   · simp
   · intro e' r y _ _ ihy
-    -- Key: mapEdge injectivity means the condition `mapEdge e' = mapEdge e` ↔ `e' = e`
-    have hmapedge_eq :
-        (mapEdge (M₁ := M₁) (M₂ := M₂) f hf e' =
-          mapEdge (M₁ := M₁) (M₂ := M₂) f hf e) = (e' = e) :=
-      propext (mapEdge_injective hf hfinj).eq_iff
-    -- Expand push1 and simplify using the rewrite
-    simp only [map_add, push1_single, Finsupp.add_apply, Finsupp.single_apply,
-      hmapedge_eq, ihy]
+    classical
+    by_cases h : e' = e
+    · subst h
+      simp [map_add, push1_single, ihy]
+    · have hne :
+          mapEdge (M₁ := M₁) (M₂ := M₂) f hf e' ≠
+            mapEdge (M₁ := M₁) (M₂ := M₂) f hf e := by
+        intro hme
+        exact h ((mapEdge_injective hf hfinj) hme)
+      simp [map_add, push1_single, Finsupp.add_apply, Finsupp.single_apply, h, hne, ihy]
 
 /-!
 ## Injectivity of `push1`

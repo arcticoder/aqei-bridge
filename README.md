@@ -31,7 +31,7 @@ The `energy-tensor-cone` PRD submission provides the convexity foundation (`AQEI
   - `AQEI_cone` as an intersection of halfspaces — **convexity proven**
   - Discrete causal posets (directed graphs), Alexandrov topology
   - Chain complex boundary map, `∂∂=0` — **proven**
-  - H₁ proxy invariant — **functoriality partially proven**
+  - H₁ proxy invariant — **functoriality + invariance proven** (see `PosetHomologyProxy.lean` and `H1Stability.lean`)
   - Typed conjecture statements for causal stability (proofs in progress)
 
 - **Heuristic / numerical (see `aqei-numerical-validation`):**
@@ -139,7 +139,7 @@ python python/analyze_candidates.py --input /path/to/aqei-numerical-validation/m
 | `boundary_boundary_zero` | `DiscreteHomologyProxy.lean` | ✓ proven |
 | `H1IsoZ1`, `H1IsoOfEdgeIso` | `PosetHomologyProxy.lean` | ✓ proven |
 | `aqei_bridge_conjecture_discrete` | `CausalStability.lean` | axiom (proof target) |
-| `admissible_region_pathConnected` | `CausalStability.lean` | axiom (proof target) |
+| `admissible_region_pathConnected` | `CausalStability.lean` | ✓ proven (requires nonempty AQEI cone) |
 
 ## Foundation
 

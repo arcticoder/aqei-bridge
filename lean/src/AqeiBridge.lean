@@ -3,6 +3,8 @@ import AqeiBridge.CausalPoset
 import AqeiBridge.CausalIntervals
 import AqeiBridge.CausalContinuity
 import AqeiBridge.SpacetimeCausalPoset
+import AqeiBridge.AlexandrovPresheaf
+import AqeiBridge.DiscreteHausdorff
 import AqeiBridge.StressEnergy
 import AqeiBridge.AQEI_Cone
 import AqeiBridge.Chambers

@@ -790,5 +790,19 @@ Here's a summary of everything done in this session:
 - TODO.md: marked `h1_stable_small_pert` ✅ PROVEN
 
 The remaining open work from TODO-BLOCKED.md is: `aqei_bridge_conjecture_discrete` (still needs a concrete metric perturbation → edge delta translation), full sheaf cohomology (blocked on Mathlib infrastructure), and realistic backgrounds (blocked on solver choice).
+
+<!-- ------ -->
+---
+**2026-02-22: Unblock scaffolding for TODO-BLOCKED items (Lean-only)**
+
+**What changed**
+- Added `lean/src/AqeiBridge/AlexandrovPresheaf.lean`: minimal presheaf interface on Alexandrov opens (`OpenInAlexandrov`, `PresheafOnPoset`) with placeholder sheaf-condition slots.
+- Added `lean/src/AqeiBridge/DiscreteHausdorff.lean`: finite-set Hausdorff-style distance `discreteHausdorff` on `Finset`, parameterized by an arbitrary distance function.
+- Wired both modules into `lean/src/AqeiBridge.lean` so they are built by CI.
+- Updated `docs/TODO-BLOCKED.md` with concrete next-step paths and clarified which blocked items belong in `aqei-numerical-validation` vs this Lean repo.
+- Fixed README status drift for `admissible_region_pathConnected` and the H₁ proxy invariance notes.
+
+**Validation**
+- `./run_tests.sh` should remain green (Lean build + typecheck only).
 <!-- ------ -->
 ---
