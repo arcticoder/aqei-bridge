@@ -1,32 +1,43 @@
 # aqei-bridge
 
-A *bridge* repo: human conjecture → Lean language (toy formalization) → Mathematica heuristic “destruction” search → Lean lemma skeleton emission, orchestrated by Python.
-This repository supports **two parallel publication tracks**:
-1. **Formal verification** (Lean 4 formalization): `papers/aqei-lean-formalization.tex`
-2. **Numerical validation** (computational methods): `papers/aqei-numerical-validation.tex`
+Lean 4 formalization of AQEI causal stability: the *bridge* from stress-energy cone geometry to causal poset invariants.  
+This repository contains the formal proofs, conjecture statements, and the Lean–Mathematica pipeline that drives the **formal verification track** of the bridge conjecture.
 
-See `papers/aqei-bridge-hybrid-workflow.md` for the living draft overview.
-This repository is intentionally **independent** from the (submitted to PRD) companion manuscript. When referencing prior work, prefer citing the submitted manuscript rather than re-deriving or duplicating it:
+For the companion computational/numerical validation work, see [`aqei-numerical-validation`](https://github.com/arcticoder/aqei-numerical-validation).
 
-- Related repo (reference only): https://github.com/DawsonInstitute/energy-tensor-cone
+## Relationship to companion repos
+
+| Repo | Role |
+|------|------|
+| **this repo** | Lean 4 formal proofs, bridge conjecture, causal poset invariants |
+| [`aqei-numerical-validation`](https://github.com/arcticoder/aqei-numerical-validation) | Discrete simulation, H₁ stability testing, Mathematica AQEI search, numerical manuscript |
+| [`energy-tensor-cone`](https://github.com/arcticoder/energy-tensor-cone) | AQEI cone convexity proofs, extreme ray verification (submitted to Physical Review D, February 2026) |
+
+The `energy-tensor-cone` PRD submission provides the convexity foundation (`AQEI_cone_convex`, `Candidate_Is_Extreme_Point`) that this repo builds on for causal stability. This repo is intentionally **independent** from it.
+
 - Local directory: `~/Code/asciimath/energy-tensor-cone`
-- Submitted manuscript (Physical Review D, February 2026): `~/Code/asciimath/energy-tensor-cone/papers/aqei-cone-formalization-prd.tex`
+- Submitted manuscript: `~/Code/asciimath/energy-tensor-cone/papers/aqei-cone-formalization-prd.tex`
 
-## What is formal vs heuristic
+## Research goal
+
+**Bridge conjecture:** Causal futures J^+(p) remain topologically stable (same H₁ invariant) under AQEI-admissible stress-energy perturbations.
+
+**Global causality conjecture (longer term):** Chronology (absence of CTCs) is a topological invariant of causal posets — preserved under all AQEI-admissible perturbations.
+
+## What is formalizable vs heuristic
 
 - **Formalizable now (Lean):**
-  - finite-dimensional `StressEnergy n := Fin n → ℝ`
-  - linear AQEI-like functionals `StressEnergy n →ₗ[ℝ] ℝ` with bounds
-  - `AQEI_cone` as an intersection of halfspaces
-  - convexity theorem for `AQEI_cone`
-  - typed conjecture *statements* (placeholders) about causal stability
+  - `StressEnergy n := Fin n → ℝ`, linear AQEI-like functionals
+  - `AQEI_cone` as an intersection of halfspaces — **convexity proven**
+  - Discrete causal posets (directed graphs), Alexandrov topology
+  - Chain complex boundary map, `∂∂=0` — **proven**
+  - H₁ proxy invariant — **functoriality partially proven**
+  - Typed conjecture statements for causal stability (proofs in progress)
 
-- **Heuristic / experimental (Mathematica + pipeline):**
-  - the PDE → observable reduction
-  - any identification of Δ>0 with “cone advance”
-  - the synthetic AQEI constraints used in the current toy search
-
-Treat everything in `mathematica/` as **experimental**. Positive results are only *candidates* to refine and then formalize.
+- **Heuristic / numerical (see `aqei-numerical-validation`):**
+  - FFT perturbation testing of H₁ stability (100% invariance over 100 trials)
+  - Mathematica symbolic AQEI constraint search
+  - Multi-ray Jaccard overlap proxy
 
 ## Repo layout
 
@@ -38,8 +49,8 @@ aqei-bridge/
 │   └── src/AqeiBridge/
 │       ├── Spacetime.lean                    # Lorentzian manifold definitions
 │       ├── StressEnergy.lean                 # Finite-dimensional stress-energy
-│       ├── AQEI_Cone.lean                    # AQEI cone as convex polyhedron
-│       ├── CausalPoset.lean                  # Abstract causal preorder structure
+│       ├── AQEI_Cone.lean                    # AQEI cone as convex polyhedron ✓
+│       ├── CausalPoset.lean                  # Abstract causal preorder, Alexandrov topology ✓
 │       ├── SpacetimeCausalPoset.lean         # Bridge: spacetime → poset
 │       ├── CausalStability.lean              # Stability theorem statements
 │       ├── CausalContinuity.lean             # Continuity of J⁺ under perturbations
@@ -47,193 +58,96 @@ aqei-bridge/
 │       ├── DiscreteCausalPoset.lean          # Directed graph causal models
 │       ├── DiscreteCausality.lean            # Discrete reachability and J⁺
 │       ├── DiscreteChronology.lean           # CTC detection in graphs
-│       ├── DiscreteHomologyProxy.lean        # Chain complex and H₁ proxy
-│       ├── PosetHomologyProxy.lean           # Functorial homology maps
+│       ├── DiscreteHomologyProxy.lean        # Chain complex and H₁ proxy ✓
+│       ├── PosetHomologyProxy.lean           # Functorial homology maps (partial)
 │       ├── Chambers.lean                     # Parameter space chambers
 │       ├── ChamberIndexedModel.lean          # Chamber-indexed causal structures
 │       ├── ChamberClosedChamberBridge.lean   # Discrete chamber stability
 │       ├── DiscreteChamberStability.lean     # Chamber-crossing analysis
 │       ├── Conjecture.lean                   # Main conjecture statements
 │       ├── GlobalConjectures.lean            # Global invariance statements
-│       ├── GeneratedCandidates.lean          # Auto-generated from Mathematica
+│       ├── GeneratedCandidates.lean          # Auto-generated from Mathematica search
 │       ├── GeneratedPosetConjectures.lean    # Auto-generated from Python sweeps
 │       └── Tactics/                          # Custom tactics
-├── mathematica/
-│   ├── search.nb                   # Notebook interface for AQEI search
-│   ├── search.wl                   # Batch script for symbolic optimization
-│   ├── visualize_results.wl        # Post-processing and plotting
-│   └── results/                    # Output JSON files
 ├── python/
-│   ├── orchestrator.py             # Main workflow driver (all stages)
-│   ├── analyze_candidates.py       # Parse Mathematica → Lean emission
-│   ├── minkowski_poset.py          # Generate discrete Minkowski grids
-│   ├── poset_homology_proxy.py     # H₁ computation and perturbation tests
-│   ├── poset_interval_tools.py     # Order interval utilities
-│   ├── causal_graph_tools.py       # Graph causality analysis
-│   ├── ctc_scan.py                 # Closed timelike curve detection
-│   ├── multi_ray_analysis.py       # Multi-ray Jaccard overlap proxy
-│   ├── sweep_parameters.py         # Parameter space sweeps
-│   └── sweep_analysis.py           # Aggregate sweep statistics
+│   ├── orchestrator.py             # Main workflow driver (stages I-IV)
+│   └── analyze_candidates.py       # Mathematica JSON → Lean skeleton emission
 ├── papers/
-│   ├── aqei-lean-formalization.tex      # Manuscript 1: Lean 4 proofs
-│   ├── aqei-numerical-validation.tex    # Manuscript 2: computational methods
-│   └── aqei-bridge-hybrid-workflow.md   # Living draft overview
+│   ├── aqei-lean-formalization.tex      # Manuscript: Lean 4 formal methods (CPP/ITP target)
+│   └── aqei-bridge-hybrid-workflow.md   # Living draft overview of bridge conjecture
 ├── docs/
-│   ├── TODO.md                     # High-priority immediate tasks
+│   ├── TODO.md                     # High-priority active tasks
 │   ├── TODO-backlog.md             # Lower-priority future work
-│   ├── TODO-BLOCKED.md             # Blocked/underspecified items
+│   ├── TODO-BLOCKED.md             # Blocked items
 │   ├── TODO-completed.md           # Completed task history
 │   ├── architecture.md             # System design overview
 │   ├── conjecture.md               # Mathematical conjecture statements
 │   ├── toy-model.md                # Discrete model description
-│   ├── phase4_searches.md          # Sweep workflow documentation
-│   ├── h1_stability_results.md     # Empirical H₁ stability test results
-│   ├── matlab_comsol_integration.md # MATLAB/COMSOL setup guide
+│   ├── code-overview.md            # Newcomer guide to codebase
 │   └── history/                    # Chronological development log
 ├── tests/
 │   ├── build_lean.sh               # Build Lean codebase
-│   ├── lean_tests.sh               # Typecheck all Lean files
-│   ├── mathematica_tests.sh        # Run Mathematica in test mode
-│   ├── python_tests.sh             # Python unit tests
-│   └── integration_tests.sh        # End-to-end pipeline tests
-├── runs/                           # Timestamped run artifacts
-│   └── <timestamp>/
-│       ├── run.json                # Run metadata
-│       └── artifacts/              # Outputs (graphs, JSON, logs)
-├── results/                        # Persistent results (not timestamped)
-├── run_tests.sh                    # Master test script (all 3267 jobs)
-└── LICENSE
+│   └── lean_tests.sh               # Typecheck all Lean files
+└── run_tests.sh                    # Master test script (Lean only)
 ```
 
-**Code inventory summary:**
-- **Lean 4:** ~2500 lines across 20+ modules (formal definitions, theorems, conjectures)
-- **Python:** ~3000 lines across 12 scripts (discrete models, homology, sweeps, analysis)
-- **Mathematica:** ~800 lines (symbolic AQEI search, Green's function, visualization)
-- **Tests:** Full test suite with 3267 jobs (Lean build, Python validation, Mathematica runs)
-- **Documentation:** 10+ markdown files covering architecture, conjectures, results, integration guides
+**Code inventory:**
+- **Lean 4:** ~2500 lines across 20+ modules
+- **Python:** ~400 lines (pipeline glue: orchestrator + Lean skeleton emitter)
+- **Numerical analysis (~3000 lines) and Mathematica search (~800 lines) are in** [`aqei-numerical-validation`](https://github.com/arcticoder/aqei-numerical-validation)
 
 ## Quick start
 
-### Prereqs
+### Build Lean formalization
 
-- Wolfram engine / WolframScript on PATH (`wolframscript` preferred).
-- Lean 4 + Lake (via `elan`), already present on your machine.
-- Python 3.8+ with NetworkX, NumPy, SciPy
+```bash
+cd lean && lake build
+```
 
-### Run the 4-stage loop
+### Emit Lean skeletons from Mathematica candidates
 
-From repo root:
+After running the Mathematica search in `aqei-numerical-validation`:
 
-1) Stage III (heuristic search)
+```bash
+python python/analyze_candidates.py --input /path/to/aqei-numerical-validation/mathematica/results/top_candidates.json
+```
 
-- `wolframscript -file mathematica/search.wl`
+### Run all tests
 
-2) Stage IV (emit Lean skeletons)
+```bash
+./run_tests.sh
+```
 
-- `python python/analyze_candidates.py`
+## Publication track
 
-3) Stage I (typecheck)
+### Formal Verification Track (`papers/aqei-lean-formalization.tex`)
 
-- `cd lean && lake build`
+**Target venue:** CPP / ITP (formal methods / theorem proving)
 
-Or run the single orchestrator:
+**Focus:** Lean 4 formalization of AQEI cone convexity, discrete causal poset stability, Alexandrov topology, H₁ invariance, real-world applications.
 
-- `python python/orchestrator.py`
+**Current status:** 10 pages, compiles. ~15 theorems proven, ~300 `sorry` obligations remaining.
 
-## Publication tracks
+**Empirical support:** See [`aqei-numerical-validation`](https://github.com/arcticoder/aqei-numerical-validation) — 100% H₁ invariance over 100 trials.
 
-This repository supports two separate manuscripts currently in draft:
+## Key proven theorems
 
-### 1. Formal Verification Track (`papers/aqei-lean-formalization.tex`)
+| Theorem | File | Status |
+|---------|------|--------|
+| `AQEI_cone_convex` | `AQEI_Cone.lean` | ✓ proven |
+| `causalFuture_open` | `CausalPoset.lean` | ✓ proven |
+| `boundary_boundary_zero` | `DiscreteHomologyProxy.lean` | ✓ proven |
+| `H1IsoZ1`, `H1IsoOfEdgeIso` | `PosetHomologyProxy.lean` | ✓ proven |
+| `aqei_bridge_conjecture_discrete` | `CausalStability.lean` | axiom (proof target) |
+| `admissible_region_pathConnected` | `CausalStability.lean` | axiom (proof target) |
 
-**Target venue:** Formal methods / theorem proving conference (CPP, ITP, etc.)
+## Foundation
 
-**Focus:**
-- Lean 4 formalization of AQEI cone convexity
-- Discrete causal poset stability theorems
-- Alexandrov topology bridge to Lorentzian causality
-- Machine-checked proofs of H₁ invariance
+[`energy-tensor-cone`](https://github.com/arcticoder/energy-tensor-cone) (PRD submission, February 2026) proves:
+- `candidate_active_binding`: rational-exact vertex constraint satisfaction
+- `Candidate_Is_Extreme_Point`: the AQEI cone has a verified non-trivial extreme point
 
-**Current status:**
-- Core definitions: complete
-- Convexity theorems: proven
-- Stability theorems: partial proofs (300 sorries remaining)
-- Integration with Mathlib: ongoing
-
-### 2. Numerical Validation Track (`papers/aqei-numerical-validation.tex`)
-
-**Target venue:** Computational physics journal (CPC, JCP, etc.)
-
-**Focus:**
-- Hybrid symbolic-numeric AQEI search pipeline
-- FFT-based perturbation testing and homology stability
-- Multi-ray overlap analysis (path-connectedness proxy)
-- MATLAB/COMSOL analog gravity integration
-
-**Current status:**
-- Core Python pipeline: complete
-- Mathematica symbolic search: operational
-- H₁ stability validation: 100% invariance over 100 trials
-- MATLAB/COMSOL integration: planned (skeleton code documented)
-
-Both manuscripts reference the hybrid workflow described in `papers/aqei-bridge-hybrid-workflow.md`.
-
-## Recent progress
-
-## Recent progress
-
-**2026-02-16: Empirical H₁ stability validation and manuscript separation**
-- Tested H₁ invariance under FFT perturbations: 100% stability across mild (ε=0.05) and strong (ε=0.3) perturbations
-- Documented results in `docs/h1_stability_results.md`
-- Created MATLAB/COMSOL integration guide (`docs/matlab_comsol_integration.md`)
-- Separated publication tracks into two manuscripts:
-  - `papers/aqei-lean-formalization.tex` (formal verification)
-  - `papers/aqei-numerical-validation.tex` (computational methods)
-- All tests green (3267 jobs)
-
-**Earlier milestones:**
-- Discrete reachability toy model and typed conjecture skeletons in Lean
-- Order-theoretic bridge: causal preorders / causal posets and Alexandrov-style topology
-- `Spacetime` → `CausalPoset` bridge under explicit axioms
-- Phase 3 analysis tooling: multi-ray overlap summaries with connectedness proxy (mean pairwise Jaccard)
-- Tests default to fast Mathematica runs (`--test-mode`) for CI efficiency
-
-### Phase 4: searches (diagnostics)
-
-- Sweep + aggregation workflow: see `docs/phase4_searches.md`.
-- Over-scoped / underspecified items are tracked in `docs/TODO-BLOCKED.md` until we choose concrete, reproducible implementations.
-
-### Phase 4 scope (tracked, but currently blocked)
-
-The larger Phase 4 items (large-scale nondeterministic searches, realistic backgrounds, PDE solver-in-loop,
-and a precise continuity topology for $J^+$) are tracked in `docs/TODO-BLOCKED.md` until we choose concrete
-implementations that fit the repo’s reproducibility + CI constraints.
-
-## Debugging / common failure modes
-
-- **Mathematica script errors / huge output**
-  - Start with the smallest test settings: `bash tests/mathematica_tests.sh`.
-  - If Wolfram prints enormous expressions, it's usually a failed numeric path
-    (e.g. symbolic leakage). Check `mathematica/search.wl` for any unevaluated
-    symbols and force `N@` where needed.
-
-- **WolframScript not found**
-  - `tests/mathematica_tests.sh` will fall back to `wolfram -script`.
-  - Ensure `which wolframscript` or `which wolfram` works.
-
-- **Lean build fails / Mathlib cache mismatch**
-  - The toolchain is pinned in `lean/lean-toolchain`.
-  - If you see cache warnings, run `cd lean && lake build` once to sync.
-
-- **Slow tests**
-  - Reduce `AQEI_GRID` and `AQEI_NUM_CONSTRAINTS`.
-  - Keep `AQEI_NUM_BASIS` small while iterating.
-
-## Notes on the toy model
-
-- Current search works in a 1+1 grid, builds Gaussian wavepacket basis functions, applies a scalar Fourier-space Green multiplier, then integrates a proxy field along several “null-ish” rays.
-- This is an **ansatz** for quick iteration only.
-- As the bridge paper matures, the constraints and observable must be replaced with ones justified by the manuscript and/or formal derivations.
+This geometric foundation underpins this repo's causal stability direction.
 
 ## License
 

@@ -215,3 +215,11 @@
   - Updated docs/TODO.md with Gemini 3 Pro expert analysis of incremental real-world applications
   - Reorganized TODO priorities: manuscript enhancement critical, MATLAB/COMSOL implementation medium priority
 
+
+## 2026-02-22
+- **Repository split:** Extracted numerical validation pipeline into standalone repo `aqei-numerical-validation`
+  - New repo: https://github.com/arcticoder/aqei-numerical-validation
+  - Moved: python numerical scripts (8 scripts), mathematica/ directory, papers/aqei-numerical-validation.tex, docs/h1_stability_results.md, docs/matlab_comsol_integration.md, docs/phase4_searches.md, runs/, tests/python_tests.sh, tests/mathematica_tests.sh, tests/test_pipeline.py
+  - Retained in aqei-bridge: lean/, python/orchestrator.py, python/analyze_candidates.py, papers/aqei-lean-formalization.tex, papers/aqei-bridge-hybrid-workflow.md, all formal docs
+  - Updated: README.md, run_tests.sh, docs/TODO.md, docs/code-overview.md to reflect split
+  - Energy-tensor-cone review: confirmed PRD submission complete (Feb 21), `Candidate_Is_Extreme_Point` proven, provides geometric foundation for bridge conjecture

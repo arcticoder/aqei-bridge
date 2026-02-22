@@ -1,8 +1,0 @@
-Notebook[{
-  Cell["AQEI-bridge search notebook (toy model)", "Title"],
-  Cell["This notebook is a convenience wrapper around mathematica/search.wl.", "Text"],
-  Cell[BoxData[ToBoxes[
-    Row[{"Run from shell:", "\n", "  wolframscript -file mathematica/search.wl"}]
-  ]], "Text"],
-  Cell["Open search.wl to adjust parameters / observe outputs.", "Text"]
-}]

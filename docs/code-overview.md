@@ -189,157 +189,46 @@ The formal verification layer: machine-checked mathematical definitions and proo
 
 ## Python Pipeline (`python/`)
 
-Discrete causal models, homology computation, sweep orchestration, and Lean code generation.
+This repo retains only the Lean-facing Python glue scripts. All discrete causal simulation, homology computation, and sweep analysis scripts have moved to [`aqei-numerical-validation`](https://github.com/arcticoder/aqei-numerical-validation).
 
-### Core Workflow
+### Lean Pipeline Scripts
 
 #### `orchestrator.py`
-- **Purpose:** Master workflow driver (all 4 stages)
+- **Purpose:** Master workflow driver (Lean build + Lean emission stages)
 - **Usage:** `python orchestrator.py [--test-mode]`
 - **Stages:**
   1. Lean typecheck (`cd lean && lake build`)
   2. Python setup (validate imports)
-  3. Mathematica search (`wolframscript mathematica/search.wl`)
+  3. Mathematica search (run from `aqei-numerical-validation`)
   4. Analysis & Lean emission (`analyze_candidates.py`)
-- **Outputs:** Timestamped run directory under `runs/<timestamp>/`
+- **Note:** Stage III assumes Mathematica has already been run in `aqei-numerical-validation`
 
 #### `analyze_candidates.py`
 - **Purpose:** Parse Mathematica JSON results → emit Lean code
-- **Input:** `mathematica/results/top_candidates.json`
+- **Input:** `top_candidates.json` (from `aqei-numerical-validation/mathematica/results/`)
 - **Output:** `lean/src/AqeiBridge/GeneratedCandidates.lean`
 - **Key functions:**
   - `parse_json()`: Load and validate Mathematica output
   - `rationalize_floats()`: Convert floats to Lean-compatible rationals
   - `emit_lean_defs()`: Generate Lean definition strings
 
-### Discrete Causal Models
-
-#### `minkowski_poset.py`
-- **Purpose:** Generate discrete Minkowski grid causal posets
-- **Usage:** Can be imported or run standalone for JSON export
-- **Key functions:**
-  - `generate_minkowski_poset(tmax, xmax)`: Create NetworkX DiGraph
-  - Causal edge rule: `(t2 - t1) > abs(x2 - x1)` (lightcone condition)
-- **Output format:** NetworkX JSON graph serialization
-
-#### `causal_graph_tools.py`
-- **Purpose:** General causal analysis on directed graphs
-- **Key functions:**
-  - `compute_causal_future(G, node)`: BFS reachability
-  - `causal_diamond(G, p, q)`: J⁺(p) ∩ J⁻(q)
-  - `is_acyclic(G)`: Check for CTCs
-- **Dependencies:** NetworkX
-
-#### `ctc_scan.py`
-- **Purpose:** Detect closed timelike curves in graph JSON files
-- **Usage:** `python ctc_scan.py <graph.json>`
-- **Algorithm:** Tarjan's strongly connected components
-- **Output:** Boolean + cycle listing (if detected)
-- **Testing:** Used in `tests/python_tests.sh` for validation
-
-### Homological Invariants
-
-#### `poset_homology_proxy.py`
-- **Purpose:** Compute H₁ proxy and run perturbation stability tests
-- **Subcommands:**
-  - `compute-z1 <graph.json>`: Output dim Z₁
-  - `sweep-minkowski --tmaxs t1,t2,... --xmaxs x1,x2,...`: Generate grid family
-  - `perturb-fft <graph.json> --trials N --epsilon E`: FFT-based edge perturbations
-  - `scan-minkowski-perturb`: Cone-widening perturbation scan
-  - `sweep-minkowski-perturb`: Combined sweep + perturbation
-- **Key functions:**
-  - `compute_z1_dim(G)`: |E| - |V| + c (connected components)
-  - `perturb_via_fft(G, epsilon, threshold, window)`: Smooth edge dropout
-  - `cone_widening_perturb(G, alpha_min, alpha_max)`: Lightcone slope variation
-- **Output:** JSON with `{z1Dim, fractionUnchanged, maxAbsDeltaZ1, meanAbsDeltaZ1, trials}`
-- **Integration:** Emits Lean code to `GeneratedPosetConjectures.lean`
-
-#### `poset_interval_tools.py`
-- **Purpose:** Order interval computations (future ∩ past)
-- **Key functions:**
-  - `order_interval(G, p, q)`: J⁺(p) ∩ J⁻(q)
-  - `alexandrov_open_sets(G)`: Generate upper sets (Alexandrov topology)
-- **Status:** Utility library; used by other scripts
-
-### Parameter Sweeps and Analysis
-
-#### `sweep_parameters.py`
-- **Purpose:** Systematically sweep AQEI constraint parameters
-- **Usage:** `python sweep_parameters.py --grid-sizes 5,10,15 --num-constraints 50,100,200`
-- **Outputs:** One Mathematica run per parameter combination
-- **Integration:** Calls `wolframscript mathematica/search.wl` with env vars
-
-#### `sweep_analysis.py`
-- **Purpose:** Aggregate sweep results and compute statistics
-- **Input:** Multiple `runs/<timestamp>/artifacts/` directories
-- **Key metrics:**
-  - Max observable across all runs
-  - Active constraint frequency histogram
-  - Chamber boundary crossings
-- **Output:** CSV summary + plots (via matplotlib, if available)
-
-#### `multi_ray_analysis.py`
-- **Purpose:** Multi-ray constraint-set overlap (path-connectedness proxy)
-- **Input:** Mathematica JSON with multi-ray results
-- **Key metrics:**
-  - Pairwise Jaccard similarity: |C_i ∩ C_j| / |C_i ∪ C_j|
-  - Mean Jaccard
-  - Connectedness proxy: fraction of pairs above threshold θ
-  - Connectivity threshold estimate (via sweep over θ)
-- **Output:** JSON with `{meanJaccard, connProxy, connThreshold}`
-- **Usage:** `python multi_ray_analysis.py <results.json> [--theta 0.5]`
+The following scripts are now in [`aqei-numerical-validation`](https://github.com/arcticoder/aqei-numerical-validation):
+- `minkowski_poset.py` — discrete Minkowski grid generation
+- `causal_graph_tools.py` — graph causality analysis
+- `poset_interval_tools.py` — order interval utilities
+- `ctc_scan.py` — CTC detection (Tarjan's SCC)
+- `poset_homology_proxy.py` — H₁ computation, FFT perturbation, stability sweeps
+- `sweep_parameters.py` — parameter space sweeps
+- `sweep_analysis.py` — sweep statistics
+- `multi_ray_analysis.py` — multi-ray Jaccard overlap proxy
 
 ---
 
-## Mathematica (`mathematica/`)
+## Mathematica
 
-Symbolic AQEI constraint solving and heuristic search.
+The Mathematica AQEI search scripts (`search.wl`, `search.nb`, `visualize_results.wl`) and their results are now in [`aqei-numerical-validation`](https://github.com/arcticoder/aqei-numerical-validation).
 
-### Search Scripts
-
-#### `search.nb`
-- **Purpose:** Interactive notebook for exploratory search
-- **Contents:**
-  - Gaussian wavepacket basis generation
-  - Fourier-space Green's function (scalar toy model)
-  - Ray-path integration of proxy observable
-  - Visualization of constraint polytope
-- **Usage:** Open in Mathematica desktop app
-
-#### `search.wl`
-- **Purpose:** Batch script for automated runs (CI-friendly)
-- **Key parameters (env vars or defaults):**
-  - `AQEI_GRID`: Grid resolution (default 16)
-  - `AQEI_NUM_BASIS`: Number of basis functions (default 5)
-  - `AQEI_NUM_CONSTRAINTS`: Number of linear AQEI constraints (default 10)
-  - `AQEI_NUM_RAYS`: Number of null-ish rays to integrate (default 1)
-- **Algorithm:**
-  1. Generate basis in Fourier space (Gaussians)
-  2. Build Green's function response (scalar field)
-  3. For each ray:
-     - Integrate proxy observable along ray
-     - Maximize subject to AQEI constraints (NMaximize)
-  4. Export top candidates to JSON
-- **Output:** `mathematica/results/top_candidates.json`
-- **Test mode:** `AQEI_TEST_MODE=1` reduces grid/basis for fast CI
-- **Dependencies:** Optimization, Symbolic Math toolboxes
-
-#### `visualize_results.wl`
-- **Purpose:** Post-processing and plotting
-- **Key functions:**
-  - `PlotConstraintPolytope`: 2D/3D polytope visualization
-  - `PlotActiveConstraints`: Heatmap of active constraint frequency
-- **Input:** JSON results from `search.wl`
-- **Output:** PNG/PDF plots in `mathematica/results/`
-
-### Results Directory
-
-#### `mathematica/results/`
-- **Contents:**
-  - `summary.json`: Aggregate statistics (mean, max, std dev of observable)
-  - `top_candidates.json`: Optimal stress-energy coefficients + active constraints
-  - `*.png`: Plots (if visualization script is run)
-- **Persistence:** Copied to `runs/<timestamp>/artifacts/` by orchestrator
+The `analyze_candidates.py` in this repo consumes `top_candidates.json` from that repo's `mathematica/results/` directory to emit Lean candidate definitions.
 
 ---
 
@@ -368,34 +257,19 @@ Validation and CI infrastructure.
 - **Exit code:** 0 if JSON is valid, 1 otherwise
 
 #### `python_tests.sh`
-- **Purpose:** Python unit tests and validation
-- **Tests:**
-  - Import all modules (syntax check)
-  - `compute_z1_dim` on known graphs
-  - JSON parsing roundtrip
-  - CTC detection on artificial cycles
-- **Framework:** Plain assertions (no pytest/unittest dependency)
-- **Exit code:** 0 if all assertions pass, 1 otherwise
+The following test scripts have moved to [`aqei-numerical-validation`](https://github.com/arcticoder/aqei-numerical-validation):
+- `tests/python_tests.sh` — Python unit tests
+- `tests/mathematica_tests.sh` — Mathematica test mode
 
 #### `integration_tests.sh`
-- **Purpose:** End-to-end pipeline test
-- **Steps:**
-  1. Generate Minkowski graph (Python)
-  2. Compute Z₁ (Python)
-  3. Run Mathematica search (test mode)
-  4. Parse results and emit Lean (Python)
-  5. Typecheck generated Lean (Lake)
-- **Exit code:** 0 if all stages succeed
+- **Note:** Integration tests now require running Mathematica from `aqei-numerical-validation` first, then running Lean build here.
 
 ### Master Test Script
 
 #### `run_tests.sh`
-- **Purpose:** Run all tests (Lean + Mathematica + Python + integration)
+- **Purpose:** Run Lean build and typecheck tests
 - **Usage:** `./run_tests.sh`
-- **Output:** Combined log with per-stage results
-- **Total jobs:** 3267 (mostly Lean build parallelism)
-- **CI integration:** GitHub Actions calls this script
-- **Green status:** All tests pass as of 2026-02-16
+- **Scope:** Lean build only (numerical tests are in `aqei-numerical-validation`)
 
 ---
 
