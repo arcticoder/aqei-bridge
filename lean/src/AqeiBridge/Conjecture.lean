@@ -22,6 +22,12 @@ Formalizable now:
 Heuristic / not yet formal:
 - PDE solution map `T ↦ h[T]`
 - equality between Δ proxies and true causal-future changes
+
+Background (external foundation):
+- The companion repo `energy-tensor-cone` proves a non-trivial extreme-point result
+  (`Candidate_Is_Extreme_Point` in `FinalTheorems.lean`) for the homogenized AQEI cone.
+  In this repo we only reference that result at the documentation level; it motivates
+  the idea that admissible perturbations live in a geometrically constrained region.
 -/
 
 namespace AqeiBridge

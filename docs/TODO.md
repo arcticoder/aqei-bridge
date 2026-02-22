@@ -8,29 +8,9 @@
 
 ## CRITICAL: Manuscript Citations (Lean Formalization Paper)
 
-Add bibliography entries to `papers/aqei-lean-formalization.tex` for the three real-world applications documented in §7:
+**Current state:** ✅ **COMPLETED** (recorded in `docs/TODO-completed.md`, 2026-02-22)
 
-```latex
-\bibitem{abbott2016ligo}
-B.~P. Abbott et al. (LIGO/Virgo), \textit{Observation of Gravitational Waves from a Binary Black Hole Merger}, Phys. Rev. Lett. \textbf{116}, 061102 (2016).
-
-\bibitem{alcubierre2008numerical}
-M.~Alcubierre, \textit{Introduction to 3+1 Numerical Relativity}, Oxford University Press (2008).
-
-\bibitem{gisin2002quantum}
-N.~Gisin et al., \textit{Quantum cryptography}, Rev. Mod. Phys. \textbf{74}, 145 (2002).
-
-\bibitem{ashby2003relativity}
-N.~Ashby, \textit{Relativity in the Global Positioning System}, Living Rev. Relativ. \textbf{6}, 1 (2003).
-
-\bibitem{fewster2012lectures}
-C.~J. Fewster, \textit{Lectures on quantum energy inequalities}, arXiv:1208.5399 (2012).
-
-\bibitem{penrose1965gravitational}
-R.~Penrose, \textit{Gravitational Collapse and Space-Time Singularities}, Phys. Rev. Lett. \textbf{14}, 57 (1965).
-```
-
-Also update `\cite{}` commands in §7.1–§7.3.
+The bibliography entries and §7 citations for the “Real-World Applications” section are now present in `papers/aqei-lean-formalization.tex`.
 
 ---
 
@@ -120,7 +100,7 @@ The PRD submission in `energy-tensor-cone` proves that the AQEI cone has:
 - Added `AQEI_cone_isClosed` proof (finite intersection of closed halfspaces via `LinearMap.continuous_of_finiteDimensional`)
 - `Covex.isPathConnected` proof of `admissible_region_pathConnected` mirrors `energy-tensor-cone`'s `affineAdmissible_convex`
 
-**Remaining:** Add a Lean `import` or cross-reference comment in `Conjecture.lean`/`GlobalConjectures.lean` referencing the extreme-point result.
+**Remaining:** None in this repo. Cross-reference notes exist in `GlobalConjectures.lean` and `Conjecture.lean`.
 
 ---
 
