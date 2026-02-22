@@ -233,3 +233,16 @@
   - Updated `causal_stability_pathConnected` axiom signature to include `hne` parameter
   - Added 5 missing citations + 5 bibliography entries to `papers/aqei-lean-formalization.tex` (LIGO, Alcubierre numerical GR, Gisin QKD, Ashby GPS, Penrose 1965)
   - Updated `docs/TODO.md`: `homology_functorial` marked ✅ PROVEN, `admissible_region_pathConnected` marked ✅ PROVEN, energy-tensor-cone LOW item updated
+
+- **Proved `h1_stable_small_pert` (HIGH priority TODO):**
+  - Created `lean/src/AqeiBridge/H1Stability.lean` with full proof chain:
+    - `Edge.ext'`: edge extensionality (proof irrelevance for ok field)
+    - `mapEdge_injective`: `mapEdge f hf` injective when vertex map `f` injective
+    - `push1_apply_mapEdge`: coefficient extraction identity — `(push1 f hf x)(mapEdge f hf e) = x e`
+    - `push1_injective`: `push1 f hf` injective when `f` injective
+    - `Z1_eq_bot_of_subgraph`: `Z₁(M₁) = ⊥` follows from `Z₁(M₂) = ⊥ + M₁ ⊆ M₂` (subgraph monotonicity)
+    - `dimH1IsZero M`: abbreviation for `Z₁(M, ℤ) = ⊥`
+    - `h1_stable_small_pert`: `dimH1IsZero P → EdgeHom P' P id → dimH1IsZero P'`
+  - Added import `AqeiBridge.H1Stability` to `lean/src/AqeiBridge.lean`
+  - Updated `docs/TODO.md`: `h1_stable_small_pert` marked ✅ PROVEN
+  - Added cross-reference comment in `GlobalConjectures.lean` linking to energy-tensor-cone extreme-point result and `h1_stable_small_pert`

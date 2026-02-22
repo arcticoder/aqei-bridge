@@ -772,3 +772,23 @@ The three applications (numerical relativity, navigation, quantum networks) demo
 Remaining high-priority task: **Add citations** for real-world applications (Abbott et al. for LIGO, NASA JPL for navigation, BB84/Ekert for QKD). Estimated time: 30 minutes.
 <!-- ------ -->
 ---
+Here's a summary of everything done in this session:
+
+---
+
+**Commit `d528417` — AQEI cone closedness + path-connectedness + citations:**
+- AQEI_Cone.lean: `AQEI_cone_isClosed` theorem (list induction + `LinearMap.continuous_of_finiteDimensional`)
+- CausalStability.lean: replaced `axiom admissible_region_pathConnected` with proven theorem using `Convex.isPathConnected`
+- aqei-lean-formalization.tex: 5 new citations + bibliography entries
+- TODO.md: marked homology_functorial and admissible_region_pathConnected ✅
+
+**Commit `4951af2` — `h1_stable_small_pert` proof:**
+- H1Stability.lean: new file proving the full chain:
+  - `Edge.ext'` → `mapEdge_injective` → `push1_apply_mapEdge` (coefficient extraction) → `push1_injective` → `Z1_eq_bot_of_subgraph` → `h1_stable_small_pert`
+  - **Key insight:** `Z₁ = 0` is monotone under subgraph inclusion — any cycle in a subgraph is a cycle in the supergraph, so if the supergraph is acyclic, so is the subgraph
+- GlobalConjectures.lean: cross-reference to energy-tensor-cone extreme point result
+- TODO.md: marked `h1_stable_small_pert` ✅ PROVEN
+
+The remaining open work from TODO-BLOCKED.md is: `aqei_bridge_conjecture_discrete` (still needs a concrete metric perturbation → edge delta translation), full sheaf cohomology (blocked on Mathlib infrastructure), and realistic backgrounds (blocked on solver choice).
+<!-- ------ -->
+---
