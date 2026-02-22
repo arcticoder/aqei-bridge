@@ -59,7 +59,7 @@ This manuscript presents:
 
 \subsection{Related Work}
 
-\textbf{AQEI and energy conditions:} Prior work \cite{fewster2012averaged} established AQEI as a rigorous quantum replacement for classical energy conditions. Our formalization builds on this foundation but focuses on \emph{causal} implications rather than singularity theorems.
+\textbf{AQEI and energy conditions:} Prior work \cite{fewster2012averaged} established AQEI as a rigorous quantum replacement for classical energy conditions. Our formalization builds on this foundation but focuses on \emph{causal} implications rather than singularity theorems \cite{penrose1965gravitational}.
 
 \textbf{Chronology protection:} Hawking's chronology protection conjecture \cite{hawking1992chronology} remains unproven in full generality. Our discrete model provides a tractable setting for proving stability results that may guide continuous extensions.
 
@@ -299,14 +299,14 @@ While this work focuses on formal verification of causal stability, the mathemat
     \item \textbf{After:} ``This discretization preserves $\dim H_1$, formally proving the causal structure is unchanged''
 \end{itemize}
 
-The key insight is that numerical relativity codes discretize spacetime into a causal graph. Our theorem guarantees that if $H_1(P) = 0$ for the discrete approximation $P$, then small numerical errors (represented as graph perturbations with $\|\delta\| < \epsilon$) cannot introduce spurious causal cycles. This provides:
+The key insight is that numerical relativity codes~\cite{alcubierre2008numerical} discretize spacetime into a causal graph. Our theorem guarantees that if $H_1(P) = 0$ for the discrete approximation $P$, then small numerical errors (represented as graph perturbations with $\|\delta\| < \epsilon$) cannot introduce spurious causal cycles. This provides:
 \begin{enumerate}
     \item A formal verification tool for numerical relativity codes
     \item Computable bounds on acceptable discretization parameters
     \item Machine-checked proofs (via Lean) that the verification algorithm is correct
 \end{enumerate}
 
-\textbf{Impact:} More accurate gravitational wave templates → improved parameter estimation for source masses, spins, and distances. The Lean formalization ensures the verification tool itself cannot contain errors that would invalidate numerical relativity results used by LIGO/VIRGO collaborations.
+\textbf{Impact:} More accurate gravitational wave templates → improved parameter estimation for source masses, spins, and distances. The Lean formalization ensures the verification tool itself cannot contain errors that would invalidate numerical relativity results used by LIGO/VIRGO collaborations~\cite{abbott2016ligo}.
 
 \subsection{High-Precision Time Synchronization (Deep Space Navigation)}
 
@@ -321,11 +321,11 @@ The key insight is that numerical relativity codes discretize spacetime into a c
 
 The Alexandrov topology framework provides a natural setting for protocol design: synchronization messages follow causal edges in the discrete poset approximation, and Theorem~4.1 ensures the discrete protocol remains valid as spacetime curvature varies smoothly.
 
-\textbf{Impact:} Certified time-synchronization algorithms for next-generation deep-space navigation systems. Unlike GPS (which uses empirical relativistic corrections), these protocols have machine-checked proofs of correctness under general relativistic environments.
+\textbf{Impact:} Certified time-synchronization algorithms for next-generation deep-space navigation systems. Unlike GPS (which uses empirical relativistic corrections~\cite{ashby2003relativity}), these protocols have machine-checked proofs of correctness under general relativistic environments.
 
 \subsection{Quantum Communication Network Verification}
 
-\textbf{Problem:} Quantum Key Distribution (QKD) relies on strict causal ordering of measurement events. A theoretical attack vector involves using exotic matter to create local metric perturbations that reorder events, allowing an eavesdropper to intercept quantum states without detection.
+\textbf{Problem:} Quantum Key Distribution (QKD)~\cite{gisin2002quantum} relies on strict causal ordering of measurement events. A theoretical attack vector involves using exotic matter to create local metric perturbations that reorder events, allowing an eavesdropper to intercept quantum states without detection.
 
 \textbf{Application of AQEI Cone Convexity:} Our formalization of the AQEI cone as a convex polyhedron (Theorem~2.1) provides computable security bounds:
 \begin{itemize}
@@ -371,6 +371,31 @@ Phys. Rev. D \textbf{46}, 603 (1992).
 The mathlib Community,
 \textit{The Lean mathematical library},
 CPP 2020, 367--381 (2020).
+
+\bibitem{abbott2016ligo}
+B.~P. Abbott et al. (LIGO Scientific and Virgo Collaborations),
+\textit{Observation of Gravitational Waves from a Binary Black Hole Merger},
+Phys. Rev. Lett. \textbf{116}, 061102 (2016).
+
+\bibitem{alcubierre2008numerical}
+M.~Alcubierre,
+\textit{Introduction to 3+1 Numerical Relativity},
+Oxford University Press (2008).
+
+\bibitem{gisin2002quantum}
+N.~Gisin, G.~Ribordy, W.~Tittel, and H.~Zbinden,
+\textit{Quantum cryptography},
+Rev. Mod. Phys. \textbf{74}, 145 (2002).
+
+\bibitem{ashby2003relativity}
+N.~Ashby,
+\textit{Relativity in the Global Positioning System},
+Living Rev. Relativ. \textbf{6}, 1 (2003).
+
+\bibitem{penrose1965gravitational}
+R.~Penrose,
+\textit{Gravitational Collapse and Space-Time Singularities},
+Phys. Rev. Lett. \textbf{14}, 57 (1965).
 
 \end{thebibliography}
 

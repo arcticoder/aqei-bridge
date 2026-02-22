@@ -223,3 +223,13 @@
   - Retained in aqei-bridge: lean/, python/orchestrator.py, python/analyze_candidates.py, papers/aqei-lean-formalization.tex, papers/aqei-bridge-hybrid-workflow.md, all formal docs
   - Updated: README.md, run_tests.sh, docs/TODO.md, docs/code-overview.md to reflect split
   - Energy-tensor-cone review: confirmed PRD submission complete (Feb 21), `Candidate_Is_Extreme_Point` proven, provides geometric foundation for bridge conjecture
+
+- **energy-tensor-cone deep review + aqei-bridge adjustments:**
+  - Reviewed `AffineToCone.lean`: confirmed homogenization approach embeds affine admissible set as t=1 slice of cone in E×ℝ; all isClosed/convex/cone theorems proven
+  - Found `PosetHomologyProxy.lean` H1Map_comp = `homology_functorial` fully proven (no sorry); H1IsoZ1 also proven; updated stale TODO.md entry
+  - Added `AQEI_cone_isClosed` to `AQEI_Cone.lean`: proof by list induction, each halfspace closed via `LinearMap.continuous_of_finiteDimensional`; added import `Mathlib.Topology.Algebra.Module.FiniteDimension`
+  - Added naming clarification comment to `AQEI_cone`: convex polyhedron NOT homogeneous cone, references energy-tensor-cone/AffineToCone.lean
+  - Replaced `axiom admissible_region_pathConnected` with proven theorem: added `hne : (AQEI_cone F).Nonempty` hypothesis, uses `Convex.isPathConnected`; added import `Mathlib.Analysis.Convex.PathConnected`
+  - Updated `causal_stability_pathConnected` axiom signature to include `hne` parameter
+  - Added 5 missing citations + 5 bibliography entries to `papers/aqei-lean-formalization.tex` (LIGO, Alcubierre numerical GR, Gisin QKD, Ashby GPS, Penrose 1965)
+  - Updated `docs/TODO.md`: `homology_functorial` marked ✅ PROVEN, `admissible_region_pathConnected` marked ✅ PROVEN, energy-tensor-cone LOW item updated

@@ -1,5 +1,6 @@
 import Mathlib.Data.Set.Basic
 import Mathlib.Topology.Connected.PathConnected
+import Mathlib.Analysis.Convex.PathConnected
 
 import AqeiBridge.Spacetime
 import AqeiBridge.StressEnergy
@@ -78,9 +79,21 @@ abbrev Small (_T : StressEnergy n) : Prop := True
 
 This is intentionally abstract, but is already a meaningful topological goal in
 the `StressEnergy n = Fin n → ℝ` model.
+
+**Proof:** The AQEI cone is convex (`AQEI_cone_convex`) and `StressEnergy n`
+is a finite-dimensional real normed space, so any nonempty convex subset is
+path-connected (`Convex.isPathConnected` from Mathlib).
+
+Note: `Small T = True` for all `T`, so the set equals `AQEI_cone F`.
 -/
-axiom admissible_region_pathConnected (F : List (AQEIFunctional n)) :
-  IsPathConnected {T : StressEnergy n | T ∈ AQEI_cone F ∧ Small (n := n) T}
+theorem admissible_region_pathConnected (F : List (AQEIFunctional n))
+    (hne : (AQEI_cone F).Nonempty) :
+    IsPathConnected {T : StressEnergy n | T ∈ AQEI_cone F ∧ Small (n := n) T} := by
+  -- Small T = True, so the set equals AQEI_cone F
+  have heq : {T : StressEnergy n | T ∈ AQEI_cone F ∧ Small (n := n) T} = AQEI_cone F := by
+    ext T; simp [Small]
+  rw [heq]
+  exact (AQEI_cone_convex F).isPathConnected hne
 
 /-!
 ## Toward “no change in global causal homotopy class” (interface placeholders)
@@ -115,9 +128,13 @@ abbrev InvariantHomotopyClass {M : Spacetime} (_g : Metric M) (_p : M.Pt)
 
 This is deliberately weak/axiomatic right now; the near-term goal is to prove a
 nontrivial analogue in the discrete toy model, then strengthen this statement.
+
+The path-connectedness component is now provable given nonemptiness of the AQEI cone;
+the `InvariantHomotopyClass` component remains axiomatic.
 -/
 axiom causal_stability_pathConnected
-  {M : Spacetime} (g : Metric M) (p : M.Pt) (F : List (AQEIFunctional n)) :
+  {M : Spacetime} (g : Metric M) (p : M.Pt) (F : List (AQEIFunctional n))
+  (hne : (AQEI_cone F).Nonempty) :
   IsPathConnected {T : StressEnergy n | T ∈ AQEI_cone F ∧ Small (n := n) T} ∧
     InvariantHomotopyClass (M := M) g p F
 

@@ -1,4 +1,5 @@
 import Mathlib.Analysis.Convex.Basic
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 import Mathlib.Tactic
 
 import AqeiBridge.StressEnergy
@@ -32,6 +33,12 @@ def mkFunctionals {n : ℕ} (pairs : List ((StressEnergy n →ₗ[ℝ] ℝ) × �
 /-- The (toy) AQEI cone cut out by finitely many linear inequalities.
 
 `T ∈ AQEI_cone F` means: for every functional `f ∈ F`, `f.L T ≥ -f.B`.
+
+**Naming note:** This set is a **convex polyhedron** (intersection of affine halfspaces),
+NOT a homogeneous cone under scaling. Scaling T by α > 1 can violate constraints because
+the bounds `-f.B` do not scale proportionally. The name `AQEI_cone` is conventional;
+see `energy-tensor-cone/AffineToCone.lean` for the homogenization approach that embeds
+this set as the t=1 slice of a true cone in `E × ℝ`.
 -/
 def AQEI_cone {n : ℕ} (F : List (AQEIFunctional n)) : Set (StressEnergy n) :=
   {T | ∀ f ∈ F, f.L T ≥ -f.B}
@@ -76,5 +83,35 @@ theorem AQEI_cone_convex {n : ℕ} (F : List (AQEIFunctional n)) : Convex ℝ (A
       have hsum : a * f.L x + b * f.L y ≥ (a + b) * (-f.B) := by linarith
       -- use `hab` to rewrite `(a+b)*(-B)` to `-B`
       simpa [hab] using hsum)
+
+/-- Closedness of the AQEI cone: finite intersection of closed affine halfspaces.
+
+Each halfspace `{T | f.L T ≥ -f.B}` is closed because `f.L` is a continuous linear
+map on the finite-dimensional space `StressEnergy n = Fin n → ℝ` (by
+`LinearMap.continuous_of_finiteDimensional`).
+
+Foundation: `energy-tensor-cone/AffineToCone.lean` proves the analogous
+`affineAdmissible_isClosed` for infinite families using the same argument.
+-/
+theorem AQEI_cone_isClosed {n : ℕ} (F : List (AQEIFunctional n)) :
+    IsClosed (AQEI_cone F) := by
+  induction F with
+  | nil =>
+    -- empty list ⟹ whole space, which is closed
+    simp only [AQEI_cone, List.not_mem_nil, IsEmpty.forall_iff, setOf_true]
+    exact isClosed_univ
+  | cons f fs ih =>
+    -- split head constraint off
+    have h : AQEI_cone (f :: fs) = {T : StressEnergy n | f.L T ≥ -f.B} ∩ AQEI_cone fs := by
+      ext T
+      simp only [AQEI_cone, Set.mem_setOf_eq, List.mem_cons, or_imp, forall_and,
+        Set.mem_inter_iff, forall_eq, ge_iff_le]
+    rw [h]
+    refine IsClosed.inter ?_ ih
+    -- {T | f.L T ≥ -f.B} = (f.L)⁻¹' Set.Ici (-f.B), which is closed.
+    -- `f.L` is continuous since `StressEnergy n = Fin n → ℝ` is finite-dimensional.
+    have hcont : Continuous (f.L : StressEnergy n → ℝ) :=
+      f.L.continuous_of_finiteDimensional
+    simpa [ge_iff_le] using isClosed_Ici.preimage hcont
 
 end AqeiBridge

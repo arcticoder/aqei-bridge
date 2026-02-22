@@ -38,14 +38,15 @@ Also update `\cite{}` commands in §7.1–§7.3.
 
 **File:** `lean/src/AqeiBridge/PosetHomologyProxy.lean`
 
-**Current state:** `sorry` — structure in place, need to prove `(g ∘ f)* = g* ∘ f*`
+**Current state:** ✅ **PROVEN** — `H1Map_comp` and `H1Map_id` establish full functoriality; `H1IsoZ1` bridges H₁ to Z₁.
 
-**Proof strategy:**
-- Show chain maps compose: `chainMap (g ∘ f) = chainMap g ∘ chainMap f`
-- Lift to homology via the H₁ functor definition
-- Use `DiscreteHomologyProxy.lean` `boundary_boundary_zero` as the key lemma
+**Theorems now proven:**
+- `H1Map_id`: identity is respected by the H₁ functor
+- `H1Map_comp`: `H1Map (g ∘ f) = H1Map f ≫ H1Map g` — this IS homology_functorial
+- `H1IsoZ1`: H₁ ≅ Z₁ (bridge between Mathlib homology API and the explicit kernel)
+- `H1IsoOfOrderIso`: H₁ is invariant under OrderIso of point-types
 
-**Why this unblocks:** `homology_functorial` unlocks `h1_preserves_zero` (the bridge conjecture in small-epsilon regime).
+**Why this mattered:** `homology_functorial` was needed to establish that the H₁ proxy is an honest invariant. It is now proven without any `sorry`. Downstream items are unblocked.
 
 ---
 
@@ -72,21 +73,16 @@ lemma h1_stable_small_pert (P : DiscreteCausalPoset) (ε : ℝ) (hε : ε ≤ 0.
 
 **File:** `lean/src/AqeiBridge/CausalStability.lean`
 
-**Current state:** `axiom` — stated but not proven
+**Current state:** ✅ **PROVEN** (2026-02-22) — theorem with nonemptiness hypothesis, using `Convex.isPathConnected` from Mathlib.
 
-**Statement:**
-```lean
-axiom admissible_region_pathConnected (F : List (AQEIFunctional n)) :
-  IsPathConnected {T : StressEnergy n | T ∈ AQEI_cone F ∧ Small (n := n) T}
-```
+**What changed:**
+- Replaced `axiom admissible_region_pathConnected (F : List (AQEIFunctional n))` with
+  `theorem admissible_region_pathConnected (F : List (AQEIFunctional n)) (hne : (AQEI_cone F).Nonempty)`
+- Proof: `Small T = True` → set = `AQEI_cone F`, then `AQEI_cone_convex` + `hne` + `Convex.isPathConnected`
+- Also added `AQEI_cone_isClosed` to `AQEI_Cone.lean` (finite intersection of closed halfspaces)
+- Foundation: `energy-tensor-cone/AffineToCone.lean` proves the analogous infinite-family results
 
-**Proof strategy:**
-- AQEI_cone is convex (already proven: `AQEI_cone_convex`)
-- Any convex set intersected with an open ball is path-connected if non-empty
-- Use `Convex.pathConnected` from Mathlib: `Convex.isPathConnected`
-- Need: non-emptiness (find one T in the cone); then `convex_iff_isPathConnected`
-
-**Key Mathlib lemma:** `Convex.isPathConnected` (check if exists; may need `IsConnected` first).
+**Note:** The nonemptiness hypothesis `hne` is essential: for degenerate constraint sets, the AQEI cone can be empty, and empty sets are not path-connected.
 
 ---
 
@@ -111,8 +107,14 @@ axiom admissible_region_pathConnected (F : List (AQEIFunctional n)) :
 The PRD submission in `energy-tensor-cone` proves that the AQEI cone has:
 1. Non-trivial extreme rays (`Candidate_Is_Extreme_Point`)
 2. Exact rational coordinates for the vertex
+3. Infinite-family closedness + convexity via `AffineToCone.lean`
 
-**Action:** Add a Lean `import` or a comment in `AQEI_Cone.lean` referencing these results, noting that the geometric foundation is established in the companion work.
+**Actions completed (2026-02-22):**
+- Added a naming comment to `AQEI_Cone.lean` clarifying that `AQEI_cone` is a convex polyhedron, not a homogeneous cone; references `energy-tensor-cone/AffineToCone.lean` for homogenization
+- Added `AQEI_cone_isClosed` proof (finite intersection of closed halfspaces via `LinearMap.continuous_of_finiteDimensional`)
+- `Covex.isPathConnected` proof of `admissible_region_pathConnected` mirrors `energy-tensor-cone`'s `affineAdmissible_convex`
+
+**Remaining:** Add a Lean `import` or cross-reference comment in `Conjecture.lean`/`GlobalConjectures.lean` referencing the extreme-point result.
 
 ---
 
