@@ -2,6 +2,13 @@
 
 (Entries moved here from docs/TODO.md as they are completed.)
 
+## 2026-02-24
+- `lean/src/AqeiBridge/Cech01.lean` (NEW): minimal Čech 0/1 cochain complex scaffold — `C0 R I`, `C1 R I`, `C2 R I` as Pi-modules; `d0 : C0 →ₗ C1` and `d1 : C1 →ₗ C2`; proved `d1_comp_d0 = 0` and `range_d0_le_ker_d1`; defined `H1Cech` as `ker(d1) / im(d0)` quotient and `h1Cech_denom_top_of_exact` sanity lemma.
+- `lean/src/AqeiBridge/OrderComplexProxy.lean` (NEW): order complex chain complex for `FiniteCausalPoset` — `OC1 P`/`OC2 P` oriented simplex subtypes; face maps `face01`, `face12`, `face02`; boundary maps `bdy1 : (OC1 P →₀ R) →ₗ (Fin n →₀ R)` and `bdy2 : (OC2 P →₀ R) →ₗ (OC1 P →₀ R)` via `Finsupp.lsum`; proved `bdy1_comp_bdy2 = 0`; defined `Z1_oc`, `B1_oc`, proved `B1_le_Z1`, and defined `H1_oc`.
+- `lean/src/AqeiBridge/DiscreteFutureContinuity.lean`: added `jplus_discreteHausdorff_coverage` — Lipschitz-style perturbation-model lemma bounding `discreteHausdorff (boundedDist adj) (P.JplusFinset p) (Q.JplusFinset p)` from pointwise matching hypotheses.
+- `lean/src/AqeiBridge.lean`: wired both new modules into the top-level import.
+- Ran `./run_tests.sh` (3395 jobs, all OK).
+
 ## 2026-02-23
 - `docs/TODO.md`: added a top-of-file “Next actions” checklist keyed to `docs/TODO-BLOCKED.md`.
 - `lean/src/AqeiBridge/DiscreteFutureContinuity.lean`: strengthened the disc01 Hausdorff scaffold with “zero when contained” lemmas; proved one-sided future-set Hausdorff = 0 under relation extension.

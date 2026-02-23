@@ -2,16 +2,16 @@
 
 ## Next actions (from `docs/TODO-BLOCKED.md`)
 
-- [ ] **Full Mathlib sheaf cohomology** → implement the suggested minimal Čech 0/1-cochain complex for a *finite* cover (Lean), so we can talk about an `H¹`-like quotient without pulling in all sheaf infrastructure.
-  - Target: new Lean file `lean/src/AqeiBridge/Cech01.lean` (or similar) with `C0`, `C1`, `d0`, and `H1 := ker d1 / im d0` in `ModuleCat`.
+- [x] **Full Mathlib sheaf cohomology** → implement the suggested minimal Čech 0/1-cochain complex for a *finite* cover (Lean), so we can talk about an `H¹`-like quotient without pulling in all sheaf infrastructure.
+  - Implemented: `lean/src/AqeiBridge/Cech01.lean` with `C0`, `C1`, `C2`, `d0`, `d1`, `d1_comp_d0 = 0`, and `H1Cech := ker(d1) / im(d0)` as a `Submodule` quotient.
 
-- [ ] **Poset homology / order complex (full)** → add an “order complex proxy” that turns `FiniteCausalPoset.Chains` into a small simplicial/chain complex (degrees 0–2), then relate its degree-1 cycles to the existing `Z1 := ker ∂₁` proxy.
-  - Target: new Lean file `lean/src/AqeiBridge/OrderComplexProxy.lean` with explicit `C0/C1/C2` from enumerated simplices.
+- [x] **Poset homology / order complex (full)** → add an “order complex proxy” that turns `FiniteCausalPoset.Chains` into a small simplicial/chain complex (degrees 0–2), then relate its degree-1 cycles to the existing `Z1 := ker ∂₁` proxy.
+  - Implemented: `lean/src/AqeiBridge/OrderComplexProxy.lean` with `OC1`/`OC2` simplex types, `bdy1` and `bdy2` boundary maps, `bdy1_comp_bdy2 = 0`, and `Z1_oc`, `B1_oc`, `H1_oc`.
 
 - [ ] **Future-set topology/continuity** → implement a real discrete base metric (graph shortest-path distance) for finite reachability models and upgrade the placeholder `discreteHausdorff ≤ 1` lemma to a perturbation-sensitive bound.
   - Target: new Lean file `lean/src/AqeiBridge/GraphDistance.lean` defining shortest-path distance on `Fin n` (undirected or directed-as-undirected), plus a lemma in `DiscreteFutureContinuity.lean` stating a Lipschitz-style bound for `J⁺` under a stated perturbation model.
   - [x] Implement `GraphDistance.boundedDist` (bounded shortest-path proxy) and a generic bound `discreteHausdorff (boundedDist ...) A B ≤ n`.
-  - [ ] Add a concrete perturbation model for causal graphs and prove a Lipschitz-style bound specialized to `JplusFinset`.
+  - [x] Add a concrete perturbation model for causal graphs and prove a Lipschitz-style bound specialized to `JplusFinset` — implemented as `jplus_discreteHausdorff_coverage` in `DiscreteFutureContinuity.lean`.
   - [x] Immediate substep: prove one-sided Hausdorff = 0 when futures only grow by relation extension.
 
 - [ ] **Mathematica worldline bumps / realistic curved sweeps** → remain blocked here because the pipeline moved to `aqei-numerical-validation`.

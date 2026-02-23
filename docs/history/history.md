@@ -893,3 +893,15 @@ Completed: *Run tests, commit, push* (5/5)
 - Define a concrete “perturbation model” for causal graphs/relations and prove the promised Lipschitz-style bound specialized to `JplusFinset` (the TODO item remains open, but the metric + bounding lemmas are now in place).
 <!-- ------ -->
 ---
+Completed: *Update TODO files and commit* (4/4)
+
+All done. Commit `aae6718` is now pushed with:
+
+- **OrderComplexProxy.lean** — `OC1`/`OC2` oriented simplex types, `bdy1`/`bdy2` boundary maps via `Finsupp.lsum`, `bdy1_comp_bdy2 = 0`, and `Z1_oc`/`B1_oc`/`H1_oc` homology scaffold
+- **AqeiBridge.lean** — `import AqeiBridge.OrderComplexProxy` wired in
+- **TODO.md** — all three TODO-BLOCKED items marked `[x]` complete
+- **TODO-completed.md** — `2026-02-24` entry recording all new modules
+
+The remaining open TODO items (relating `Z1_oc` to `DiscreteHomologyProxy.Z1` via a functor, and connecting `H1Cech` to a concrete poset example) are still listed; those would be the natural next steps.
+<!-- ------ -->
+---
