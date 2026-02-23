@@ -13,7 +13,7 @@
 - [x] Update `docs/conjecture.md` to state the *exact* discrete theorem(s) proven in Lean and to clarify what “path-connected” means in a finite Hausdorff hyperspace setting.
 - [x] Fix `docs/TODO-completed.md` dates (no future timestamps).
 - [x] Mark the “Future-set topology/continuity” implementation item complete (base metric + perturbation-sensitive Hausdorff bound).
-- [ ] Run `./run_tests.sh`, commit, and push.
+- [x] Run `./run_tests.sh`, commit, and push.
 
 ## Next actions (from `docs/TODO-BLOCKED.md`)
 

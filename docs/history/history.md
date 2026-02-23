@@ -917,3 +917,19 @@ The remaining open TODO items (relating `Z1_oc` to `DiscreteHomologyProxy.Z1` vi
 **conjecture.md** updated with the proven status. **TODO.md** marks `aqei_bridge_conjecture_discrete` as ✅ PROVEN. Build: 3396 jobs, all OK, no errors.
 <!-- ------ -->
 ---
+**Done**
+- Fixed the Lean parse errors and cleaned up the `unusedSectionVars` lint in PosetHomologyProxy.lean using the correct `omit … in` placement (not between docstrings/attributes and declarations).
+- Kept the “discrete bridge main theorem” wrapper in CausalStability.lean and synced the writeup in conjecture.md + TODO bookkeeping in TODO.md and TODO-completed.md.
+- Removed hard-coded commit hash references from docs so they won’t go stale.
+
+**Validation**
+- Ran run_tests.sh in `aqei-bridge`; Lean build succeeded (script prints `=== All Lean tests: OK ===` at the end).
+
+**Commits pushed**
+- `2f1a3f6` “Lock in discrete bridge proof”
+- `43f9fd7` “Update TODO checklist”
+
+**Notes**
+- There are still other non-fatal linter warnings elsewhere (mostly “try `simp` instead of `simpa`” and some `unusedSectionVars` in other modules); I didn’t chase those beyond the targeted cleanup in PosetHomologyProxy.lean.
+<!-- ------ -->
+---
