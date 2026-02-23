@@ -16,6 +16,10 @@ import AqeiBridge.DiscreteCausalPoset
 import AqeiBridge.DiscreteChronology
 import AqeiBridge.DiscreteHomologyProxy
 import AqeiBridge.H1Stability
+
+-- Mathlib presheaf interface + examples (unblocks sheaf/cohomology integration work)
+import AqeiBridge.AlexandrovPresheafMathlib
+import AqeiBridge.Examples.DiamondPresheaf
 import AqeiBridge.PosetHomologyProxy
 import AqeiBridge.GeneratedPosetConjectures
 import AqeiBridge.CausalStability

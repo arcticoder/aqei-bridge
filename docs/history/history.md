@@ -847,3 +847,19 @@ Remaining open work:
 - The main open item is still `aqei_bridge_conjecture_discrete` in docs/TODO.md; the next actionable move is to pick a concrete perturbation model (metric/edge translation) so it can become a theorem rather than an axiom.
 <!-- ------ -->
 ---
+**Status**
+- Fixed the Mathlib import issue and got the repo back to green: run_tests.sh ends with `=== All Lean tests: OK ===`.
+
+**What changed**
+- Added a Mathlib `TopCat.Presheaf CommRingCat` on Alexandrov opens via continuous ℝ-valued functions in AlexandrovPresheafMathlib.lean.
+- Added a “diamond poset” instantiation (using `Fin 2 × Fin 2` product order) in DiamondPresheaf.lean.
+- Wired the new modules into the build in AqeiBridge.lean.
+- Kept the blocked-item notes in sync in TODO-BLOCKED.md.
+
+**Bug fix (pinned Mathlib layout)**
+- Replaced the broken `import Mathlib.Topology.Instances.Real` (file doesn’t exist in this pinned Mathlib) with `import Mathlib.Topology.Algebra.Ring.Real`, which provides the needed topological ring instances for ℝ.
+
+**Git**
+- Committed and pushed: “Add Mathlib Alexandrov presheaf scaffold” (commit `e639338`).
+<!-- ------ -->
+---

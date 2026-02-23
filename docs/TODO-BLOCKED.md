@@ -4,7 +4,10 @@ Minimal after latest commits (e.g., diagnostics/posets unblock proxies). Moved u
 
 - [ ] Full Mathlib sheaf cohomology: Still blocked on infrastructure; use a presheaf proxy + homology alternative.
 	- Unblocked scaffold (Lean): `lean/src/AqeiBridge/AlexandrovPresheaf.lean` defines `OpenInAlexandrov` and a minimal `PresheafOnPoset` interface (objects + restriction maps).
+	- Unblocked scaffold (Mathlib interface): `lean/src/AqeiBridge/AlexandrovPresheafMathlib.lean` defines a genuine Mathlib presheaf `TopCat.Presheaf CommRingCat` on the Alexandrov topological space: continuous ℝ-valued functions on opens (`realContinuousPresheaf`).
+	- Sanity instantiation: `lean/src/AqeiBridge/Examples/DiamondPresheaf.lean` builds this presheaf on a 4-point diamond preorder (`Fin 2 × Fin 2` with product order).
 	- Next concretization (Lean): define a presheaf of “sections of futures” over Alexandrov opens and implement a Čech-style H¹ for finite covers, or reduce to a chain-complex proxy on a finite basis of opens.
+		- Suggested minimal step: implement a Čech 0/1-cochain complex for a *finite* cover of an open and define `H¹` as a quotient kernel/image in `CommRingCat` or `ModuleCat`.
 
 - [ ] Poset homology / order complex in Lean (full): still blocked on selecting a concrete (finite) poset representation + a minimal invariant target (order complex vs graph/CW proxy).
 	- Unblocked starter: a minimal chain-level 1-cycle proxy is now implemented in Lean for causal posets (`PosetHomologyProxy.lean`) and for directed graphs (`DiscreteHomologyProxy.lean`).
