@@ -175,6 +175,28 @@ lemma jplus_maxDistToSet_disc01_eq_zero_of_relExtension (P Q : FiniteCausalPoset
   have hsub := jplusFinset_subset_of_relExtension (P := P) (Q := Q) h p
   exact FinsetMetric.maxDistToSet_disc01_eq_zero_of_subset (A := P.JplusFinset p) (B := Q.JplusFinset p) hsub
 
+
+/-- Coverage-based Lipschitz bound for future sets under the bounded graph metric.
+
+Given a background adjacency relation `adj`, if every vertex in `P`'s future-set
+has a representative in `Q`'s future-set within `C` `adj`-steps (and vice versa),
+then `discreteHausdorff (boundedDist adj)` is bounded by `C`.
+
+This formalizes the perturbation model: two causal structures whose future sets
+are mutually `C`-covered (in the graph metric) have Hausdorff distance ≤ C.
+-/
+lemma jplus_discreteHausdorff_coverage
+    (adj : Fin n → Fin n → Prop) [DecidableRel adj]
+    (P Q : FiniteCausalPoset n) (p : Fin n) (C : ℝ) (hC : 0 ≤ C)
+    (hPQ : ∀ a ∈ P.JplusFinset p, ∃ b ∈ Q.JplusFinset p,
+        GraphDistance.boundedDist adj a b ≤ C)
+    (hQP : ∀ b ∈ Q.JplusFinset p, ∃ a ∈ P.JplusFinset p,
+        GraphDistance.boundedDist adj b a ≤ C) :
+    FinsetMetric.discreteHausdorff
+        (GraphDistance.boundedDist adj) (P.JplusFinset p) (Q.JplusFinset p) ≤ C :=
+  FinsetMetric.discreteHausdorff_le_of_forall_exists
+    (GraphDistance.boundedDist adj) C hC (P.JplusFinset p) (Q.JplusFinset p) hPQ hQP
+
 end FiniteCausalPoset
 
 end AqeiBridge
