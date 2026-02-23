@@ -63,7 +63,7 @@ on a topology of sets.
 The nontrivial discrete analogue is proven in `DiscreteStabilityBridge.lean`.
 -/
 theorem causal_futures_path_connected
-  (F : List (AQEIFunctional n)) :
+  (_F : List (AQEIFunctional n)) :
   True := trivial
 
 end AqeiBridge

@@ -164,7 +164,7 @@ theorem push1_single (P Q : AqeiBridge.CausalPoset) (f : P.Pt → Q.Pt) (hf : Ed
 
 @[simp]
 theorem push1_id (P : AqeiBridge.CausalPoset) :
-    push1 (P := P) (Q := P) (R := R) (fun p => p) (by intro p q hpq; simpa using hpq)
+  push1 (P := P) (Q := P) (R := R) (fun p => p) (by intro p q hpq; exact hpq)
       = LinearMap.id := by
   classical
   apply LinearMap.ext
@@ -173,6 +173,7 @@ theorem push1_id (P : AqeiBridge.CausalPoset) :
   · simp
   · intro e r x he hr0 hx
     simp [push1_single, hx]
+
 
 theorem push1_comp {P Q S : AqeiBridge.CausalPoset} (f : P.Pt → Q.Pt) (g : Q.Pt → S.Pt)
     (hf : EdgeHom P Q f) (hg : EdgeHom Q S g) :
@@ -352,6 +353,7 @@ noncomputable def chainD : ∀ n : ℕ, chainObj (P := P) (R := R) (n + 1) ⟶ c
   | 1 => 0
   | _ + 2 => 0
 
+omit [DecidableEq P.Pt] in
 theorem chainD_squared (n : ℕ) :
   chainD (P := P) (R := R) (n + 1) ≫ chainD (P := P) (R := R) n = 0 := by
   cases n <;> simp [chainD, chainObj]
@@ -363,6 +365,7 @@ noncomputable abbrev posetChainComplex : ChainComplex (ModuleCat R) ℕ :=
       intro n
       simpa using (chainD_squared (P := P) (R := R) n))
 
+omit [DecidableEq P.Pt] in
 @[simp]
 theorem posetChainComplex_d_1_0 :
     (posetChainComplex (P := P) (R := R)).d 1 0 =
@@ -376,12 +379,14 @@ theorem posetChainComplex_d_1_0 :
           simpa using (chainD_squared (P := P) (R := R) n))
         0)
 
+omit [DecidableEq P.Pt] in
 @[simp]
 theorem posetChainComplex_d_1_0_hom :
     ((posetChainComplex (P := P) (R := R)).d 1 0).hom =
       boundary1 (P := P) (R := R) := by
   simp [posetChainComplex_d_1_0 (P := P) (R := R)]
 
+omit [DecidableEq P.Pt] in
 @[simp]
 theorem posetChainComplex_d_2_1 :
     (posetChainComplex (P := P) (R := R)).d 2 1 = 0 := by
@@ -393,6 +398,7 @@ theorem posetChainComplex_d_2_1 :
           simpa using (chainD_squared (P := P) (R := R) n))
         1)
 
+omit [DecidableEq P.Pt] in
 @[simp]
 theorem posetChainComplex_d_succ_succ (n : ℕ) :
     (posetChainComplex (P := P) (R := R)).d (n + 2) (n + 1) = 0 := by
@@ -457,7 +463,7 @@ noncomputable def H1Map (f : P.Pt → Q.Pt) (hf : EdgeHom P Q f) :
 @[simp]
 theorem posetChainMap_id (P : AqeiBridge.CausalPoset) [DecidableEq P.Pt] :
   posetChainMap (P := P) (Q := P) (R := R) (fun p => p)
-    (by intro p q hpq; simpa using hpq)
+    (by intro p q hpq; exact hpq)
     = 𝟙 (posetChainComplex (P := P) (R := R)) := by
   classical
   -- Compare components degreewise.
@@ -496,7 +502,7 @@ theorem posetChainMap_comp {P Q S : AqeiBridge.CausalPoset} [DecidableEq P.Pt] [
 
 @[simp]
 theorem H1Map_id (P : AqeiBridge.CausalPoset) [DecidableEq P.Pt] :
-  H1Map (P := P) (Q := P) (R := R) (fun p => p) (by intro p q hpq; simpa using hpq) = 𝟙 _ := by
+  H1Map (P := P) (Q := P) (R := R) (fun p => p) (by intro p q hpq; exact hpq) = 𝟙 _ := by
   classical
   -- Reduce to the standard `homologyMap_id` via `posetChainMap_id`.
   simpa [H1Map, posetChainMap_id (R := R) (P := P)] using
@@ -554,6 +560,7 @@ noncomputable def cycles1IsoZ1 :
   simpa [Z1, K, posetChainComplex_d_1_0_hom (P := P) (R := R)] using
     (ModuleCat.kernelIsoKer (K.d 1 0))
 
+omit [DecidableEq P.Pt] in
 /-- In the low-degree proxy chain complex, the map `toCycles 2 1` is zero.
 
 This is the core input for reducing `H₁` to `cycles 1`. -/
@@ -650,7 +657,7 @@ instance (e : EdgeIso P Q) : IsIso (H1MapOfEdgeIso (P := P) (Q := Q) (R := R) e)
         (EdgeHom.comp (P := P) (Q := Q) (S := P) e.map_lt' e.inv_map_lt')
     have hid0 : EdgeHom P P (fun p : P.Pt => p) := by
       intro p q hpq
-      simpa using hpq
+      exact hpq
     have hIdMap : H1Map (P := P) (Q := P) (R := R) (fun p : P.Pt => p) hidFromE = 𝟙 _ := by
       have : hidFromE = hid0 := Subsingleton.elim _ _
       simpa [this] using (H1Map_id (R := R) (P := P))
@@ -675,7 +682,7 @@ instance (e : EdgeIso P Q) : IsIso (H1MapOfEdgeIso (P := P) (Q := Q) (R := R) e)
         (EdgeHom.comp (P := Q) (Q := P) (S := Q) e.inv_map_lt' e.map_lt')
     have hid0 : EdgeHom Q Q (fun q : Q.Pt => q) := by
       intro p q hpq
-      simpa using hpq
+      exact hpq
     have hIdMap : H1Map (P := Q) (Q := Q) (R := R) (fun q : Q.Pt => q) hidFromE = 𝟙 _ := by
       have : hidFromE = hid0 := Subsingleton.elim _ _
       simpa [this] using (H1Map_id (R := R) (P := Q))
@@ -699,6 +706,7 @@ noncomputable def H1IsoOfEdgeIso (e : EdgeIso P Q) :
 
 section OrderIso
 
+omit [DecidableEq P.Pt] [DecidableEq Q.Pt] in
 /-- An `OrderIso` of point-types induces an `EdgeHom` (it preserves `<`). -/
 theorem edgeHom_of_orderIso (e : P.Pt ≃o Q.Pt) :
     EdgeHom P Q (fun p => e p) := by
@@ -706,8 +714,7 @@ theorem edgeHom_of_orderIso (e : P.Pt ≃o Q.Pt) :
   refine ⟨?_, ?_⟩
   · exact e.monotone hpq.1
   · intro hle
-    have : q ≤ p := by
-      simpa using e.symm.monotone hle
+    have : q ≤ p := (e.le_iff_le).1 hle
     exact hpq.2 this
 
 /-- An `OrderIso` of point-types induces an `EdgeIso` (preserves `<` both ways). -/

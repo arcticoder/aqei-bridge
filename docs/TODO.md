@@ -1,5 +1,20 @@
 # TODO: aqei-bridge — Lean 4 Formal Verification Track
 
+## Post-proof phase (discrete model) — lock in the win
+
+**Status:** ✅ The bridge conjecture is now **formally proven in the discrete graph/poset toy model**, in the precise sense implemented by:
+- `admissible_region_pathConnected` (AQEI parameter region path-connectedness) in `lean/src/AqeiBridge/CausalStability.lean`.
+- `DiscreteSpacetime.h1_stable_small_pert` (H₁=0 stable under subgraph inclusion) in `lean/src/AqeiBridge/H1Stability.lean`.
+- `DiscreteSpacetime.aqei_bridge_conjecture_discrete` + `DiscreteSpacetime.aqei_bridge_full` (packaged bridge statement) in `lean/src/AqeiBridge/DiscreteStabilityBridge.lean`.
+
+- [x] Add a short **Main Theorem (discrete bridge)** wrapper section in `lean/src/AqeiBridge/CausalStability.lean` that re-exports:
+  - path-connectedness of the admissible AQEI parameter region (already `admissible_region_pathConnected`), and
+  - H₁=0 stability under AQEI-admissible edge removal (already `DiscreteStabilityBridge.aqei_bridge_conjecture_discrete`).
+- [x] Update `docs/conjecture.md` to state the *exact* discrete theorem(s) proven in Lean and to clarify what “path-connected” means in a finite Hausdorff hyperspace setting.
+- [x] Fix `docs/TODO-completed.md` dates (no future timestamps).
+- [x] Mark the “Future-set topology/continuity” implementation item complete (base metric + perturbation-sensitive Hausdorff bound).
+- [ ] Run `./run_tests.sh`, commit, and push.
+
 ## Next actions (from `docs/TODO-BLOCKED.md`)
 
 - [x] **Full Mathlib sheaf cohomology** → implement the suggested minimal Čech 0/1-cochain complex for a *finite* cover (Lean), so we can talk about an `H¹`-like quotient without pulling in all sheaf infrastructure.
@@ -8,7 +23,7 @@
 - [x] **Poset homology / order complex (full)** → add an “order complex proxy” that turns `FiniteCausalPoset.Chains` into a small simplicial/chain complex (degrees 0–2), then relate its degree-1 cycles to the existing `Z1 := ker ∂₁` proxy.
   - Implemented: `lean/src/AqeiBridge/OrderComplexProxy.lean` with `OC1`/`OC2` simplex types, `bdy1` and `bdy2` boundary maps, `bdy1_comp_bdy2 = 0`, and `Z1_oc`, `B1_oc`, `H1_oc`.
 
-- [ ] **Future-set topology/continuity** → implement a real discrete base metric (graph shortest-path distance) for finite reachability models and upgrade the placeholder `discreteHausdorff ≤ 1` lemma to a perturbation-sensitive bound.
+- [x] **Future-set topology/continuity** → implement a real discrete base metric (graph shortest-path distance) for finite reachability models and upgrade the placeholder `discreteHausdorff ≤ 1` lemma to a perturbation-sensitive bound.
   - Target: new Lean file `lean/src/AqeiBridge/GraphDistance.lean` defining shortest-path distance on `Fin n` (undirected or directed-as-undirected), plus a lemma in `DiscreteFutureContinuity.lean` stating a Lipschitz-style bound for `J⁺` under a stated perturbation model.
   - [x] Implement `GraphDistance.boundedDist` (bounded shortest-path proxy) and a generic bound `discreteHausdorff (boundedDist ...) A B ≤ n`.
   - [x] Add a concrete perturbation model for causal graphs and prove a Lipschitz-style bound specialized to `JplusFinset` — implemented as `jplus_discreteHausdorff_coverage` in `DiscreteFutureContinuity.lean`.
@@ -19,7 +34,7 @@
 
 **Status Update (2026-02-22):** Repository split complete. Numerical validation pipeline moved to [`aqei-numerical-validation`](https://github.com/arcticoder/aqei-numerical-validation). This repo is now focused exclusively on the Lean 4 formalization and the formal verification manuscript.
 
-**Active objective:** Prove the bridge conjecture — causal futures J⁺(p) are topologically stable (H₁ invariant) under AQEI-admissible perturbations.
+**Active objective (post-proof):** push the discrete proof from “H₁=0 is stable under edge removal + AQEI parameter region is path-connected” toward a **meaningful stability statement about futures** (e.g. quantitative Hausdorff/Lipschitz control) and begin the **global obstruction** direction (vanishing of an `H¹`-like invariant for acyclic finite posets).
 
 ---
 

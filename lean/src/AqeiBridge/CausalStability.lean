@@ -5,6 +5,7 @@ import Mathlib.Analysis.Convex.PathConnected
 import AqeiBridge.Spacetime
 import AqeiBridge.StressEnergy
 import AqeiBridge.AQEI_Cone
+import AqeiBridge.DiscreteStabilityBridge
 
 /-!
 # Causal stability (formal statements; proof skeletons)
@@ -54,7 +55,7 @@ For now, we state a very weak topological form; later versions should be
 replaced with a concrete local/causal statement for discrete spacetimes.
 -/
 theorem causal_stability
-  {M : Spacetime} (g : Metric M) (p : M.Pt) (F : List (AQEIFunctional n)) :
+  {M : Spacetime} (_g : Metric M) (_p : M.Pt) (_F : List (AQEIFunctional n)) :
   True := trivial
 
 /-!
@@ -138,5 +139,34 @@ theorem causal_stability_pathConnected
   IsPathConnected {T : StressEnergy n | T ∈ AQEI_cone F ∧ Small (n := n) T} ∧
     InvariantHomotopyClass (M := M) g p F :=
   ⟨admissible_region_pathConnected F hne, trivial⟩
+
+/-!
+## Main theorem (discrete bridge)
+
+This section packages the two proven “discrete bridge” ingredients in a single
+Lean statement:
+
+1. the admissible AQEI region is path-connected (parameter space), and
+2. H₁ = 0 is stable under AQEI-admissible perturbations modeled as edge removal.
+
+The nontrivial H₁ stability proof lives in `H1Stability.lean` and is re-exported
+through `DiscreteStabilityBridge.lean`.
+-/
+
+namespace DiscreteBridge
+
+open AqeiBridge.DiscreteSpacetime
+
+variable {Pt : Type} [DecidableEq Pt]
+
+theorem main
+    (F : List (AQEIFunctional n)) (hne : (AQEI_cone F).Nonempty)
+    (P : DiscreteSpacetime Pt) (h0 : dimH1IsZero (Pt := Pt) P) :
+    (∀ T ∈ AQEI_cone F, ∀ P' : DiscreteSpacetime Pt,
+        EdgeHom P' P id → dimH1IsZero (Pt := Pt) P') ∧
+      IsPathConnected (AQEI_cone (n := n) F) :=
+  aqei_bridge_full (n := n) (Pt := Pt) F hne P h0
+
+end DiscreteBridge
 
 end AqeiBridge

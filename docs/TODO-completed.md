@@ -2,7 +2,7 @@
 
 (Entries moved here from docs/TODO.md as they are completed.)
 
-## 2026-02-24
+## 2026-02-22
 - `lean/src/AqeiBridge/DiscreteStabilityBridge.lean` (NEW): proved the discrete bridge conjecture:
   - `aqei_bridge_conjecture_discrete`: H₁ = 0 (acyclicity) is stable under AQEI-admissible edge removal, using `h1_stable_small_pert`. The AQEI parameters (`F`, `T`, `hT`) are explicit witnesses.
   - `aqei_bridge_full`: packages both H₁ stability (uniformly over `AQEI_cone F`) and `IsPathConnected (AQEI_cone F)` (from convexity + nonemptiness).
@@ -18,7 +18,6 @@
 - `lean/src/AqeiBridge.lean`: wired both new modules into the top-level import.
 - Ran `./run_tests.sh` (3395 jobs, all OK).
 
-## 2026-02-23
 - `docs/TODO.md`: added a top-of-file “Next actions” checklist keyed to `docs/TODO-BLOCKED.md`.
 - `lean/src/AqeiBridge/DiscreteFutureContinuity.lean`: strengthened the disc01 Hausdorff scaffold with “zero when contained” lemmas; proved one-sided future-set Hausdorff = 0 under relation extension.
 - `lean/src/AqeiBridge/GraphDistance.lean`: added a bounded shortest-path proxy distance on `Fin n` and wired it into `DiscreteFutureContinuity.lean` via a generic Hausdorff bound lemma.

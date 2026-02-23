@@ -123,6 +123,37 @@ Lean status (toy):
 - Active-set vs sign-pattern chambers: `ClosedChamber F active` always implies `active ⊆ chamberIndex F T`,
   and on interior points (inactive constraints strict) we get `chamberIndex F T = active`
   (`lean/src/AqeiBridge/ChamberClosedChamberBridge.lean`).
+
+### Main theorem (discrete / poset model)
+
+What is now *actually proven in Lean* is the following discrete bridge statement:
+
+1. **AQEI admissible region is path-connected (parameter space).**
+	If the finite polyhedron `AQEI_cone F` is nonempty, then it is path-connected, and the same holds for the “admissible + small” region (currently `Small := True`):
+
+	- Lean: `admissible_region_pathConnected` in `lean/src/AqeiBridge/CausalStability.lean`.
+
+2. **H₁ = 0 is stable under AQEI-admissible perturbations (modeled as edge removal).**
+	If a discrete causal graph `P` is acyclic (`dimH1IsZero P`) and `P'` is a subgraph (`EdgeHom P' P id`), then `P'` is also acyclic:
+
+	- Lean: `DiscreteSpacetime.h1_stable_small_pert` in `lean/src/AqeiBridge/H1Stability.lean`.
+	- Packaged bridge form (with explicit AQEI witness): `DiscreteSpacetime.aqei_bridge_conjecture_discrete` in `lean/src/AqeiBridge/DiscreteStabilityBridge.lean`.
+
+3. **Quantitative stability for futures (Hausdorff bound), but not image path-connectedness.**
+	For finite causal posets on `Fin n`, we have a perturbation-sensitive Hausdorff bound for `JplusFinset` under pointwise matching hypotheses:
+
+	- Lean: `jplus_discreteHausdorff_coverage` in `lean/src/AqeiBridge/DiscreteFutureContinuity.lean`.
+
+### Important topology nuance (finite hyperspaces)
+
+Be careful with the phrase “the family of futures is path-connected in the Hausdorff topology.”
+
+If the underlying event set is finite, then the hyperspace of (finite) subsets is itself a **finite metric space** under any Hausdorff-style metric, hence its topology is **totally disconnected**. In particular, a path in that hyperspace is continuous only if it is locally constant, so a *path-connected* subset is typically just a singleton.
+
+So the formalizable (and useful) discrete target is better phrased as one of:
+
+- **Parameter-space path-connectedness** (already proven) plus a **quantitative stability bound** (Hausdorff/Lipschitz control), or
+- a combinatorial replacement like **ε-chain connectivity** in Hausdorff distance (connect subsets by a finite sequence of small Hausdorff jumps).
 - **Discrete bridge conjecture — now PROVEN** (`lean/src/AqeiBridge/DiscreteStabilityBridge.lean`):
   - `aqei_bridge_conjecture_discrete`: H₁ = 0 (acyclicity) is preserved for any subgraph
     arising from an AQEI-admissible perturbation. Explicit proof using `h1_stable_small_pert`
