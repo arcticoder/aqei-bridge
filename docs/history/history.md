@@ -877,3 +877,19 @@ Completed: *Run tests, commit, push* (5/5)
 - Committed + pushed: “Add finite poset + Hausdorff continuity scaffolds” (commit `a8ed2de`).
 <!-- ------ -->
 ---
+**Done (and pushed)**
+- Implemented a compiling bounded shortest-path proxy metric in aqei-bridge/lean/src/AqeiBridge/GraphDistance.lean (works with this pinned Mathlib; avoids missing `Finset.bind`/`MinMax`).
+- Wired it into the continuity scaffold via a generic bound lemma in aqei-bridge/lean/src/AqeiBridge/DiscreteFutureContinuity.lean (`discreteHausdorff (boundedDist ...) A B ≤ n`).
+- Added “coverage-style” (∀a∈A, ∃b∈B with `d a b ≤ C`) Hausdorff upper-bound lemmas in aqei-bridge/lean/src/AqeiBridge/DiscreteHausdorff.lean so we can state perturbation-sensitive bounds once a perturbation model is chosen.
+- Updated TODO bookkeeping to reflect the new completed substep in aqei-bridge/docs/TODO.md and logged it in aqei-bridge/docs/TODO-completed.md.
+- Tests: ran run_tests.sh (Lean tests OK).
+
+**Commits**
+- `069b911` Add bounded graph distance scaffold
+- `f5176be` Add coverage-style Hausdorff bounds
+- `00204ea` Update TODO-completed bookkeeping
+
+**Next actionable step**
+- Define a concrete “perturbation model” for causal graphs/relations and prove the promised Lipschitz-style bound specialized to `JplusFinset` (the TODO item remains open, but the metric + bounding lemmas are now in place).
+<!-- ------ -->
+---

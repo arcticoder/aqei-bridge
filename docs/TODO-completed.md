@@ -6,6 +6,7 @@
 - `docs/TODO.md`: added a top-of-file “Next actions” checklist keyed to `docs/TODO-BLOCKED.md`.
 - `lean/src/AqeiBridge/DiscreteFutureContinuity.lean`: strengthened the disc01 Hausdorff scaffold with “zero when contained” lemmas; proved one-sided future-set Hausdorff = 0 under relation extension.
 - `lean/src/AqeiBridge/GraphDistance.lean`: added a bounded shortest-path proxy distance on `Fin n` and wired it into `DiscreteFutureContinuity.lean` via a generic Hausdorff bound lemma.
+- `lean/src/AqeiBridge/DiscreteHausdorff.lean`: added coverage-style (∀∃) lemmas to bound Hausdorff distance from pointwise matching assumptions.
 - Ran `./run_tests.sh` (passes).
 
 ## 2026-02-09
