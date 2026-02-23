@@ -80,19 +80,28 @@ def Homology (_P : CausalPoset) (_k : ℕ) : Type := PUnit
 
 This is intentionally abstract. In the discrete development, the proven theorem
 `h1_stable_small_pert` provides one concrete instance of the intended behavior.
+
+With the current placeholder types (`Homology P k := PUnit`, `PerturbPoset P T := P`)
+this reduces to `PUnit = PUnit`, proven by `rfl`. The proof is honest: it reflects
+that the placeholder types trivialise the statement. The nontrivial discrete
+analogue is `aqei_bridge_conjecture_discrete` in `DiscreteStabilityBridge.lean`.
 -/
-axiom global_h1_invariance
-  (P : CausalPoset) (T : Perturbation P) (h : AQEIAdmissible T) :
-  Homology P 1 = Homology (PerturbPoset P T) 1
+theorem global_h1_invariance
+  (P : CausalPoset) (T : Perturbation P) (_h : AQEIAdmissible T) :
+  Homology P 1 = Homology (PerturbPoset P T) 1 := rfl
 
 /-- Draft global fragment: chronology/acyclicity and a homology invariant are preserved.
 
 This matches the *shape* of the intended statement while remaining abstract.
+
+With the current placeholder types, `PerturbPoset P T` reduces to `P`, so
+`Acyclic (PerturbPoset P T)` is `Acyclic P` and the homology goal is `rfl`.
 -/
-axiom ChronologyAsInvariant
-  (P : CausalPoset) (T : Perturbation P) (h : AQEIAdmissible T) :
-  CausalPoset.Acyclic P →
+theorem ChronologyAsInvariant
+  (P : CausalPoset) (T : Perturbation P) (_h : AQEIAdmissible T) :
+  CausalPoset.Acyclic P ->
     CausalPoset.Acyclic (PerturbPoset P T) ∧
-    Homology P 1 = Homology (PerturbPoset P T) 1
+    Homology P 1 = Homology (PerturbPoset P T) 1 :=
+  fun hA => ⟨hA, rfl⟩
 
 end AqeiBridge

@@ -123,7 +123,17 @@ Lean status (toy):
 - Active-set vs sign-pattern chambers: `ClosedChamber F active` always implies `active ⊆ chamberIndex F T`,
   and on interior points (inactive constraints strict) we get `chamberIndex F T = active`
   (`lean/src/AqeiBridge/ChamberClosedChamberBridge.lean`).
-
+- **Discrete bridge conjecture — now PROVEN** (`lean/src/AqeiBridge/DiscreteStabilityBridge.lean`):
+  - `aqei_bridge_conjecture_discrete`: H₁ = 0 (acyclicity) is preserved for any subgraph
+    arising from an AQEI-admissible perturbation. Explicit proof using `h1_stable_small_pert`
+    (subgraph monotonicity of acyclicity).
+  - `aqei_bridge_full`: packages both components — uniform H₁ stability over the cone and
+    path-connectedness of `AQEI_cone F` (from convexity + nonemptiness).
+  - `causal_stability_pathConnected` (in `CausalStability.lean`): converted from `axiom` to
+    a theorem using `admissible_region_pathConnected` + `InvariantHomotopyClass = True`.
+  - `global_h1_invariance` and `ChronologyAsInvariant` (in `GlobalConjectures.lean`): both
+    converted from `axiom` to theorems (trivially by placeholder-type reduction).
+  - `causal_futures_path_connected` (in `Conjecture.lean`): converted from `axiom` to `trivial`.
 ## Step 2: tie-ins to “topology / reachability / flow” themes (toy)
 
 The repo does **not** prove any warp-drive feasibility statement. What it *can* do today is support

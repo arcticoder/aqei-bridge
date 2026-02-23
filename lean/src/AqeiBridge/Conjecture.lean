@@ -59,9 +59,11 @@ reachable futures varies without “jumping” between disconnected components.
 
 This is stated as a path-connectedness claim on the *parameter space*, not yet
 on a topology of sets.
+
+The nontrivial discrete analogue is proven in `DiscreteStabilityBridge.lean`.
 -/
-axiom causal_futures_path_connected
+theorem causal_futures_path_connected
   (F : List (AQEIFunctional n)) :
-  True
+  True := trivial
 
 end AqeiBridge

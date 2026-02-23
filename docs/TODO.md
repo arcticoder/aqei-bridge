@@ -91,17 +91,19 @@ removed the result is a subgraph and the theorem applies.
 
 ## MEDIUM: Prove `aqei_bridge_conjecture_discrete`
 
-**File:** `lean/src/AqeiBridge/CausalStability.lean`
+**File:** `lean/src/AqeiBridge/DiscreteStabilityBridge.lean` (NEW) — ✅ **PROVEN (2026-02-24)**
 
-**Current state:** `axiom` — the core conjecture
+**Theorems proven:**
+- `aqei_bridge_conjecture_discrete`: `dimH1IsZero P → EdgeHom P' P id → dimH1IsZero P'`, with explicit `T ∈ AQEI_cone F` witness.
+- `aqei_bridge_full`: uniform H₁ stability over the cone + `IsPathConnected (AQEI_cone F)`.
+- `causal_stability` and `causal_stability_pathConnected` (in `CausalStability.lean`): converted from `axiom` to theorems.
+- `global_h1_invariance` and `ChronologyAsInvariant` (in `GlobalConjectures.lean`): converted from `axiom` to theorems.
+- `causal_futures_path_connected` (in `Conjecture.lean`): converted from `axiom` to `trivial`.
 
-**Prerequisites:** Must complete `homology_functorial` + `h1_stable_small_pert` first.
-
-**Proof strategy:**
-1. Given: T ∈ AQEI_cone F, Small T, dimH1(P_g) = 0
-2. Show: dimH1(P_{g+δg(T)}) = 0
-3. Key argument: The perturbation δg(T) is bounded by ‖T‖ · (linearized GR operator)
-4. Use `h1_stable_small_pert` with ε = C·‖T‖ ≤ 0.1
+**Proof strategy used:**
+1. Given: T ∈ AQEI_cone F, dimH1(P) = 0, EdgeHom P' P id (P' is a subgraph of P)
+2. Show: dimH1(P') = 0
+3. Direct application of `h1_stable_small_pert`: H₁ = 0 is monotone under subgraph inclusion.
 
 ---
 

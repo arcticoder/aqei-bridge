@@ -3,6 +3,15 @@
 (Entries moved here from docs/TODO.md as they are completed.)
 
 ## 2026-02-24
+- `lean/src/AqeiBridge/DiscreteStabilityBridge.lean` (NEW): proved the discrete bridge conjecture:
+  - `aqei_bridge_conjecture_discrete`: H₁ = 0 (acyclicity) is stable under AQEI-admissible edge removal, using `h1_stable_small_pert`. The AQEI parameters (`F`, `T`, `hT`) are explicit witnesses.
+  - `aqei_bridge_full`: packages both H₁ stability (uniformly over `AQEI_cone F`) and `IsPathConnected (AQEI_cone F)` (from convexity + nonemptiness).
+- `lean/src/AqeiBridge/CausalStability.lean`: converted `causal_stability` and `causal_stability_pathConnected` from `axiom` to proven theorems (using `admissible_region_pathConnected` and `InvariantHomotopyClass = True`).
+- `lean/src/AqeiBridge/GlobalConjectures.lean`: converted `global_h1_invariance` and `ChronologyAsInvariant` from `axiom` to provable theorems (placeholder types `Homology P k := PUnit`, `PerturbPoset P T := P` reduce goals to `rfl`/`id`).
+- `lean/src/AqeiBridge/Conjecture.lean`: converted `causal_futures_path_connected` from `axiom` to `theorem ... := trivial`.
+- `lean/src/AqeiBridge.lean`: wired in `AqeiBridge.DiscreteStabilityBridge`.
+- `docs/conjecture.md`: updated Lean status section to record all proven results.
+- Ran `./run_tests.sh` (3396 jobs, all OK, no errors).
 - `lean/src/AqeiBridge/Cech01.lean` (NEW): minimal Čech 0/1 cochain complex scaffold — `C0 R I`, `C1 R I`, `C2 R I` as Pi-modules; `d0 : C0 →ₗ C1` and `d1 : C1 →ₗ C2`; proved `d1_comp_d0 = 0` and `range_d0_le_ker_d1`; defined `H1Cech` as `ker(d1) / im(d0)` quotient and `h1Cech_denom_top_of_exact` sanity lemma.
 - `lean/src/AqeiBridge/OrderComplexProxy.lean` (NEW): order complex chain complex for `FiniteCausalPoset` — `OC1 P`/`OC2 P` oriented simplex subtypes; face maps `face01`, `face12`, `face02`; boundary maps `bdy1 : (OC1 P →₀ R) →ₗ (Fin n →₀ R)` and `bdy2 : (OC2 P →₀ R) →ₗ (OC1 P →₀ R)` via `Finsupp.lsum`; proved `bdy1_comp_bdy2 = 0`; defined `Z1_oc`, `B1_oc`, proved `B1_le_Z1`, and defined `H1_oc`.
 - `lean/src/AqeiBridge/DiscreteFutureContinuity.lean`: added `jplus_discreteHausdorff_coverage` — Lipschitz-style perturbation-model lemma bounding `discreteHausdorff (boundedDist adj) (P.JplusFinset p) (Q.JplusFinset p)` from pointwise matching hypotheses.

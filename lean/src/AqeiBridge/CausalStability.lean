@@ -53,9 +53,9 @@ move inside a constrained AQEI cone.
 For now, we state a very weak topological form; later versions should be
 replaced with a concrete local/causal statement for discrete spacetimes.
 -/
-axiom causal_stability
+theorem causal_stability
   {M : Spacetime} (g : Metric M) (p : M.Pt) (F : List (AQEIFunctional n)) :
-  True
+  True := trivial
 
 /-!
 ## Parameter-space stability (path-connectedness)
@@ -132,10 +132,11 @@ nontrivial analogue in the discrete toy model, then strengthen this statement.
 The path-connectedness component is now provable given nonemptiness of the AQEI cone;
 the `InvariantHomotopyClass` component remains axiomatic.
 -/
-axiom causal_stability_pathConnected
+theorem causal_stability_pathConnected
   {M : Spacetime} (g : Metric M) (p : M.Pt) (F : List (AQEIFunctional n))
   (hne : (AQEI_cone F).Nonempty) :
   IsPathConnected {T : StressEnergy n | T ∈ AQEI_cone F ∧ Small (n := n) T} ∧
-    InvariantHomotopyClass (M := M) g p F
+    InvariantHomotopyClass (M := M) g p F :=
+  ⟨admissible_region_pathConnected F hne, trivial⟩
 
 end AqeiBridge
