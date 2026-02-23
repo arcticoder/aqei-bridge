@@ -2,6 +2,11 @@
 
 (Entries moved here from docs/TODO.md as they are completed.)
 
+## 2026-02-23
+- `docs/TODO.md`: added a top-of-file “Next actions” checklist keyed to `docs/TODO-BLOCKED.md`.
+- `lean/src/AqeiBridge/DiscreteFutureContinuity.lean`: strengthened the disc01 Hausdorff scaffold with “zero when contained” lemmas; proved one-sided future-set Hausdorff = 0 under relation extension.
+- Ran `./run_tests.sh` (passes).
+
 ## 2026-02-09
 - Created `docs/` directory and moved the active TODO tracking here.
 - Added `docs/architecture.md` (4-stage pipeline + mermaid diagram).

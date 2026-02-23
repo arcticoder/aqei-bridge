@@ -769,7 +769,7 @@ The three applications (numerical relativity, navigation, quantum networks) demo
 
 ### 📌 **Next Steps**
 
-Remaining high-priority task: discharge or further refine the core conjecture statement(s) (e.g., `aqei_bridge_conjecture_discrete`), once a concrete perturbation model is chosen.
+Remaining high-priority task: discharge or further refine the core conjecture statement(s) (e.g., `causal_stability_pathConnected`), once a concrete perturbation model is chosen.
 <!-- ------ -->
 ---
 Here's a summary of everything done in this session:
@@ -790,7 +790,7 @@ Here's a summary of everything done in this session:
 - TODO.md: marked `h1_stable_small_pert` ✅ PROVEN
 
 Remaining open work:
-- `aqei_bridge_conjecture_discrete` remains an axiom/TODO item until the perturbation model is made concrete.
+- `causal_stability_pathConnected` remains an axiom/TODO item until the perturbation model is made concrete.
 - The genuinely *blocked* items are tracked in `docs/TODO-BLOCKED.md` (sheaf cohomology infrastructure; future-set topology/metric choices; numerical solver work lives in `aqei-numerical-validation`).
 
 <!-- ------ -->
@@ -844,7 +844,7 @@ Remaining open work:
 - `5365ea1` — refine GlobalConjectures interface + doc/history updates
 
 **Next step (remaining TODO)**
-- The main open item is still `aqei_bridge_conjecture_discrete` in docs/TODO.md; the next actionable move is to pick a concrete perturbation model (metric/edge translation) so it can become a theorem rather than an axiom.
+- The main open item is still `causal_stability_pathConnected` in docs/TODO.md; the next actionable move is to pick a concrete perturbation model (metric/edge translation) so it can become a theorem rather than an axiom.
 <!-- ------ -->
 ---
 **Status**

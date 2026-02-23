@@ -127,7 +127,8 @@ The formal verification layer: machine-checked mathematical definitions and proo
 #### `CausalStability.lean`
 - **Purpose:** Stability of causal structure under stress-energy perturbations
 - **Key statements:**
-  - `aqei_bridge_conjecture_discrete`: Path-connectedness of {J⁺(p)_T | T ∈ AQEI_cone, ||T - T₀|| < δ}
+  - `admissible_region_pathConnected`: Path-connectedness of the (nonempty) AQEI admissible region
+  - `causal_stability_pathConnected`: Interface axiom bundling path-connectedness + an invariant placeholder
 - **Status:** Conjecture formalized; proof obligations remain (300 sorries)
 - **Dependencies:** `AQEI_Cone.lean`, `CausalPoset.lean`, Mathlib topology
 

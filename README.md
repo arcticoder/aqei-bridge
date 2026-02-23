@@ -138,7 +138,7 @@ python python/analyze_candidates.py --input /path/to/aqei-numerical-validation/m
 | `causalFuture_open` | `CausalPoset.lean` | ✓ proven |
 | `boundary_boundary_zero` | `DiscreteHomologyProxy.lean` | ✓ proven |
 | `H1IsoZ1`, `H1IsoOfEdgeIso` | `PosetHomologyProxy.lean` | ✓ proven |
-| `aqei_bridge_conjecture_discrete` | `CausalStability.lean` | axiom (proof target) |
+| `causal_stability_pathConnected` | `CausalStability.lean` | axiom (proof target; invariant component) |
 | `admissible_region_pathConnected` | `CausalStability.lean` | ✓ proven (requires nonempty AQEI cone) |
 
 ## Foundation

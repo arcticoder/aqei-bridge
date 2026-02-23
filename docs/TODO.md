@@ -10,7 +10,7 @@
 
 - [ ] **Future-set topology/continuity** → implement a real discrete base metric (graph shortest-path distance) for finite reachability models and upgrade the placeholder `discreteHausdorff ≤ 1` lemma to a perturbation-sensitive bound.
   - Target: new Lean file `lean/src/AqeiBridge/GraphDistance.lean` defining shortest-path distance on `Fin n` (undirected or directed-as-undirected), plus a lemma in `DiscreteFutureContinuity.lean` stating a Lipschitz-style bound for `J⁺` under a stated perturbation model.
-  - Immediate substep: prove one-sided Hausdorff = 0 when futures only grow by relation extension (done in this iteration).
+  - [x] Immediate substep: prove one-sided Hausdorff = 0 when futures only grow by relation extension.
 
 - [ ] **Mathematica worldline bumps / realistic curved sweeps** → remain blocked here because the pipeline moved to `aqei-numerical-validation`.
   - Next step lives in that repo; no action in `aqei-bridge`.
