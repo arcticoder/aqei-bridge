@@ -1,5 +1,20 @@
 # TODO: aqei-bridge — Lean 4 Formal Verification Track
 
+## Next actions (from `docs/TODO-BLOCKED.md`)
+
+- [ ] **Full Mathlib sheaf cohomology** → implement the suggested minimal Čech 0/1-cochain complex for a *finite* cover (Lean), so we can talk about an `H¹`-like quotient without pulling in all sheaf infrastructure.
+  - Target: new Lean file `lean/src/AqeiBridge/Cech01.lean` (or similar) with `C0`, `C1`, `d0`, and `H1 := ker d1 / im d0` in `ModuleCat`.
+
+- [ ] **Poset homology / order complex (full)** → add an “order complex proxy” that turns `FiniteCausalPoset.Chains` into a small simplicial/chain complex (degrees 0–2), then relate its degree-1 cycles to the existing `Z1 := ker ∂₁` proxy.
+  - Target: new Lean file `lean/src/AqeiBridge/OrderComplexProxy.lean` with explicit `C0/C1/C2` from enumerated simplices.
+
+- [ ] **Future-set topology/continuity** → implement a real discrete base metric (graph shortest-path distance) for finite reachability models and upgrade the placeholder `discreteHausdorff ≤ 1` lemma to a perturbation-sensitive bound.
+  - Target: new Lean file `lean/src/AqeiBridge/GraphDistance.lean` defining shortest-path distance on `Fin n` (undirected or directed-as-undirected), plus a lemma in `DiscreteFutureContinuity.lean` stating a Lipschitz-style bound for `J⁺` under a stated perturbation model.
+  - Immediate substep: prove one-sided Hausdorff = 0 when futures only grow by relation extension (done in this iteration).
+
+- [ ] **Mathematica worldline bumps / realistic curved sweeps** → remain blocked here because the pipeline moved to `aqei-numerical-validation`.
+  - Next step lives in that repo; no action in `aqei-bridge`.
+
 **Status Update (2026-02-22):** Repository split complete. Numerical validation pipeline moved to [`aqei-numerical-validation`](https://github.com/arcticoder/aqei-numerical-validation). This repo is now focused exclusively on the Lean 4 formalization and the formal verification manuscript.
 
 **Active objective:** Prove the bridge conjecture — causal futures J⁺(p) are topologically stable (H₁ invariant) under AQEI-admissible perturbations.
