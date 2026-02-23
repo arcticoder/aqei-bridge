@@ -1,6 +1,7 @@
 import Mathlib.Data.Real.Basic
 
 import AqeiBridge.DiscreteHausdorff
+import AqeiBridge.GraphDistance
 import AqeiBridge.FiniteCausalPoset
 
 /-!
@@ -119,6 +120,24 @@ lemma maxDistToSet_disc01_eq_zero_of_eq {A B : Finset α} (h : A = B) :
     maxDistToSet disc01 A B = 0 := by
   subst h
   exact maxDistToSet_disc01_eq_zero_of_subset (A := A) (B := A) (by intro a ha; exact ha)
+
+/-! ### Bounded graph distance instantiation -/
+
+open GraphDistance
+
+variable {n : ℕ}
+
+lemma discreteHausdorff_boundedDist_le (adj : Fin n → Fin n → Prop) [DecidableRel adj]
+    (A B : Finset (Fin n)) :
+    FinsetMetric.discreteHausdorff (GraphDistance.boundedDist (n := n) adj) A B ≤ n := by
+  have hC : (0 : ℝ) ≤ (n : ℝ) := by
+    exact_mod_cast (Nat.zero_le n)
+  have h : ∀ x y : Fin n, GraphDistance.boundedDist (n := n) adj x y ≤ n := by
+    intro x y
+    simpa using GraphDistance.boundedDist_le (n := n) (adj := adj) x y
+  simpa using
+    FinsetMetric.discreteHausdorff_le_of_forall_le
+      (d := GraphDistance.boundedDist (n := n) adj) (C := (n : ℝ)) hC h A B
 
 end FinsetMetric
 

@@ -5,6 +5,7 @@ import AqeiBridge.CausalContinuity
 import AqeiBridge.SpacetimeCausalPoset
 import AqeiBridge.AlexandrovPresheaf
 import AqeiBridge.DiscreteHausdorff
+import AqeiBridge.GraphDistance
 import AqeiBridge.FiniteCausalPoset
 import AqeiBridge.DiscreteFutureContinuity
 import AqeiBridge.StressEnergy
