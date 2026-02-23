@@ -769,7 +769,7 @@ The three applications (numerical relativity, navigation, quantum networks) demo
 
 ### 📌 **Next Steps**
 
-Remaining high-priority task: **Add citations** for real-world applications (Abbott et al. for LIGO, NASA JPL for navigation, BB84/Ekert for QKD). Estimated time: 30 minutes.
+Remaining high-priority task: discharge or further refine the core conjecture statement(s) (e.g., `aqei_bridge_conjecture_discrete`), once a concrete perturbation model is chosen.
 <!-- ------ -->
 ---
 Here's a summary of everything done in this session:
@@ -789,7 +789,9 @@ Here's a summary of everything done in this session:
 - GlobalConjectures.lean: cross-reference to energy-tensor-cone extreme point result
 - TODO.md: marked `h1_stable_small_pert` ✅ PROVEN
 
-The remaining open work from TODO-BLOCKED.md is: `aqei_bridge_conjecture_discrete` (still needs a concrete metric perturbation → edge delta translation), full sheaf cohomology (blocked on Mathlib infrastructure), and realistic backgrounds (blocked on solver choice).
+Remaining open work:
+- `aqei_bridge_conjecture_discrete` remains an axiom/TODO item until the perturbation model is made concrete.
+- The genuinely *blocked* items are tracked in `docs/TODO-BLOCKED.md` (sheaf cohomology infrastructure; future-set topology/metric choices; numerical solver work lives in `aqei-numerical-validation`).
 
 <!-- ------ -->
 ---
@@ -804,5 +806,44 @@ The remaining open work from TODO-BLOCKED.md is: `aqei_bridge_conjecture_discret
 
 **Validation**
 - `./run_tests.sh` should remain green (Lean build + typecheck only).
+<!-- ------ -->
+---
+
+**2026-02-22: Global conjecture interface refinements**
+
+**What changed**
+- `GlobalConjectures.lean`: added `global_h1_invariance` placeholder axiom and proved `CausalPoset.acyclic_iff_of_orderIso`.
+- `Conjecture.lean`: added a documentation-only cross-reference note to the `energy-tensor-cone` extreme-point result.
+- `docs/TODO.md`: synced status (removed stale “citations remaining” block; marked GlobalConjectures refinements as done).
+
+**Validation**
+- `./run_tests.sh` ends with `=== All Lean tests: OK ===`.
+<!-- ------ -->
+---
+**What I did**
+- Fixed the Lean build breakages surfaced by run_tests.sh (Mathlib import path drift + two Lean proof/simp issues).
+- Added the two Lean unblock scaffolds and wired them into the build:
+  - lean/src/AqeiBridge/AlexandrovPresheaf.lean
+  - lean/src/AqeiBridge/DiscreteHausdorff.lean
+- Synced docs/TODO state and refined the global conjecture interface:
+  - lean/src/AqeiBridge/GlobalConjectures.lean now has `global_h1_invariance` (placeholder axiom) and a proved `CausalPoset.acyclic_iff_of_orderIso`.
+  - docs/TODO.md, docs/TODO-completed.md, and docs/history/history.md updated to reflect current reality (no stale “citations remaining” / incorrect blocked-list claim).
+
+**Key fixes**
+- Updated the Finset lattice import to match this pinned Mathlib layout in lean/src/AqeiBridge/DiscreteHausdorff.lean.
+- Made `push1_apply_mapEdge`’s induction step robust via `by_cases e' = e` in lean/src/AqeiBridge/H1Stability.lean.
+- Simplified the `AQEI_cone_isClosed` base case to avoid `setOf_true` name issues in lean/src/AqeiBridge/AQEI_Cone.lean.
+- Ensured `TopologicalSpace.Opens` is available by importing `Mathlib.Topology.Sets.Opens` in lean/src/AqeiBridge/AlexandrovPresheaf.lean.
+
+**Validation**
+- run_tests.sh now ends with `=== All Lean tests: OK ===` (warnings only).
+
+**Commits pushed**
+- `ad66a40` — scaffold modules + Lean build fixes + doc sync
+- `65a5a1b` — TODO/doc sync cleanup
+- `5365ea1` — refine GlobalConjectures interface + doc/history updates
+
+**Next step (remaining TODO)**
+- The main open item is still `aqei_bridge_conjecture_discrete` in docs/TODO.md; the next actionable move is to pick a concrete perturbation model (metric/edge translation) so it can become a theorem rather than an axiom.
 <!-- ------ -->
 ---

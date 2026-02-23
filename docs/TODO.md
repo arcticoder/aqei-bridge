@@ -108,12 +108,11 @@ The PRD submission in `energy-tensor-cone` proves that the AQEI cone has:
 
 **File:** `lean/src/AqeiBridge/GlobalConjectures.lean`
 
-**Current state:** Placeholder statements
+**Current state:** ✅ **REFINED PLACEHOLDERS** (2026-02-22)
 
-**Refinements needed:**
-- State `global_h1_invariance` more precisely: for all T in AQEI_cone, all base posets P
-- Add `chronology_topological_invariant` (chronology as poset topological invariant)
-- These are the long-term goals; leave as axioms for now but sharpen types
+**What’s now in place (Lean-side interface):**
+- `global_h1_invariance`: explicit placeholder axiom stating H₁ invariance under AQEI-admissible perturbations
+- `CausalPoset.acyclic_iff_of_orderIso`: proves acyclicity/chronology proxy is invariant under order isomorphism
 
 ---
 

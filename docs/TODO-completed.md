@@ -246,3 +246,6 @@
   - Added import `AqeiBridge.H1Stability` to `lean/src/AqeiBridge.lean`
   - Updated `docs/TODO.md`: `h1_stable_small_pert` marked ✅ PROVEN
   - Added cross-reference comment in `GlobalConjectures.lean` linking to energy-tensor-cone extreme-point result and `h1_stable_small_pert`
+  - Refined `GlobalConjectures.lean` placeholders:
+    - Added `global_h1_invariance` axiom (explicit interface statement)
+    - Proved `CausalPoset.acyclic_iff_of_orderIso` (chronology proxy invariant under `OrderIso`)
