@@ -11,6 +11,7 @@ Minimal after latest commits (e.g., diagnostics/posets unblock proxies). Moved u
 
 - [ ] Poset homology / order complex in Lean (full): still blocked on selecting a concrete (finite) poset representation + a minimal invariant target (order complex vs graph/CW proxy).
 	- Unblocked starter: a minimal chain-level 1-cycle proxy is now implemented in Lean for causal posets (`PosetHomologyProxy.lean`) and for directed graphs (`DiscreteHomologyProxy.lean`).
+	- Unblocked scaffold (Lean): `lean/src/AqeiBridge/FiniteCausalPoset.lean` defines `FiniteCausalPoset (n : ℕ)` on `Fin n` with decidable relation + a computable `Chains` enumeration.
 	- Unblocked infrastructure: functorial pushforwards + invariance under point `OrderIso` (so the proxy behaves like an actual invariant under isomorphism).
 	- Next concretization: pick one target invariant (e.g. order complex simplicial homology) and prove one lemma tying it to chronology proxies.
 		- Suggested rep: a finite poset structure with an explicit `Finset` of events + decidable relation.
@@ -22,6 +23,7 @@ Minimal after latest commits (e.g., diagnostics/posets unblock proxies). Moved u
 
 - [ ] Future-set topology/continuity (Hausdorff distance on subsets) in Lean: blocked on choosing a metric/topology on the base space and aligning it with the repo’s current abstract `Spacetime` interface.
 	- Unblocked scaffold (Lean): `lean/src/AqeiBridge/DiscreteHausdorff.lean` defines a Hausdorff-style distance `discreteHausdorff` for `Finset` parameterized by an arbitrary distance function.
+	- Unblocked starter lemma (Lean): `lean/src/AqeiBridge/DiscreteFutureContinuity.lean` picks the 0/1 discrete metric and proves a uniform bound `discreteHausdorff ≤ 1` (placeholder until shortest-path graph distance is implemented).
 	- Next concretization: specialize to a discrete metric (graph distance / Hamming / Jaccard) and prove a Lipschitz-style bound for futures under edge perturbations.
 
 - [ ] Realistic backgrounds (e.g., Schwarzschild) and curved sweeps: blocked here (numerical solver work moved).

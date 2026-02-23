@@ -863,3 +863,17 @@ Remaining open work:
 - Committed and pushed: “Add Mathlib Alexandrov presheaf scaffold” (commit `e639338`).
 <!-- ------ -->
 ---
+Completed: *Run tests, commit, push* (5/5)
+
+- Implemented a concrete finite-poset representation and chain enumeration scaffold in FiniteCausalPoset.lean:
+  - `FiniteCausalPoset (n : ℕ)` on `Fin n` with decidable relation
+  - `JplusFinset`, `IsChain`, and `Chains` (powerset-based enumeration)
+- Added a starter future-set continuity development in DiscreteFutureContinuity.lean:
+  - defines the 0/1 discrete metric `disc01`
+  - proves `discreteHausdorff disc01 A B ≤ 1` and a corresponding bound for `JplusFinset`
+- Wired both into the build via AqeiBridge.lean.
+- Updated blocked-item notes to point at the new unblocking scaffolds in TODO-BLOCKED.md.
+- Tests: run_tests.sh ends with `=== All Lean tests: OK ===`.
+- Committed + pushed: “Add finite poset + Hausdorff continuity scaffolds” (commit `a8ed2de`).
+<!-- ------ -->
+---
