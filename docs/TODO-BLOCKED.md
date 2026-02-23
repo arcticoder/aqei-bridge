@@ -9,12 +9,15 @@ Minimal after latest commits (e.g., diagnostics/posets unblock proxies). Moved u
 	- Next concretization (Lean): define a presheaf of “sections of futures” over Alexandrov opens and implement a Čech-style H¹ for finite covers, or reduce to a chain-complex proxy on a finite basis of opens.
 		- Suggested minimal step: implement a Čech 0/1-cochain complex for a *finite* cover of an open and define `H¹` as a quotient kernel/image in `CommRingCat` or `ModuleCat`.
 
-- [ ] Poset homology / order complex in Lean (full): still blocked on selecting a concrete (finite) poset representation + a minimal invariant target (order complex vs graph/CW proxy).
+- [x] Poset homology / order complex in Lean (full): **DONE** — both cycle proxies are fully bridged.
 	- Unblocked starter: a minimal chain-level 1-cycle proxy is now implemented in Lean for causal posets (`PosetHomologyProxy.lean`) and for directed graphs (`DiscreteHomologyProxy.lean`).
 	- Unblocked scaffold (Lean): `lean/src/AqeiBridge/FiniteCausalPoset.lean` defines `FiniteCausalPoset (n : ℕ)` on `Fin n` with decidable relation + a computable `Chains` enumeration.
 	- Unblocked infrastructure: functorial pushforwards + invariance under point `OrderIso` (so the proxy behaves like an actual invariant under isomorphism).
-	- **DONE: `OrderComplexBridge.lean`** proves `Z1_oc_eq_bot_of_posethom`: the PosetHomologyProxy acyclicity (`Z1 = ⊥`) implies OC acyclicity (`Z1_oc = ⊥`), via an explicit injection `OC1 P → Edge (P.toCausalPoset)` and boundary-map commutativity (see `TODO-completed.md`, 2026-02-22).
-	- Next concretization: prove the converse direction (OC acyclicity implies Poset acyclicity when `P.rel a b → a ≤ b` in `Fin n`), giving a full isomorphism of the two proxies on "upward" posets.
+	- **DONE: `OrderComplexBridge.lean`** proves the full equivalence:
+		- `Z1_oc_eq_bot_of_posethom`: PosetHom acyclicity ⇒ OC acyclicity
+		- `Z1_posethom_eq_bot_of_oc`: OC acyclicity ⇒ PosetHom acyclicity (under `IsCompatible`)
+		- `Z1_oc_eq_bot_iff`: the bidirectional equivalence for compatible posets
+	- (see `TODO-completed.md`, 2026-02-22)
 
 - [ ] Replace synthetic AQEI constraints with worldline sampling bumps in Mathematica: blocked here (Mathematica pipeline moved).
 	- Location: implement in `aqei-numerical-validation/mathematica/`.

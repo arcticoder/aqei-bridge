@@ -20,8 +20,9 @@
 - [x] **Full Mathlib sheaf cohomology** → implement the suggested minimal Čech 0/1-cochain complex for a *finite* cover (Lean), so we can talk about an `H¹`-like quotient without pulling in all sheaf infrastructure.
   - Implemented: `lean/src/AqeiBridge/Cech01.lean` with `C0`, `C1`, `C2`, `d0`, `d1`, `d1_comp_d0 = 0`, and `H1Cech := ker(d1) / im(d0)` as a `Submodule` quotient.
 
-- [x] **Poset homology / order complex (full)** → add an “order complex proxy” that turns `FiniteCausalPoset.Chains` into a small simplicial/chain complex (degrees 0–2), then relate its degree-1 cycles to the existing `Z1 := ker ∂₁` proxy.
+- [x] **Poset homology / order complex (full)** → add an "order complex proxy" that turns `FiniteCausalPoset.Chains` into a small simplicial/chain complex (degrees 0–2), then relate its degree-1 cycles to the existing `Z1 := ker ∂₁` proxy.  **Fully bridged (2026-02-22)**.
   - Implemented: `lean/src/AqeiBridge/OrderComplexProxy.lean` with `OC1`/`OC2` simplex types, `bdy1` and `bdy2` boundary maps, `bdy1_comp_bdy2 = 0`, and `Z1_oc`, `B1_oc`, `H1_oc`.
+  - Implemented: `lean/src/AqeiBridge/OrderComplexBridge.lean` with full `↔` equivalence via `Z1_oc_eq_bot_iff` (under `IsCompatible`).
 
 - [x] **Future-set topology/continuity** → implement a real discrete base metric (graph shortest-path distance) for finite reachability models and upgrade the placeholder `discreteHausdorff ≤ 1` lemma to a perturbation-sensitive bound.
   - Target: new Lean file `lean/src/AqeiBridge/GraphDistance.lean` defining shortest-path distance on `Fin n` (undirected or directed-as-undirected), plus a lemma in `DiscreteFutureContinuity.lean` stating a Lipschitz-style bound for `J⁺` under a stated perturbation model.

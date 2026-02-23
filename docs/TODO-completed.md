@@ -3,7 +3,21 @@
 (Entries moved here from docs/TODO.md as they are completed.)
 
 ## 2026-02-22
-- `lean/src/AqeiBridge/OrderComplexBridge.lean` (NEW): OC↪PosetHom bridge theorem:
+- `lean/src/AqeiBridge/OrderComplexBridge.lean` — **full OC ↔ PosetHom equivalence**:
+  - `OC1_to_edge`: injection `OC1 P → Edge (P.toCausalPoset)` using antisymmetry
+  - `OC1_to_edge_injective`: proved via `congr_arg` on src/dst projections
+  - `bdy1_eq_boundary1_mapDomain`: boundary commutativity (proved by `Finsupp.induction`)
+  - `Z1_oc_eq_bot_of_posethom`: PosetHom acyclicity ⇒ OC acyclicity
+  - `IsCompatible`: condition `P.rel a b → a.val ≤ b.val` enabling the converse
+  - `edgeToOC1`: right inverse of `OC1_to_edge` under `IsCompatible`
+  - `mapDomain_OC1_to_edge_right_inv`: `mapDomain ι ∘ mapDomain ι⁻¹ = id` (proved by induction)
+  - `Z1_posethom_eq_bot_of_oc`: OC acyclicity ⇒ PosetHom acyclicity (under `IsCompatible`)
+  - `Z1_oc_eq_bot_iff`: **full bidirectional equivalence** `Z1_oc R P = ⊥ ↔ Z1 (P.toCausalPoset) R = ⊥`
+  - `lean/src/AqeiBridge.lean`: wired in `OrderComplexBridge` (already done in prior commit).
+  - `docs/TODO-BLOCKED.md`: marked "Poset homology / order complex" as `[x] DONE`.
+  - Ran `./run_tests.sh` (3397 jobs, all OK, no errors).
+
+- `lean/src/AqeiBridge/OrderComplexBridge.lean` (prior entry): OC↪PosetHom bridge theorem (one-direction only):
   - `OC1_to_edge`: injection `OC1 P → Edge (P.toCausalPoset)` using antisymmetry to discharge the strict-edge condition
   - `OC1_to_edge_injective`: injectivity of the injection (proved via `congr_arg` on src/dst projections)
   - `bdy1_eq_boundary1_mapDomain`: boundary-map commutativity `boundary1 (mapDomain ι x) = bdy1 R P x` (proved by `refine Finsupp.induction x ?_ ?_` + `simp` on singleton case using `boundary1_single`, `bdy1_single`, `edgeBoundary`)

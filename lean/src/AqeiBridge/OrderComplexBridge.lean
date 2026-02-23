@@ -115,5 +115,94 @@ theorem Z1_oc_eq_bot_of_posethom
   exact Finsupp.mapDomain_injective (OC1_to_edge_injective P)
     (hmapZ.trans (Finsupp.mapDomain_zero (f := OC1_to_edge P)).symm)
 
+/-! ## Compatibility and the converse direction -/
+
+/-- A `FiniteCausalPoset` is *compatible with the index order* when the poset relation
+respects the natural ordering of `Fin n` indices: `P.rel a b → a.val ≤ b.val`.
+
+Under this condition `OC1_to_edge` is a bijection, giving the converse of
+`Z1_oc_eq_bot_of_posethom` and hence the full equivalence of the two acyclicity
+conditions. -/
+def IsCompatible : Prop :=
+  ∀ a b : Fin n, P.rel a b → a.val ≤ b.val
+
+/-- Under compatibility, every strict edge of `P.toCausalPoset` arises from an `OC1`
+simplex: `edgeToOC1 hc` is a right inverse of `OC1_to_edge P`. -/
+def edgeToOC1 (hc : IsCompatible P)
+    (e : CausalPoset.Edge (P.toCausalPoset)) : OC1 P :=
+  ⟨(e.src, e.dst),
+   -- `<` on `Fin n` is definitionally `<` on `.val`, so this Nat proof works directly.
+   Nat.lt_of_le_of_ne (hc e.src e.dst e.ok.le)
+     (fun h => ne_of_lt e.ok (Fin.ext h)),
+   e.ok.le⟩
+
+@[simp] lemma edgeToOC1_src (hc : IsCompatible P)
+    (e : CausalPoset.Edge (P.toCausalPoset)) :
+    (edgeToOC1 P hc e).1.1 = e.src := rfl
+
+@[simp] lemma edgeToOC1_dst (hc : IsCompatible P)
+    (e : CausalPoset.Edge (P.toCausalPoset)) :
+    (edgeToOC1 P hc e).1.2 = e.dst := rfl
+
+/-- `edgeToOC1 hc` is a right inverse of `OC1_to_edge P`:
+`OC1_to_edge P (edgeToOC1 hc e) = e`. -/
+@[simp]
+lemma OC1_to_edge_edgeToOC1 (hc : IsCompatible P)
+    (e : CausalPoset.Edge (P.toCausalPoset)) :
+    OC1_to_edge P (edgeToOC1 P hc e) = e := by
+  cases e with
+  | mk src dst ok =>
+    simp [OC1_to_edge, edgeToOC1]
+
+/-- Under compatibility, `mapDomain (edgeToOC1 hc)` is a right inverse of
+`mapDomain (OC1_to_edge P)`. -/
+lemma mapDomain_OC1_to_edge_right_inv (hc : IsCompatible P)
+    (y : CausalPoset.Edge (P.toCausalPoset) →₀ R) :
+    Finsupp.mapDomain (OC1_to_edge P) (Finsupp.mapDomain (edgeToOC1 P hc) y) = y := by
+  classical
+  refine Finsupp.induction y ?_ ?_
+  · simp
+  · intro e r z _ _ ih
+    simp [Finsupp.mapDomain_add, Finsupp.mapDomain_single,
+          OC1_to_edge_edgeToOC1 P hc, ih]
+
+/-- **Converse bridge theorem**: under `IsCompatible`, OC acyclicity implies PosetHom
+acyclicity.
+
+Combined with `Z1_oc_eq_bot_of_posethom`, this yields the **full equivalence**
+for compatible posets; see `Z1_oc_eq_bot_iff`. -/
+theorem Z1_posethom_eq_bot_of_oc (hc : IsCompatible P)
+    (hZ : Z1_oc R P = ⊥) :
+    CausalPoset.Z1 (P.toCausalPoset) R = ⊥ := by
+  classical
+  rw [Submodule.eq_bot_iff]
+  intro y hy
+  rw [CausalPoset.Z1, LinearMap.mem_ker] at hy
+  -- Lift y to an OC chain via the right inverse
+  -- x := mapDomain (edgeToOC1 hc) y  satisfies  mapDomain (OC1_to_edge P) x = y
+  have hright : Finsupp.mapDomain (OC1_to_edge P)
+      (Finsupp.mapDomain (edgeToOC1 P hc) y) = y :=
+    mapDomain_OC1_to_edge_right_inv P R hc y
+  -- bdy1 x = boundary1 (mapDomain (OC1_to_edge P) x) = boundary1 y = 0
+  have hx : bdy1 R P (Finsupp.mapDomain (edgeToOC1 P hc) y) = 0 := by
+    have heq := bdy1_eq_boundary1_mapDomain P R (Finsupp.mapDomain (edgeToOC1 P hc) y)
+    -- heq : boundary1 (mapDomain (OC1_to_edge P) x) = bdy1 R P x
+    -- after right_inv: boundary1 y = bdy1 R P x
+    rw [hright] at heq
+    exact heq.symm.trans hy
+  -- x ∈ ker(bdy1) = Z1_oc = ⊥, so x = 0
+  have hx0 : Finsupp.mapDomain (edgeToOC1 P hc) y = 0 := by
+    rw [← Submodule.mem_bot (R := R), ← hZ]
+    exact LinearMap.mem_ker.mpr hx
+  -- y = mapDomain (OC1_to_edge P) x = mapDomain (OC1_to_edge P) 0 = 0
+  rw [← hright, hx0, Finsupp.mapDomain_zero]
+
+/-- **Full equivalence**: for a compatible `FiniteCausalPoset`, the order-complex and
+PosetHomology acyclicity conditions coincide:
+`Z1_oc R P = ⊥ ↔ Z1 (P.toCausalPoset) R = ⊥`. -/
+theorem Z1_oc_eq_bot_iff (hc : IsCompatible P) :
+    Z1_oc R P = ⊥ ↔ CausalPoset.Z1 (P.toCausalPoset) R = ⊥ :=
+  ⟨Z1_posethom_eq_bot_of_oc P R hc, Z1_oc_eq_bot_of_posethom P R⟩
+
 end OrderComplexBridge
 end AqeiBridge

@@ -948,3 +948,18 @@ The `bdy1_eq_boundary1_mapDomain` proof was broken because:
 All 3397 jobs pass.
 <!-- ------ -->
 ---
+Completed: *Run tests and commit* (3/3)
+
+Commit `71c43af` on `main`. Here's a summary of what was done:
+
+**New theorems in OrderComplexBridge.lean:**
+
+- `IsCompatible P` — the condition `∀ a b, P.rel a b → a.val ≤ b.val` (Fin index order consistent with poset)
+- `edgeToOC1 hc` — right inverse of `OC1_to_edge`: lifts any `Edge (P.toCausalPoset)` back to an `OC1 P` simplex
+- `mapDomain_OC1_to_edge_right_inv` — `mapDomain ι (mapDomain ι⁻¹ y) = y`
+- `Z1_posethom_eq_bot_of_oc` — **converse**: OC acyclicity ⇒ PosetHom acyclicity (under `IsCompatible`)
+- `Z1_oc_eq_bot_iff` — **full equivalence**: `Z1_oc R P = ⊥ ↔ Z1 (P.toCausalPoset) R = ⊥`
+
+The `"Poset homology / order complex"` item in TODO-BLOCKED.md is now marked `[x] DONE` and recorded in TODO-completed.md.
+<!-- ------ -->
+---
