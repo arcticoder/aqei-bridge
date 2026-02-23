@@ -10,6 +10,7 @@ import AqeiBridge.FiniteCausalPoset
 import AqeiBridge.DiscreteFutureContinuity
 import AqeiBridge.Cech01
 import AqeiBridge.OrderComplexProxy
+import AqeiBridge.OrderComplexBridge
 import AqeiBridge.StressEnergy
 import AqeiBridge.AQEI_Cone
 import AqeiBridge.Chambers

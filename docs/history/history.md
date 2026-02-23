@@ -933,3 +933,18 @@ The remaining open TODO items (relating `Z1_oc` to `DiscreteHomologyProxy.Z1` vi
 - There are still other non-fatal linter warnings elsewhere (mostly “try `simp` instead of `simpa`” and some `unusedSectionVars` in other modules); I didn’t chase those beyond the targeted cleanup in PosetHomologyProxy.lean.
 <!-- ------ -->
 ---
+Completed: *Update TODO docs and commit* (4/4)
+
+Done. Commit `1068c30` on `main`.
+
+**What was fixed and why it works:**
+
+The `bdy1_eq_boundary1_mapDomain` proof was broken because:
+1. `map_finsupp_sum` — not in scope with the current imports (the qualified `LinearMap.map_finsupp_sum` also doesn't exist by that name in this pinned Mathlib)
+2. `induction x using Finsupp.induction_linear` — "failed to elaborate eliminator" because the `induction ... using` syntax can't elaborate the predicate in this position
+
+**Fix**: Used `refine Finsupp.induction x ?_ ?_` (the pattern that works throughout PosetHomologyProxy.lean and H1Stability.lean), plus added two `@[simp] rfl` projection lemmas `OC1_to_edge_src`/`OC1_to_edge_dst` so that `simp` can reduce `(OC1_to_edge P e).src` → `e.1.1` and `.dst` → `e.1.2` in the singleton step. The induction step then closes via `simp only [Finsupp.mapDomain_add, Finsupp.mapDomain_single, map_add, ih, CausalPoset.boundary1_single, CausalPoset.edgeBoundary, OC1_to_edge_src, OC1_to_edge_dst, bdy1_single]`.
+
+All 3397 jobs pass.
+<!-- ------ -->
+---

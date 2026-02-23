@@ -13,18 +13,18 @@ Minimal after latest commits (e.g., diagnostics/posets unblock proxies). Moved u
 	- Unblocked starter: a minimal chain-level 1-cycle proxy is now implemented in Lean for causal posets (`PosetHomologyProxy.lean`) and for directed graphs (`DiscreteHomologyProxy.lean`).
 	- Unblocked scaffold (Lean): `lean/src/AqeiBridge/FiniteCausalPoset.lean` defines `FiniteCausalPoset (n : ℕ)` on `Fin n` with decidable relation + a computable `Chains` enumeration.
 	- Unblocked infrastructure: functorial pushforwards + invariance under point `OrderIso` (so the proxy behaves like an actual invariant under isomorphism).
-	- Next concretization: pick one target invariant (e.g. order complex simplicial homology) and prove one lemma tying it to chronology proxies.
-		- Suggested rep: a finite poset structure with an explicit `Finset` of events + decidable relation.
-		- Suggested target: order complex `Δ(P)` and simplicial/chain homology in degree 1; relate it to the existing `Z1 := ker ∂₁` proxy.
+	- **DONE: `OrderComplexBridge.lean`** proves `Z1_oc_eq_bot_of_posethom`: the PosetHomologyProxy acyclicity (`Z1 = ⊥`) implies OC acyclicity (`Z1_oc = ⊥`), via an explicit injection `OC1 P → Edge (P.toCausalPoset)` and boundary-map commutativity (see `TODO-completed.md`, 2026-02-22).
+	- Next concretization: prove the converse direction (OC acyclicity implies Poset acyclicity when `P.rel a b → a ≤ b` in `Fin n`), giving a full isomorphism of the two proxies on "upward" posets.
 
 - [ ] Replace synthetic AQEI constraints with worldline sampling bumps in Mathematica: blocked here (Mathematica pipeline moved).
 	- Location: implement in `aqei-numerical-validation/mathematica/`.
 	- Next concretization: add an *optional* mode that precomputes bump weights on the existing grid so constraints remain linear in coefficients.
 
-- [ ] Future-set topology/continuity (Hausdorff distance on subsets) in Lean: blocked on choosing a metric/topology on the base space and aligning it with the repo’s current abstract `Spacetime` interface.
-	- Unblocked scaffold (Lean): `lean/src/AqeiBridge/DiscreteHausdorff.lean` defines a Hausdorff-style distance `discreteHausdorff` for `Finset` parameterized by an arbitrary distance function.
-	- Unblocked starter lemma (Lean): `lean/src/AqeiBridge/DiscreteFutureContinuity.lean` picks the 0/1 discrete metric and proves a uniform bound `discreteHausdorff ≤ 1` (placeholder until shortest-path graph distance is implemented).
-	- Next concretization: specialize to a discrete metric (graph distance / Hamming / Jaccard) and prove a Lipschitz-style bound for futures under edge perturbations.
+- [x] **DONE** Future-set topology/continuity (Hausdorff distance on subsets) in Lean:
+	- `GraphDistance.lean`: bounded shortest-path proxy `boundedDist` on `Fin n`.
+	- `DiscreteHausdorff.lean`: `discreteHausdorff` for `Finset` parameterized by arbitrary distance.
+	- `DiscreteFutureContinuity.lean`: `jplus_discreteHausdorff_coverage` — Lipschitz-style bound for `JplusFinset` under edge perturbations.
+	- **Moved to TODO-completed.md (2026-02-22).**
 
 - [ ] Realistic backgrounds (e.g., Schwarzschild) and curved sweeps: blocked here (numerical solver work moved).
 	- Location: implement in `aqei-numerical-validation` (Python numeric sweep harness + deterministic `--test-mode`).

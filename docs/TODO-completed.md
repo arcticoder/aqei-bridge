@@ -3,6 +3,15 @@
 (Entries moved here from docs/TODO.md as they are completed.)
 
 ## 2026-02-22
+- `lean/src/AqeiBridge/OrderComplexBridge.lean` (NEW): OC↪PosetHom bridge theorem:
+  - `OC1_to_edge`: injection `OC1 P → Edge (P.toCausalPoset)` using antisymmetry to discharge the strict-edge condition
+  - `OC1_to_edge_injective`: injectivity of the injection (proved via `congr_arg` on src/dst projections)
+  - `bdy1_eq_boundary1_mapDomain`: boundary-map commutativity `boundary1 (mapDomain ι x) = bdy1 R P x` (proved by `refine Finsupp.induction x ?_ ?_` + `simp` on singleton case using `boundary1_single`, `bdy1_single`, `edgeBoundary`)
+  - `Z1_oc_eq_bot_of_posethom`: main bridge theorem — PosetHomologyProxy acyclicity (`Z1 P.toCausalPoset R = ⊥`) implies OC acyclicity (`Z1_oc R P = ⊥`), via `mapDomain_injective`.
+  - `lean/src/AqeiBridge.lean`: wired in `OrderComplexBridge`.
+  - Ran `./run_tests.sh` (3397 jobs, all OK, no errors).
+
+
 - `lean/src/AqeiBridge/DiscreteStabilityBridge.lean` (NEW): proved the discrete bridge conjecture:
   - `aqei_bridge_conjecture_discrete`: H₁ = 0 (acyclicity) is stable under AQEI-admissible edge removal, using `h1_stable_small_pert`. The AQEI parameters (`F`, `T`, `hT`) are explicit witnesses.
   - `aqei_bridge_full`: packages both H₁ stability (uniformly over `AQEI_cone F`) and `IsPathConnected (AQEI_cone F)` (from convexity + nonemptiness).
