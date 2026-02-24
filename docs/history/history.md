@@ -1005,3 +1005,19 @@ All done. Committed as `117557b`. Here's a summary of every change made:
 **TODO-BLOCKED.md** — presheaf "sections of futures" → concrete `F(U) = monotone maps U → ℤ`; Mathematica item + linearity/polyhedral constraint note; Schwarzschild item → "curved toy adjacency model, no PDE solving"
 <!-- ------ -->
 ---
+Committed as `b543886`. All nine changes:
+
+**conjecture.md**
+- **A.1b** added: explicit $Z_1(P') \subseteq Z_1(P)$ inclusion form as the stronger underlying result; zero-preservation (A.1) is its corollary; links naturally to C.2
+- **B.1 remark** added: "$\le n$ is a global coverage lemma and is not sharp — it reflects the diameter of the metric space, not the sensitivity of $J^+$"
+- **C.1**: removed "PDE → observable reduction / Green operator" language; replaced with "topology on hyperspace of subsets / continuity of $T \mapsto J^+_T(p)$ / discretization theorem"
+- **C.4**: "locally constant on polyhedral chambers" → explicit $\Phi|_{C_i} = \text{constant}$ notation; added target Lean lemma signature with `hch : ∀ i, IsChamber i → ∀ T₁ T₂ ∈ i, Φ T₁ = Φ T₂`
+
+**aqei-lean-formalization.tex**
+- `\usepackage{xspace}` added (fixes the `\xspace` in abstract)
+- `\label{thm:convex}` added to AQEI Cone Convexity theorem (fixes the forward reference in the path-connectedness proof)
+- "injection on edges" → "inclusion on edges — the edge set of $P'$ is a subset of the edge set of $P$" (avoids conflating with the vertex-map injectivity)
+- Empirical validation: "extend it to a wider perturbation regime than the proof directly covers" → "explore perturbation regimes not explicitly covered by the formal hypotheses"
+- Future work QFT item: scoped to "additional synthetic linear constraints motivated by QFT models, while preserving polyhedral structure"
+<!-- ------ -->
+---

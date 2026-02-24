@@ -40,6 +40,18 @@ is zero; by injectivity the original cycle is zero.
 inclusion. Any subset of edges (regardless of magnitude) is covered by the theorem
 because the proof uses only the inclusion structure, not any metric bound.
 
+### A.1b Monotonicity of Z₁ (Stronger Form)
+
+The proof mechanism actually establishes the stronger inclusion:
+$$
+Z_1(P';\mathbb{Z}) \subseteq Z_1(P;\mathbb{Z})
+$$
+under subgraph inclusion $P' \subseteq P$, via injectivity of $\mathrm{push}_1$.
+Zero-preservation (A.1) is then the special case
+$Z_1(P) = 0 \Rightarrow Z_1(P') = 0$.
+
+This stronger form is the direct reason C.2 (dimension inequality) is a natural next target.
+
 ---
 
 ### A.2 Path-Connected Admissible Region
@@ -105,6 +117,11 @@ metric `boundedDist`.
 This uses `GraphDistance.lean` (bounded shortest-path proxy on `Fin n`) and
 `DiscreteHausdorff.lean` (Hausdorff distance for `Finset`).
 
+**Remark (non-sharp bound).** Since `boundedDist` takes values in `{0, …, n}`,
+the bound $\le n$ is a global coverage lemma and is not sharp.
+It reflects the diameter of the metric space, not the sensitivity of $J^+$ to
+edge changes. The single-edge bound in §B.2 is the intended quantitative strengthening.
+
 ### B.2 Tight Single-Edge Bound (Target — Not Yet Proven)
 
 > **Target Lean name:** `jplus_hausdorff_le_one_of_edge_diff`
@@ -135,9 +152,9 @@ $T \in \mathrm{AQEI\_cone}(F)$, and prove that $H^1$-like invariants are stable
 under admissible perturbations in a Lorentzian continuum setting.
 
 This requires:
-- a precise topology on the hyperspace of futures $\{J^+(p)\}$,
-- continuity of $J^+$ under metric perturbations sourced by AQEI-admissible $T$,
-- and a PDE → observable reduction step (identifying which Green operator to use).
+- a topology on the hyperspace of subsets of $M$ (or a suitable discretization thereof),
+- a proof that the map $T \mapsto J^+_T(p)$ is continuous in that topology,
+- and a discretization theorem relating $P_T$ to $J^+_T$ formally.
 
 **Status:** Entirely open. The discrete theorems in §A provide combinatorial
 scaffolding but do not imply this.
@@ -168,12 +185,24 @@ remain to be formalized in `OrderComplexProxy.lean`.
 ### C.4 Chamber Constancy → Global Constancy (Target)
 
 **Goal:**  
-If a map $\Phi : \mathrm{AQEI\_cone}(F) \to \alpha$ is locally constant on
-polyhedral chambers, and the cone is convex (hence path-connected by A.2), then
-$\Phi$ is globally constant on the cone.
+If a map $\Phi : \mathrm{AQEI\_cone}(F) \to \alpha$ satisfies
+$$
+\Phi|_{C_i} = \text{constant} \quad \text{for each polyhedral chamber } C_i,
+$$
+and the cone is nonempty (hence path-connected by A.2), then $\Phi$ is globally
+constant on the cone.
 
 This provides a bridge tool for lifting discrete chamber stability to
 continuous parameter independence.
+
+**Target Lean lemma:**
+```lean
+theorem chamber_constancy_global
+  (C : Set V) (hconv : Convex ℝ C) (hne : C.Nonempty)
+  (Φ : V → α)
+  (hch : ∀ i, IsChamber i → ∀ T₁ T₂ ∈ i, Φ T₁ = Φ T₂)
+  : ∀ T₁ T₂ ∈ C, Φ T₁ = Φ T₂
+```
 
 ---
 

@@ -4,6 +4,7 @@
 \documentclass[12pt]{article}
 
 \usepackage{amsmath,amssymb,amsthm}
+\usepackage{xspace}
 \usepackage{hyperref}
 \usepackage{geometry}
 \geometry{margin=1in}
@@ -123,7 +124,7 @@ The AQEI-admissible region is a convex cone defined by linear inequalities:
 where $\{\ell_i\}$ are linear functionals encoding averaged energy density constraints.
 \end{definition}
 
-\begin{theorem}[AQEI Cone Convexity]
+\begin{theorem}[AQEI Cone Convexity]\label{thm:convex}
 For any $n, m$, $\text{AQEI\_cone}(n,m)$ is convex.
 \end{theorem}
 
@@ -201,8 +202,8 @@ bridge on top of this library.
 \begin{definition}[Subgraph / EdgeHom]
 A \emph{subgraph inclusion} from $P'$ into $P$
 (written $\mathrm{EdgeHom}\; P'\; P\; \mathrm{id}$) is an identity map on
-vertices together with an injection on edges — every edge $(u,v) \in P'$
-also belongs to $P$.  We write $P' \subseteq P$ for this relation.
+vertices together with an inclusion on edges --- the edge set of $P'$
+is a subset of the edge set of $P$.  We write $P' \subseteq P$ for this relation.
 \end{definition}
 
 \begin{theorem}[Discrete Bridge Theorem]\label{thm:discrete-bridge}
@@ -356,7 +357,7 @@ We implemented FFT-based perturbations on Minkowski grid posets (see \texttt{pyt
     \item \textbf{Test 2} (strong perturbation, $\epsilon=0.3$): 50 trials → 100\% invariance
 \end{itemize}
 
-These results are consistent with the machine-checked \texttt{h1\_stable\_small\_pert} theorem, and extend it to a wider perturbation regime than the proof directly covers.
+These results are consistent with the machine-checked \texttt{h1\_stable\_small\_pert} theorem, and explore perturbation regimes not explicitly covered by the formal hypotheses.
 
 Full experimental details are in \texttt{docs/h1\_stability\_results.md}.
 
@@ -374,7 +375,9 @@ Full experimental details are in \texttt{docs/h1\_stability\_results.md}.
 
 \begin{enumerate}
     \item Prove a quantitative Lipschitz bound on $J^+(p)$ covering radius as a function of edge perturbation magnitude
-    \item Derive synthetic AQEI constraints from a simple free scalar QFT model and verify cone membership automatically
+    \item Derive additional synthetic linear constraints motivated by simple QFT
+          energy-inequality models, while preserving the polyhedral structure of
+          the AQEI cone.
     \item Improve CI performance (currently 3397 build jobs; profile and parallelize)
 \end{enumerate}
 
