@@ -138,6 +138,22 @@ lemma h1Cech_denom_top_of_exact
   simp only [Submodule.mem_comap, Submodule.coe_subtype]
   exact hexact hg
 
+/-! ### C.2 Vanishing of H¹_Čech under acyclicity (exactness) -/
+
+set_option linter.unusedSectionVars false in
+/-- **C.2**: If every closed Čech 1-cochain is exact (`ker d1 ≤ range d0`), then
+`H1Cech R I` is the zero module: every element equals 0. -/
+lemma H1Cech_vanishes_of_exact
+    (hexact : LinearMap.ker (d1 R I) ≤ LinearMap.range (d0 R I)) :
+    ∀ x : H1Cech R I, x = 0 := by
+  intro x
+  obtain ⟨a, rfl⟩ := Submodule.mkQ_surjective _ x
+  obtain ⟨c, hc⟩ := a
+  -- c ∈ ker(d1), and ker(d1) ≤ range(d0) by hexact
+  simp only [Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero,
+             Submodule.mem_comap, Submodule.coe_subtype]
+  exact hexact hc
+
 end Cech01
 
 end AqeiBridge

@@ -1,4 +1,5 @@
 import Mathlib.Data.Finsupp.Basic
+import Mathlib.LinearAlgebra.Dimension.Basic
 
 import AqeiBridge.DiscreteHomologyProxy
 
@@ -173,6 +174,45 @@ theorem h1_stable_small_pert
     (P' : DiscreteSpacetime Pt) (hsub : EdgeHom P' P id) :
     dimH1IsZero P' :=
   Z1_eq_bot_of_subgraph (R := ℤ) hsub h0
+
+/-! ### A.2 Quantitative dimension inequality under subgraph inclusion -/
+
+/-- The restriction of `push1 id hsub` to the cycle submodule.
+Maps 1-cycles of `M₁` injectively into 1-cycles of `M₂`. -/
+private noncomputable def push1_Z1_map (hsub : EdgeHom M₁ M₂ id) :
+    ↥(Z1 (M := M₁) (R := ℤ)) →ₗ[ℤ] ↥(Z1 (M := M₂) (R := ℤ)) where
+  toFun := fun ⟨c, hc⟩ =>
+    ⟨push1 (M₁ := M₁) (M₂ := M₂) ℤ id hsub c,
+     push1_mem_Z1 (M₁ := M₁) (M₂ := M₂) ℤ id hsub hc⟩
+  map_add' := fun x y =>
+    Subtype.ext ((push1 (M₁ := M₁) (M₂ := M₂) (R := ℤ) id hsub).map_add x.1 y.1)
+  map_smul' := fun r x =>
+    Subtype.ext ((push1 (M₁ := M₁) (M₂ := M₂) (R := ℤ) id hsub).map_smul r x.1)
+
+/-- **A.2 Dimension inequality**: the rank of the 1-cycle space can only decrease
+under subgraph inclusion.  If `P' ⊆ P` (modelled by `EdgeHom M₁ M₂ id`), then
+`Module.rank ℤ (Z₁ M₁) ≤ Module.rank ℤ (Z₁ M₂)`.
+
+The key steps:
+1. `push1_Z1_map hsub : Z1 M₁ →ₗ[ℤ] Z1 M₂` (restricts the functor `push1`).
+2. This map is injective (by `push1_injective`).
+3. An injective linear map implies a rank inequality. -/
+theorem h1_dim_le_of_subgraph (hsub : EdgeHom M₁ M₂ id) :
+    Module.rank ℤ ↥(Z1 (M := M₁) (R := ℤ)) ≤
+    Module.rank ℤ ↥(Z1 (M := M₂) (R := ℤ)) := by
+  let ψ := push1_Z1_map (M₁ := M₁) (M₂ := M₂) hsub
+  have hψ_inj : Function.Injective ψ := by
+    intro ⟨c₁, _⟩ ⟨c₂, _⟩ h
+    apply Subtype.ext
+    -- h : ψ ⟨c₁, _⟩ = ψ ⟨c₂, _⟩; unfold ψ to see push1 id hsub c₁ = push1 id hsub c₂
+    simp only [ψ, push1_Z1_map] at h
+    exact push1_injective (hf := hsub) Function.injective_id (Subtype.ext_iff.mp h)
+  -- An injective linear map Z1(M₁) → Z1(M₂) yields a rank inequality
+  calc Module.rank ℤ ↥(Z1 (M := M₁) (R := ℤ))
+      = Module.rank ℤ ↥(LinearMap.range ψ) :=
+          (LinearEquiv.ofInjective ψ hψ_inj).rank_eq
+    _ ≤ Module.rank ℤ ↥(Z1 (M := M₂) (R := ℤ)) :=
+          Submodule.rank_le _
 
 end DiscreteSpacetime
 

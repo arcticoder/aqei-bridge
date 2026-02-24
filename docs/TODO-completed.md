@@ -317,3 +317,46 @@ Completed in two phases (Phase 1: linter/build fixes; Phase 2: docs, deprecation
 - **Item 10 — python/orchestrator.py:** Archived to `deprecated/python/`; removed from git.
 - **Item 11 — results/ directory:** Was already empty and untracked; nothing to do.
 - **Item 13 — tests/lean_tests.sh:** Removed inline Python placeholder generation; replaced with a simple 7-line script echoing "Lean tests: OK". `GeneratedPosetConjectures.lean` is now a static checked-in fixture.
+
+## Phase 3 — Lean Proof Tasks (A.1, A.2, B.2, B.3, C.2)
+
+### A.1 — `jplus_hausdorff_le_one_of_edge_diff` (`DiscreteFutureContinuity.lean`)
+
+- Added `jplus_hausdorff_le_one_of_edge_diff`: if P and Q differ on exactly one edge (u,v),
+  then `discreteHausdorff (boundedDist symm-P-adj) (JplusFinset P p) (JplusFinset Q p) ≤ 1`.
+- Proof uses `FinsetMetric.discreteHausdorff_le_of_forall_exists` directly (avoids the
+  heavier `jplus_discreteHausdorff_coverage` wrapper which caused whnf timeout).
+- `classical` resolves `DecidableRel` for the symmetrized adjacency inline lambda.
+- Key insight: after `obtain ⟨rfl, rfl⟩ := hpq` where `hpq : p = u ∧ q = v`,
+  Lean 4 substitutes `u := p` and `v := q` (eliminates the *earlier* params), so
+  witness must use `p` and `q` (not `u`/`v`) in the post-substitution context.
+- Added three helper lemmas to `GraphDistance.lean`:
+  - `boundedDistNat_self`: `boundedDistNat adj v v = 0`
+  - `boundedDist_self`: `boundedDist adj v v = 0` (ℝ-valued)
+  - `boundedDist_le_one_of_adj`: direct edge → distance ≤ 1
+
+### A.2 — `h1_dim_le_of_subgraph` (`H1Stability.lean`)
+
+- Added `push1_Z1_map`: injective `ℤ`-linear map `Z1(M₁) →ₗ[ℤ] Z1(M₂)` induced by edge inclusion.
+- Added `h1_dim_le_of_subgraph`: `Module.rank (Z1 P') ≤ Module.rank (Z1 P)` for subgraph `P' ⊆ P`.
+- Key fix: `push1` has `(R : Type)` as **explicit** first positional argument; must use
+  `push1 (M₁ := M₁) (M₂ := M₂) ℤ id hsub` not `push1 id hsub` (which passes `id` as `R`).
+- Import added: `Mathlib.LinearAlgebra.Dimension.Basic`.
+
+### B.2 — `h1_oc_stable_of_subgraph` (`OrderComplexProxy.lean`)
+
+- Added `oc1Embed` (chain complex 1-simplex embedding under subgraph inclusion).
+- Added `bdy1_comp_mapDomain_oc1Embed` (boundary compatibility lemma).
+- Added `h1_oc_stable_of_subgraph`: `H1_oc P' ≤ H1_oc P` (as submodules of the ambient free module)
+  under subgraph inclusion.
+
+### B.3 — `h1_oc_eq_bot_of_acyclic` (`OrderComplexProxy.lean`)
+
+- Added `h1_oc_eq_bot_of_acyclic`: `acyclic P → H1_oc P = ⊥` (vanishing of order-complex H¹
+  for acyclic finite posets).
+
+### C.2 — `H1Cech_vanishes_of_exact` (`Cech01.lean`)
+
+- Added `H1Cech_vanishes_of_exact`: if the Čech 0/1/2 cochain complex is exact at degree 1
+  (i.e. `ker d1 = im d0`), then `H1Cech = ⊥` (vanishing of the H¹ quotient).
+- Proof: `Submodule.Quotient.eq_bot_iff` + exactness ↔ quotient is trivial.

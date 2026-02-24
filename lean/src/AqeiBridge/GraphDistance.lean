@@ -86,6 +86,47 @@ lemma boundedDist_nonneg (adj : Fin n → Fin n → Prop) [DecidableRel adj] (v 
     0 ≤ boundedDist (n := n) adj v w := by
   simp [boundedDist]
 
+/-- The bounded graph distance from a vertex to itself is 0.
+Every vertex is in its own 0-ball, so `0 ∈ candidates`, and `inf' ≤ 0`. -/
+lemma boundedDistNat_self (adj : Fin n → Fin n → Prop) [DecidableRel adj] (v : Fin n) :
+    boundedDistNat (n := n) adj v v = 0 := by
+  have hmem0 : v ∈ ball (n := n) adj v 0 := Finset.mem_singleton_self v
+  have hmem_cands : 0 ∈ candidates (n := n) adj v v := by
+    simp only [candidates, Finset.mem_filter, Finset.mem_range]
+    exact ⟨Nat.succ_pos n, hmem0⟩
+  have hne : (candidates (n := n) adj v v).Nonempty := ⟨0, hmem_cands⟩
+  unfold boundedDistNat
+  simp only [hne, dif_pos]
+  have hinf : (candidates (n := n) adj v v).inf' hne (fun k => k) ≤ 0 :=
+    Finset.inf'_le (s := candidates (n := n) adj v v) (f := fun k => k) hmem_cands
+  omega
+
+/-- The bounded graph distance from a vertex to itself is 0 (ℝ version). -/
+lemma boundedDist_self (adj : Fin n → Fin n → Prop) [DecidableRel adj] (v : Fin n) :
+    boundedDist (n := n) adj v v = 0 := by
+  simp [boundedDist, boundedDistNat_self]
+
+/-- If there is a direct edge `adj v u`, the bounded graph distance from `v` to `u` is ≤ 1. -/
+lemma boundedDist_le_one_of_adj (adj : Fin n → Fin n → Prop) [DecidableRel adj]
+    {v u : Fin n} (h : adj v u) :
+    boundedDist (n := n) adj v u ≤ 1 := by
+  -- u is reachable from v in 1 step
+  have hmem_ball : u ∈ ball (n := n) adj v 1 := by
+    simp only [ball, step, Finset.mem_filter, Finset.mem_univ, true_and]
+    exact ⟨v, Finset.mem_singleton_self v, h⟩
+  -- so 1 ∈ candidates (need 1 < n+1, which follows from u : Fin n)
+  have hn : 0 < n := Nat.lt_of_le_of_lt (Nat.zero_le _) u.isLt
+  have hmem_cands : 1 ∈ candidates (n := n) adj v u := by
+    simp only [candidates, Finset.mem_filter, Finset.mem_range]
+    exact ⟨by omega, hmem_ball⟩
+  have hne : (candidates (n := n) adj v u).Nonempty := ⟨1, hmem_cands⟩
+  have hdist : boundedDistNat (n := n) adj v u ≤ 1 := by
+    unfold boundedDistNat
+    simp only [hne, dif_pos]
+    exact Finset.inf'_le (s := candidates (n := n) adj v u) (f := fun k => k) hmem_cands
+  simp only [boundedDist]
+  exact_mod_cast hdist
+
 end GraphDistance
 
 end AqeiBridge

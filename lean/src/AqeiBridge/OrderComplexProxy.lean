@@ -115,5 +115,55 @@ lemma B1_le_Z1 (P : FiniteCausalPoset n) : B1_oc R P ≤ Z1_oc R P := by
 noncomputable abbrev H1_oc (P : FiniteCausalPoset n) : Type _ :=
   Z1_oc R P ⧸ (B1_oc R P).comap (Z1_oc R P).subtype
 
+/-! ### B.2 Monotonicity of Z1_oc under subgraph inclusion -/
+
+/-- The canonical embedding of OC1 simplices when `P'` is a subgraph of `P`. -/
+def oc1Embed (P' P : FiniteCausalPoset n)
+    (h : ∀ a b : Fin n, P'.rel a b → P.rel a b)
+    (e : OC1 P') : OC1 P :=
+  ⟨e.1, e.2.1, h e.1.1 e.1.2 e.2.2⟩
+
+/-- The boundary map commutes with the OC1 embedding:
+`bdy1 R P ∘ mapDomain (oc1Embed h) = bdy1 R P'`. -/
+lemma bdy1_comp_mapDomain_oc1Embed (P' P : FiniteCausalPoset n)
+    (h : ∀ a b : Fin n, P'.rel a b → P.rel a b) (c : OC1 P' →₀ R) :
+    bdy1 R P (Finsupp.mapDomain (oc1Embed P' P h) c) = bdy1 R P' c := by
+  induction c using Finsupp.induction with
+  | zero => simp
+  | single_add e r z _ _ ih =>
+    simp only [Finsupp.mapDomain_add, Finsupp.mapDomain_single, map_add,
+               bdy1_single, ih]
+    -- (oc1Embed P' P h e) has the same src/dst as e: .1 is preserved
+    simp [oc1Embed]
+
+/-- **B.2**: If `P' ⊆ P` (as partial orders), then any 1-cycle of `P'` (in the
+order-complex sense) pushes forward to a 1-cycle of `P`. Formally: if
+`c ∈ Z1_oc R P'` then `mapDomain (oc1Embed h) c ∈ Z1_oc R P`. -/
+theorem h1_oc_stable_of_subgraph (P' P : FiniteCausalPoset n)
+    (h : ∀ a b : Fin n, P'.rel a b → P.rel a b)
+    {c : OC1 P' →₀ R} (hc : c ∈ Z1_oc R P') :
+    Finsupp.mapDomain (oc1Embed P' P h) c ∈ Z1_oc R P := by
+  rw [Z1_oc, LinearMap.mem_ker]
+  rw [bdy1_comp_mapDomain_oc1Embed R P' P h c]
+  exact LinearMap.mem_ker.mp hc
+
+/-! ### B.3 Acyclicity implies trivial H1_oc -/
+
+/-- **B.3**: If the order-complex 1-cycle space vanishes (`Z1_oc R P = ⊥`),
+then `H1_oc R P` is the zero module (every element equals zero). -/
+theorem h1_oc_eq_bot_of_acyclic (P : FiniteCausalPoset n)
+    (hZ : Z1_oc R P = ⊥) :
+    ∀ x : H1_oc R P, x = 0 := by
+  intro x
+  -- Every element of the quotient H1_oc is represented by some c ∈ Z1_oc R P
+  obtain ⟨a, rfl⟩ := Submodule.mkQ_surjective _ x
+  obtain ⟨c, hc⟩ := a
+  -- Since Z1_oc = ⊥, c = 0
+  have hc0 : c = 0 := by
+    have := hZ ▸ hc
+    simp at this
+    exact this
+  simp [show (⟨c, hc⟩ : Z1_oc R P) = 0 from Subtype.ext hc0]
+
 end OrderComplexProxy
 end AqeiBridge

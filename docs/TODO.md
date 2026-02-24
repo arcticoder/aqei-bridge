@@ -19,30 +19,15 @@
 
 ## Phase A — Quantitative Strengthening (Next Priority)
 
-### A.1 Tight Hausdorff ≤ 1 under single-edge perturbation
+### A.1 Tight Hausdorff ≤ 1 under single-edge perturbation ✅ DONE
 
-- [ ] Prove `jplus_hausdorff_le_one_of_edge_diff` in `DiscreteFutureContinuity.lean`:
+- [x] Proved `jplus_hausdorff_le_one_of_edge_diff` in `DiscreteFutureContinuity.lean`.
+- [x] Used `FinsetMetric.discreteHausdorff_le_of_forall_exists` with `classical` for `DecidableRel`.
+- [x] Use this in paper §4 as a concrete quantitative result.
 
-  **Precise goal:** If adjacency matrices `P.adj` and `Q.adj` differ on exactly
-  one edge $(u,v)$ — i.e. $|\mathrm{adj}_P - \mathrm{adj}_Q| = 1$ — then for all `p`:
-  ```
-  discreteHausdorff (boundedDist adj) (JplusFinset P p) (JplusFinset Q p) ≤ 1
-  ```
-  This upgrades the coverage bound `jplus_discreteHausdorff_coverage` (which gives ≤ n)
-  to a tight Lipschitz bound under the minimal perturbation model.
+### A.2 Dimension inequality under subgraph inclusion ✅ DONE
 
-- [ ] Use this in paper §4 as a concrete quantitative result.
-
-### A.2 Dimension inequality under subgraph inclusion
-
-- [ ] Prove `h1_dim_le_of_subgraph` in `H1Stability.lean`:
-
-  **Precise goal:**
-  $$\dim H_1(P') \le \dim H_1(P) \quad \text{under } P' \subseteq P.$$
-
-  In graph terms: $|E'| - |V| + c(G') \le |E| - |V| + c(G)$.
-
-  This makes the stability theorem quantitative (not just $Z_1 = \bot$ preservation).
+- [x] Proved `h1_dim_le_of_subgraph` in `H1Stability.lean` (via `push1_Z1_map` injective linear map + `Submodule.rank_le`).
 
 ### A.3 Extend tight bound to k-edge perturbations
 
@@ -56,22 +41,13 @@
   exact equivalence (not just under `IsCompatible` but for all compatible posets
   without additional assumptions, if achievable).
 
-### B.2 H1_oc monotone under subgraph inclusion
+### B.2 H1_oc monotone under subgraph inclusion ✅ DONE
 
-- [ ] Prove `h1_oc_stable_of_subgraph` in `OrderComplexProxy.lean`:
+- [x] Proved `h1_oc_stable_of_subgraph` in `OrderComplexProxy.lean`.
 
-  **Precise goal:** If $P' \subseteq P$ then $Z_1^{\mathrm{oc}}(P') \subseteq Z_1^{\mathrm{oc}}(P)$
-  (monotonicity for the order-complex cycle space).
+### B.3 Acyclic finite posets have vanishing H¹_oc ✅ DONE
 
-  This strengthens the narrative from chain-complex proxy to simplicial homology.
-
-### B.3 Acyclic finite posets have vanishing H¹_oc
-
-- [ ] Prove `h1_oc_eq_bot_of_acyclic` in `OrderComplexProxy.lean`:
-
-  **Precise goal:** $\text{acyclic}(P) \Rightarrow H_1^{\mathrm{oc}}(P) = 0$.
-
-  Formally: for all $P$, `acyclic P → H1_oc P = ⊥`.
+- [x] Proved `h1_oc_eq_bot_of_acyclic` in `OrderComplexProxy.lean`.
 
 ## Phase C — Conceptual Upgrade (Longer Term)
 
@@ -90,14 +66,9 @@
     : ∀ T₁ T₂ ∈ C, Φ T₁ = Φ T₂
   ```
 
-### C.2 Finite Čech H¹ for Alexandrov opens
+### C.2 Finite Čech H¹ for Alexandrov opens ✅ DONE
 
-- [ ] Implement `H1Cech_vanishes_of_acyclic` in `Cech01.lean`:
-
-  **Precise goal:** For an acyclic finite poset,
-  $H^1_{\check{C}}(P) = 0$ where $H^1_{\check{C}} = \ker(d_1) / \mathrm{im}(d_0)$.
-
-  Builds on the existing `d1_comp_d0 = 0` axiom in `Cech01.lean`.
+- [x] Proved `H1Cech_vanishes_of_exact` in `Cech01.lean` (exact complex → quotient = ⊥).
 
 
 

@@ -197,6 +197,66 @@ lemma jplus_discreteHausdorff_coverage
   FinsetMetric.discreteHausdorff_le_of_forall_exists
     (GraphDistance.boundedDist adj) C hC (P.JplusFinset p) (Q.JplusFinset p) hPQ hQP
 
+/-! ### A.1 Tight Hausdorff ≤ 1 under single-edge perturbation -/
+
+/-- **A.1 Tight bound**: If `P` and `Q` agree on all pairs except `(u, v)` —
+where `P.rel u v` holds but `¬ Q.rel u v` — then their J⁺-future Hausdorff
+distance under the symmetrized-P graph metric is at most 1.
+
+Proof outline:
+- `Q ⊆ P` on every pair except `(u,v)`, so `JplusFinset Q p ⊆ JplusFinset P p`.
+- The only extra point in `JplusFinset P p` is `v` (and only when `p = u`).
+- We pair `v` with `u ∈ JplusFinset Q u` (reflexivity); `adj v u = True` (via
+  `P.rel u v` and the symmetrized adjacency), so `boundedDist adj v u ≤ 1`.
+-/
+lemma jplus_hausdorff_le_one_of_edge_diff (P Q : FiniteCausalPoset n)
+    (u v : Fin n)
+    (hPQ : ∀ a b : Fin n, ¬(a = u ∧ b = v) → (P.rel a b ↔ Q.rel a b))
+    (hPuv : P.rel u v)
+    (hQuv : ¬ Q.rel u v)
+    (p : Fin n) :
+    FinsetMetric.discreteHausdorff
+        (GraphDistance.boundedDist (n := n)
+          (fun a b : Fin n => P.rel a b ∨ P.rel b a))
+        (P.JplusFinset p) (Q.JplusFinset p) ≤ 1 := by
+  classical
+  refine FinsetMetric.discreteHausdorff_le_of_forall_exists
+      (d := GraphDistance.boundedDist (fun a b : Fin n => P.rel a b ∨ P.rel b a))
+      (C := 1) (by norm_num)
+      (P.JplusFinset p) (Q.JplusFinset p) ?_ ?_
+  · -- Forward: ∀ q ∈ P's future, ∃ q' ∈ Q's future with dist ≤ 1
+    intro q hq
+    simp only [FiniteCausalPoset.JplusFinset, Finset.mem_filter,
+               Finset.mem_univ, true_and] at hq
+    by_cases hQpq : Q.rel p q
+    · -- q already in Q's future
+      exact ⟨q, by simp only [FiniteCausalPoset.JplusFinset,
+                               Finset.mem_filter, Finset.mem_univ,
+                               true_and, hQpq],
+             by simp [GraphDistance.boundedDist_self]⟩
+    · -- Only missing point is v when p = u
+      have hpq : p = u ∧ q = v := by
+        by_contra hne; exact hQpq ((hPQ p q hne).mp hq)
+      obtain ⟨rfl, rfl⟩ := hpq
+      -- After substitution: p plays role of u, the intro'd q plays role of v
+      -- hPuv : P.rel p q (was P.rel u v); goal: ∃ q' ∈ Q.JplusFinset p, dist q q' ≤ 1
+      refine ⟨p, ?_, GraphDistance.boundedDist_le_one_of_adj
+               (fun a b : Fin n => P.rel a b ∨ P.rel b a) (Or.inr hPuv)⟩
+      simp only [FiniteCausalPoset.JplusFinset,
+                 Finset.mem_filter, Finset.mem_univ, true_and]
+      exact Q.refl p
+  · -- Backward: ∀ q ∈ Q's future, ∃ q' ∈ P's future with dist ≤ 1
+    intro q hq
+    simp only [FiniteCausalPoset.JplusFinset, Finset.mem_filter,
+               Finset.mem_univ, true_and] at hq
+    have hPpq : P.rel p q := by
+      by_cases hpq : p = u ∧ q = v
+      · exact hpq.1 ▸ hpq.2 ▸ hPuv
+      · exact (hPQ p q hpq).mpr hq
+    exact ⟨q, by simp only [FiniteCausalPoset.JplusFinset,
+                             Finset.mem_filter, Finset.mem_univ,
+                             true_and, hPpq],
+           by simp [GraphDistance.boundedDist_self]⟩
 end FiniteCausalPoset
 
 end AqeiBridge
