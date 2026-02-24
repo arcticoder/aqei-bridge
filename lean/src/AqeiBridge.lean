@@ -36,8 +36,7 @@ import AqeiBridge.GlobalConjectures
 /-!
 Top-level import for the aqei-bridge Lean project.
 
-This repo intentionally separates:
-- formalizable toy-model definitions (Lean), from
-- heuristic / experimental search (Mathematica), from
-- orchestration and certificate generation (Python).
+This repository is a pure Lean 4 formal methods project.
+The previous hybrid workflow (Lean + Mathematica + Python) has been
+split out into the `aqei-numerical-validation` repository.
 -/

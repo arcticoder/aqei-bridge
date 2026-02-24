@@ -294,3 +294,26 @@
   - Refined `GlobalConjectures.lean` placeholders:
     - Added `global_h1_invariance` axiom (explicit interface statement)
     - Proved `CausalPoset.acyclic_iff_of_orderIso` (chronology proxy invariant under `OrderIso`)
+
+## Repository Assessment (2026-02-23) — All Items Complete
+
+Completed in two phases (Phase 1: linter/build fixes; Phase 2: docs, deprecation, test cleanup).
+
+### Phase 1 (committed as `fix: eliminate all Lean linter warnings; improve build scripts`)
+
+- **Item 1 — Lean linter warnings:** Fixed all `unnecessarySimpa`, `unusedSectionVars`, and `unusedSimpArgs` warnings in 13 lean/src/AqeiBridge/*.lean files.
+- **Item 2 / Item 12 — tests/build_lean.sh:** Updated with full Mathlib-noise filter (matching `energy-tensor-cone`); writes filtered log to `lean/build.log`.
+- **Item 14 — run_tests.sh:** Simplified: delegates to `bash tests/build_lean.sh` once; no duplicate `lake build`.
+
+### Phase 2 (committed as `docs: rewrite architecture/code-overview/toy-model; deprecate hybrid workflow artefacts`)
+
+- **Item 3 — docs/architecture.md:** Complete rewrite — replaced 4-stage Mathematica pipeline description with current pure Lean 4 formalization structure (4 layers).
+- **Item 4 — docs/code-overview.md:** Full rewrite covering all 30 current Lean source files; removed outdated entries and physics overclaims.
+- **Item 5 — docs/conjecture.md:** No action needed; already up to date.
+- **Item 6 — docs/toy-model.md:** Replaced with a historical note that redirects to current architecture docs; original content preserved verbatim in an "(Archived)" section.
+- **Item 7 — papers/aqei-bridge-hybrid-workflow.md:** Moved to `docs/history/aqei-bridge-hybrid-workflow.md`; removed from `papers/`.
+- **Item 8 — papers/aqei-lean-formalization.tex:** No action needed; already up to date.
+- **Item 9 — python/analyze_candidates.py:** Archived to `deprecated/python/`; removed from git.
+- **Item 10 — python/orchestrator.py:** Archived to `deprecated/python/`; removed from git.
+- **Item 11 — results/ directory:** Was already empty and untracked; nothing to do.
+- **Item 13 — tests/lean_tests.sh:** Removed inline Python placeholder generation; replaced with a simple 7-line script echoing "Lean tests: OK". `GeneratedPosetConjectures.lean` is now a static checked-in fixture.

@@ -1,55 +1,66 @@
-# Architecture: 4-stage AQEI-bridge pipeline
+# Architecture: AQEI-Bridge Lean 4 Formalization
 
-This repo implements a repeatable loop:
+This repository is a **pure formal methods project**: a Lean 4 library of
+machine-checked proofs for the AQEI-bridge conjecture in the discrete
+graph/poset toy model.
 
-1. **Stage I (Lean): language / formal interface**
-   - Defines toy-model types, cones, and *typed statements*.
-   - Keeps a strict boundary: no heuristic claims are assumed true in Lean.
+The previous Lean + Mathematica + Python hybrid workflow has been split out
+into [`aqei-numerical-validation`](https://github.com/arcticoder/aqei-numerical-validation).
+This repo is now exclusively the Lean formalization and its manuscript.
 
-2. **Stage II (Ansatz): model reduction choices**
-   - Picks a finite-dimensional stress-energy ansatz (Gaussian wavepackets).
-   - Picks a causal-observable proxy $\Delta$ (ray integral) used only for search.
+## Formalization layers
 
-3. **Stage III (Mathematica): heuristic “destruction” search**
-   - Solves a toy linearized equation via FFT + regularization.
-   - Optimizes $\Delta$ subject to (currently) proxy AQEI halfspace constraints.
-   - Writes `mathematica/results/summary.json` and `mathematica/results/top_candidates.json`.
+### 1. Mathematical structures (foundation)
+- **Stress-energy vectors:** `StressEnergy n = Fin n → ℝ` (`StressEnergy.lean`)
+- **AQEI cone:** Convex polyhedron as a finite halfspace intersection (`AQEI_Cone.lean`)
+- **Abstract causal posets:** Preorder axiomatization of causal precedence (`CausalPoset.lean`)
+- **Discrete graph model:** Finite directed graphs as causal posets
+  (`DiscreteCausalPoset.lean`, `DiscreteCausality.lean`, `DiscreteChronology.lean`)
 
-4. **Stage IV (Python): formal synthesis**
-   - Reads Mathematica JSON, rationalizes floats, and emits Lean data in
-     `lean/src/AqeiBridge/GeneratedCandidates.lean`.
-   - Runs `lake build` to ensure Lean typechecks.
+### 2. Homological invariants
+- **Chain complex proxy** (`DiscreteHomologyProxy.lean`, `PosetHomologyProxy.lean`):
+  low-degree chain complex C₀ ← C₁ ← C₂ with boundary maps; H₁ ≅ Z₁ proven.
+- **Order complex** (`OrderComplexProxy.lean`, `OrderComplexBridge.lean`):
+  simplicial construction, full `Z1_oc ↔ Z1` equivalence under `IsCompatible`.
+- **Čech cochain complex** (`Cech01.lean`):
+  minimal H¹ proxy `ker(d₁) / im(d₀)` for finite covers.
 
-## Dataflow diagram
+### 3. Main stability theorems
 
-```mermaid
-flowchart LR
-  A[Human conjecture] --> B[Lean: types + statements]
-  B --> C[Mathematica: search.wl]
-  C --> D[JSON results]
-  D --> E[Python: analyze_candidates.py]
-  E --> F[Lean: GeneratedCandidates.lean]
-  F --> G[lake build]
+| Theorem | Statement | File |
+|---------|-----------|------|
+| `h1_stable_small_pert` | H₁=0 is monotone under subgraph inclusion | `H1Stability.lean` |
+| `closedChamber_convex` | Chamber is a convex set | `Chambers.lean` |
+| `admissible_region_pathConnected` | AQEI cone is path-connected (given nonemptiness) | `CausalStability.lean` |
+| `aqei_bridge_conjecture_discrete` | Full bridge (H₁=0 + AQEI cone ∋ T) | `DiscreteStabilityBridge.lean` |
+
+### 4. Quantitative continuity
+- **Graph distance** (`GraphDistance.lean`): bounded shortest-path proxy `boundedDist`.
+- **Hausdorff bound** (`DiscreteFutureContinuity.lean`):
+  `jplus_discreteHausdorff_coverage` gives `discreteHausdorff ≤ n` for n-node graphs.
+
+## Build and test
+
+```bash
+# Single clean build (Mathlib noise filtered, diagnostics from src/ shown):
+./run_tests.sh
+
+# Or manually:
+cd lean && lake build
 ```
+
+The test runner writes a filtered log to `lean/build.log`.
 
 ## Key invariants
 
-- **Formal vs heuristic separation**
-  - Any claim that depends on PDE → observable reduction is labeled *heuristic*.
-  - Lean only receives: finite vectors, inequalities, and explicitly stated axioms.
+- **Zero `sorry`:** All main theorems are fully proven.
+- **Formal/conjectural separation:** Open conjectures are in `Conjecture.lean`
+  and `GlobalConjectures.lean`, clearly labeled.
+- **No overclaims:** The library models a discrete graph toy model, not
+  full Lorentzian QFT. Realistic generalizations remain future work.
 
-- **Small runnable examples**
-  - The default test configs use `AQEI_NUM_BASIS=2`, coarse grids, and a small number
-    of constraints to keep runtime low.
-
-## Reference-only dependency
-
-This repo is independent of the in-review manuscript, but development is expected
-to track (and cite) it as the source of the real AQEI functionals and analytic
-lemmas:
-
-- Local manuscript: `~/Code/asciimath/energy-tensor-cone/papers/aqei-cone-formalization-cqg.tex`
-- Related repo: https://github.com/DawsonInstitute/energy-tensor-cone
-
-Nothing in this repo should copy long passages verbatim; it should reference
-results and reconstruct only what is needed for the SciPost bridge paper.
+## Related repositories
+- [`energy-tensor-cone`](https://github.com/DawsonInstitute/energy-tensor-cone):
+  infinite-family AQEI cone formalization, extreme rays, closedness proofs.
+- [`aqei-numerical-validation`](https://github.com/arcticoder/aqei-numerical-validation):
+  numerical/Mathematica validation pipeline (split from this repo 2026-02-22).
