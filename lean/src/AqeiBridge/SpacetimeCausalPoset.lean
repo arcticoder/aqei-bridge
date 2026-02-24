@@ -60,8 +60,7 @@ This is a direct reuse of the `CausalPoset.isOpen_Jplus` lemma.
 theorem isOpen_Jplus_order (M : Spacetime) (g : Metric M) (ax : CausalAxioms M g) (p : M.Pt) :
     @IsOpen _ (alexandrovTopology M g ax) (Jplus_order M g p) := by
   let C : CausalPoset := toCausalPoset M g ax
-  simpa [alexandrovTopology, Jplus_order, CausalPoset.Jplus, C] using
-    (CausalPoset.isOpen_Jplus (C := C) (p := p))
+  simp [alexandrovTopology, Jplus_order]
 
 end Spacetime
 

@@ -51,6 +51,7 @@ noncomputable def edgeBoundaryMap (e : Edge M) : R →ₗ[R] (Pt →₀ R) where
 noncomputable def boundary1 : (Edge M →₀ R) →ₗ[R] (Pt →₀ R) :=
   Finsupp.lsum R (fun e => edgeBoundaryMap (M := M) (R := R) e)
 
+set_option linter.unusedSectionVars false in
 @[simp] theorem boundary1_single (e : Edge M) (r : R) :
     boundary1 (M := M) (R := R) (Finsupp.single e r) = r • edgeBoundary (M := M) (R := R) e := by
   simp [boundary1, edgeBoundaryMap, edgeBoundary]
@@ -79,6 +80,7 @@ noncomputable def push0 (f : Pt₁ → Pt₂) : (Pt₁ →₀ R) →ₗ[R] (Pt�
       map_add' := by intro a b; simp
       map_smul' := by intro a b; simp })
 
+set_option linter.unusedSectionVars false in
 @[simp] theorem push0_single (f : Pt₁ → Pt₂) (p : Pt₁) (r : R) :
     push0 (R := R) f (Finsupp.single p r) = Finsupp.single (f p) r := by
   simp [push0]
@@ -95,11 +97,13 @@ noncomputable def push1 (f : Pt₁ → Pt₂) (hf : EdgeHom M₁ M₂ f) :
       map_add' := by intro a b; simp
       map_smul' := by intro a b; simp })
 
+set_option linter.unusedSectionVars false in
 @[simp] theorem push1_single (f : Pt₁ → Pt₂) (hf : EdgeHom M₁ M₂ f) (e : Edge M₁) (r : R) :
     push1 (M₁ := M₁) (M₂ := M₂) (R := R) f hf (Finsupp.single e r)
       = Finsupp.single (mapEdge (M₁ := M₁) (M₂ := M₂) f hf e) r := by
   simp [push1]
 
+set_option linter.unusedSectionVars false in
 @[simp] theorem push0_edgeBoundary (f : Pt₁ → Pt₂) (hf : EdgeHom M₁ M₂ f) (e : Edge M₁) :
     push0 (R := R) f (edgeBoundary (M := M₁) (R := R) e)
       = edgeBoundary (M := M₂) (R := R) (mapEdge (M₁ := M₁) (M₂ := M₂) f hf e) := by
@@ -181,7 +185,7 @@ theorem push1_mem_Z1 (f : Pt₁ → Pt₂) (hf : EdgeHom M₁ M₂ f) {c : Edge 
     boundary1 (M := M₂) (R := R) (push1 (M₁ := M₁) (M₂ := M₂) (R := R) f hf c)
         = push0 (R := R) f (boundary1 (M := M₁) (R := R) c) :=
           boundary1_natural (M₁ := M₁) (M₂ := M₂) (R := R) f hf c
-    _ = push0 (R := R) f 0 := by simpa [hc]
+    _ = push0 (R := R) f 0 := by simp [hc]
     _ = 0 := by simp
 
 end Functorial

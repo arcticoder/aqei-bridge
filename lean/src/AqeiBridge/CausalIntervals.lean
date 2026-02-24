@@ -32,9 +32,8 @@ def IsLowerSet (C : CausalPoset) (s : Set C.Pt) : Prop :=
 /-- The complement of a lower set is an upper set. -/
 theorem isUpperSet_compl_of_isLowerSet (C : CausalPoset) {s : Set C.Pt}
     (hs : IsLowerSet C s) : IsUpperSet C sᶜ := by
-  intro a ha b hab
+  intro a ha b hab hb
   -- If b were in s, then by downward-closure a would be in s, contradiction.
-  intro hb
   exact ha (hs hb hab)
 
 /-- In the Alexandrov topology (opens = upper sets), lower sets are closed. -/

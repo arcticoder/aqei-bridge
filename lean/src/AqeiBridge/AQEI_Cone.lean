@@ -48,9 +48,8 @@ intersection of (closed) affine halfspaces is convex.
 -/
 theorem AQEI_cone_convex {n : ℕ} (F : List (AQEIFunctional n)) : Convex ℝ (AQEI_cone F) := by
   classical
-  intro x hx y hy a b ha hb hab
+  intro x hx y hy a b ha hb hab f hf
   -- Need to show all inequalities remain true under convex combination.
-  intro f hf
   have hx' : f.L x ≥ -f.B := hx f hf
   have hy' : f.L y ≥ -f.B := hy f hf
   -- Use linearity of `f.L` and `linarith`.
@@ -98,7 +97,7 @@ theorem AQEI_cone_isClosed {n : ℕ} (F : List (AQEIFunctional n)) :
   induction F with
   | nil =>
     -- empty list ⟹ whole space, which is closed
-    simpa [AQEI_cone] using (isClosed_univ : IsClosed (Set.univ : Set (StressEnergy n)))
+    simp [AQEI_cone]
   | cons f fs ih =>
     -- split head constraint off
     have h : AQEI_cone (f :: fs) = {T : StressEnergy n | f.L T ≥ -f.B} ∩ AQEI_cone fs := by

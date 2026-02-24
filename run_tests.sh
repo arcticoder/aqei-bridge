@@ -9,7 +9,7 @@ cd "$ROOT_DIR"
 echo "=== aqei-bridge Lean tests ==="
 
 echo "--- Lean build ---"
-(cd "$ROOT_DIR/lean" && lake build)
+bash "$ROOT_DIR/tests/build_lean.sh"
 
 if [[ -f "$ROOT_DIR/tests/lean_tests.sh" ]]; then
     echo "--- Lean typecheck ---"

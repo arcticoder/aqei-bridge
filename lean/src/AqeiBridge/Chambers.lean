@@ -55,7 +55,7 @@ theorem closedChamber_convex {ι : Type} (F : ι → AQEIFunctional n) (active :
           = a * (F i).L x + b * (F i).L y := hlin
       _   = a * (-(F i).B) + b * (-(F i).B) := by simp [hx', hy']
       _   = (a + b) * (-(F i).B) := by ring
-      _   = -(F i).B := by simpa [hab]
+      _   = -(F i).B := by simp [hab]
   · intro i hi
     have hx' : (F i).L x ≥ -(F i).B := (hx.2 i hi)
     have hy' : (F i).L y ≥ -(F i).B := (hy.2 i hi)
@@ -67,7 +67,7 @@ theorem closedChamber_convex {ι : Type} (F : ι → AQEIFunctional n) (active :
     have h2 : b * (F i).L y ≥ b * (-(F i).B) := by nlinarith
     have hsum : a * (F i).L x + b * (F i).L y ≥ (a + b) * (-(F i).B) := by linarith
     -- Rewrite with hab.
-    simpa [ClosedChamber, hlin, hab] using hsum
+    simpa [hlin, hab] using hsum
 
 theorem closedChamber_isPathConnected {ι : Type} (F : ι → AQEIFunctional n) (active : Set ι)
     (hne : (ClosedChamber (n := n) F active).Nonempty) :

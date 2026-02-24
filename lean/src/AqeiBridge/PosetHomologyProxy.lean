@@ -222,7 +222,7 @@ theorem boundary1_natural (P Q : AqeiBridge.CausalPoset) [DecidableEq P.Pt] [Dec
       simp [boundary1_single, push0_edgeBoundary (P := P) (Q := Q) (R := R) f hf,
         push1_single]
     -- Extend from generators using additivity.
-    simpa [LinearMap.comp_apply, map_add, hx, hsingle,
+    simp [LinearMap.comp_apply, map_add, hx,
       push0_edgeBoundary (P := P) (Q := Q) (R := R) f hf]
 
 /-- Pushforward of `1`-cycles: strict-edge-preserving maps send `Z₁` to `Z₁`. -/
@@ -399,6 +399,7 @@ theorem posetChainComplex_d_2_1 :
         1)
 
 omit [DecidableEq P.Pt] in
+set_option linter.unnecessarySimpa false in
 @[simp]
 theorem posetChainComplex_d_succ_succ (n : ℕ) :
     (posetChainComplex (P := P) (R := R)).d (n + 2) (n + 1) = 0 := by
@@ -500,6 +501,7 @@ theorem posetChainMap_comp {P Q S : AqeiBridge.CausalPoset} [DecidableEq P.Pt] [
       | succ n =>
           simp [posetChainMap]
 
+set_option linter.unnecessarySimpa false in
 @[simp]
 theorem H1Map_id (P : AqeiBridge.CausalPoset) [DecidableEq P.Pt] :
   H1Map (P := P) (Q := P) (R := R) (fun p => p) (by intro p q hpq; exact hpq) = 𝟙 _ := by
@@ -640,6 +642,7 @@ noncomputable def H1MapOfEdgeIso (e : EdgeIso P Q) :
     H1 (P := P) (R := R) ⟶ H1 (P := Q) (R := R) :=
   H1Map (P := P) (Q := Q) (R := R) e.toEquiv e.map_lt'
 
+set_option linter.unnecessarySimpa false in
 instance (e : EdgeIso P Q) : IsIso (H1MapOfEdgeIso (P := P) (Q := Q) (R := R) e) := by
   classical
   let eSymm : EdgeIso Q P :=

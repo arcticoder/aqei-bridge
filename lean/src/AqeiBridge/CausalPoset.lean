@@ -54,12 +54,10 @@ noncomputable def alexandrovTopology (C : CausalPoset) : TopologicalSpace C.Pt w
     intro a ha b hab
     trivial
   isOpen_inter := by
-    intro s t hs ht
-    intro a ha b hab
+    intro s t hs ht a ha b hab
     exact ⟨hs ha.1 hab, ht ha.2 hab⟩
   isOpen_sUnion := by
-    intro S hS
-    intro a ha b hab
+    intro S hS a ha b hab
     rcases ha with ⟨s, hsS, has⟩
     refine ⟨s, hsS, ?_⟩
     exact hS s hsS has hab

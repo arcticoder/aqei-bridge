@@ -38,7 +38,7 @@ theorem active_subset_chamberIndex_of_mem_closedChamber
   -- If `i` is active, we have equality `L T = -B`, hence also `≤ -B`.
   have heq : (F i).L T = -(F i).B := hT.1 i hi
   show (F i).L T ≤ -(F i).B
-  simpa [heq]
+  simp [heq]
 
 theorem chamberIndex_eq_active_of_mem_closedChamber_of_inactive_strict
     (F : ι → AQEIFunctional n) (active : Set ι) {T : StressEnergy n}
@@ -55,7 +55,7 @@ theorem chamberIndex_eq_active_of_mem_closedChamber_of_inactive_strict
   · intro hi
     have heq : (F i).L T = -(F i).B := hT.1 i hi
     show (F i).L T ≤ -(F i).B
-    simpa [heq]
+    simp [heq]
 
 theorem mem_Chamber_of_mem_closedChamber_of_inactive_strict
     (F : ι → AQEIFunctional n) (active : Set ι) {T : StressEnergy n}

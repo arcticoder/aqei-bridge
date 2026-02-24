@@ -33,7 +33,7 @@ def DiscreteFuture (J : StressEnergy n → DiscreteSpacetime Pt) (p : Pt) : Stre
 theorem discreteFuture_eq_of_J_eq (J : StressEnergy n → DiscreteSpacetime Pt) (p : Pt)
     {T₁ T₂ : StressEnergy n} (h : J T₁ = J T₂) :
     DiscreteFuture (n := n) J p T₁ = DiscreteFuture (n := n) J p T₂ := by
-  simpa [DiscreteFuture] using congrArg (fun M => JplusDiscrete M p) h
+  simp [DiscreteFuture, h]
 
 theorem image_eq_singleton_of_constantOn {α β : Type} {S : Set α} {f : α → β}
     (hne : S.Nonempty) (hconst : ConstantOn S f) : f '' S = ({f hne.choose} : Set β) := by
@@ -43,7 +43,7 @@ theorem image_eq_singleton_of_constantOn {α β : Type} {S : Set α} {f : α →
   · rintro ⟨x, hx, rfl⟩
     have hx0 : hne.choose ∈ S := hne.choose_spec
     have : f x = f hne.choose := hconst hx hx0
-    simpa [Set.mem_singleton_iff, this]
+    simp [Set.mem_singleton_iff, this]
   · intro hy
     have hy' : y = f hne.choose := by
       simpa [Set.mem_singleton_iff] using hy

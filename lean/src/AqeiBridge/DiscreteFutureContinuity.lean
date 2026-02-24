@@ -95,7 +95,7 @@ lemma maxDistToSet_disc01_eq_zero_of_subset {A B : Finset α} (hAB : A ⊆ B) :
       refine Finset.sup'_le (H := hA) (f := fun a => minDistToSet disc01 a B) ?_
       intro a ha
       have : a ∈ B := hAB ha
-      simpa [minDistToSet_disc01_eq_zero_of_mem (a := a) (B := B) this]
+      simp [minDistToSet_disc01_eq_zero_of_mem (a := a) (B := B) this]
     have hge : (0 : ℝ) ≤ (A.sup' hA fun a => minDistToSet disc01 a B) := by
       have hA' : A.Nonempty := hA
       rcases hA with ⟨a0, ha0⟩
@@ -106,14 +106,14 @@ lemma maxDistToSet_disc01_eq_zero_of_subset {A B : Finset α} (hAB : A ⊆ B) :
             refine (Finset.le_inf'_iff (s := B) (H := hB) (f := fun b => disc01 a0 b)).2 ?_
             intro b hb
             exact disc01_nonneg (a := a0) (b := b)
-          simpa [minDistToSet, hB] using hinf
+          simp [minDistToSet, hB, hinf]
         · simp [minDistToSet, hB]
       have hsupa : minDistToSet disc01 a0 B ≤ (A.sup' hA' fun a => minDistToSet disc01 a B) := by
         exact Finset.le_sup' (s := A) (f := fun a => minDistToSet disc01 a B) ha0
       exact le_trans h0 hsupa
     have : A.sup' hA (fun a => minDistToSet disc01 a B) = 0 :=
-      le_antisymm (by simpa using hsup) (by simpa using hge)
-    simpa [maxDistToSet, hA, this]
+      le_antisymm (by simp [hsup]) (by simp [hge])
+    simp [maxDistToSet, hA, this]
   · simp [maxDistToSet, hA]
 
 lemma maxDistToSet_disc01_eq_zero_of_eq {A B : Finset α} (h : A = B) :

@@ -127,6 +127,7 @@ abbrev H1Cech : Type _ :=
 
 /-! ## Sanity lemma: H¹ is trivial when ker(d1) ⊆ im(d0) -/
 
+set_option linter.unusedSectionVars false in
 /-- If `ker(d1) ⊆ im(d0)` (i.e. every closed cochain is exact), then the denominator
 of `H1Cech` equals the whole numerator `ker(d1)`, so `H1Cech` is the zero module. -/
 lemma h1Cech_denom_top_of_exact

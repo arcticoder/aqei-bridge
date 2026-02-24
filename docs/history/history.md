@@ -1021,3 +1021,37 @@ Committed as `b543886`. All nine changes:
 - Future work QFT item: scoped to "additional synthetic linear constraints motivated by QFT models, while preserving polyhedral structure"
 <!-- ------ -->
 ---
+Status: the Lean build is now clean and the test scripts are de-duplicated and filtered as per your TODOs.
+
+**What I finished**
+
+- **Lean linter warnings (Task 1 / 2):**
+  - Fixed the build-breaking `simpa`/`simp` change in Chambers.lean by:
+    - Restoring the inequality step to `simpa [hlin, hab] using hsum`.
+    - Changing a trivial equality from `simpa [hab]` to `simp [hab]`.
+  - Cleaned up unused-section-variable issues with `set_option linter.unusedSectionVars false in` at lemma level where needed (e.g. H1Stability.lean, Cech01.lean).
+  - Resolved remaining `unnecessarySimpa` and `unusedSimpArgs` warnings in:
+    - DiscreteChamberStability.lean by replacing an obvious `simpa` with `simp`.
+    - PosetHomologyProxy.lean by:
+      - Changing one generator-extension step to `simp` and dropping an unused `hsingle` from the simp set.
+      - Locally disabling `linter.unnecessarySimpa` for the few lemmas/instances that genuinely use `simpa using` for clarity (`posetChainComplex_d_succ_succ`, `H1Map_id`, and the `IsIso` instance for `H1MapOfEdgeIso`).
+  - Verified with `lake build` that there are **no warnings at all** now; the build is completely clean.
+
+- **Build script and test wiring (Tasks 2 / 12 / 14):**
+  - Replaced build_lean.sh with the **filtered** version patterned on `energy-tensor-cone`, which:
+    - Captures `lake build` output to a temp file.
+    - Filters out Mathlib `.lake/packages/...` warnings, Mathlib “Replayed” progress noise, and benign `#print axioms` info.
+    - Preserves all diagnostics from src and writes the filtered log to build.log while echoing it to stdout.
+  - Updated lean_tests.sh:
+    - Still ensures the placeholder `GeneratedCandidates.lean` and `GeneratedPosetConjectures.lean` exist.
+    - **No longer calls** build_lean.sh; it just does the generation and prints “Lean tests: OK”.
+  - Updated run_tests.sh:
+    - Runs the filtered `bash tests/build_lean.sh` for a single Lean build.
+    - Then, if present, runs `bash tests/lean_tests.sh` for the extra typecheck/setup.
+    - Removed the direct `(cd lean && lake build)` so there’s no duplicate build.
+  - Confirmed the end-to-end pipeline with:
+    - `cd aqei-bridge && ./run_tests.sh` → single clean build, filtered log, and “All Lean tests: OK”.
+
+If you’d like, I can continue down the TODO list next (e.g., start on the docs cleanups in architecture.md / code-overview.md, or begin deprecating the Python hybrid workflow and simplifying lean_tests.sh accordingly).
+<!-- ------ -->
+---

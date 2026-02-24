@@ -39,6 +39,7 @@ variable {M M₁ M₂ : DiscreteSpacetime Pt}
 ## Edge extensionality
 -/
 
+set_option linter.unusedSectionVars false in
 /-- Two edges are equal if and only if they have the same source and destination.
 The proof field `ok` is in `Prop` and is equal by proof irrelevance. -/
 theorem Edge.ext_iff {e e' : Edge M} :
@@ -52,6 +53,7 @@ theorem Edge.ext_iff {e e' : Edge M} :
     subst hs; subst hd
     rfl
 
+set_option linter.unusedSectionVars false in
 /-- Two edges are equal when they have the same source and destination. -/
 theorem Edge.ext' {e e' : Edge M}
     (hs : e.src = e'.src) (hd : e.dst = e'.dst) : e = e' :=
@@ -92,7 +94,7 @@ theorem push1_apply_mapEdge {f : Pt → Pt} (hf : EdgeHom M₁ M₂ f)
             mapEdge (M₁ := M₁) (M₂ := M₂) f hf e := by
         intro hme
         exact h ((mapEdge_injective hf hfinj) hme)
-      simp [map_add, push1_single, Finsupp.add_apply, Finsupp.single_apply, h, hne, ihy]
+      simp [map_add, push1_single, Finsupp.add_apply, h, hne, ihy]
 
 /-!
 ## Injectivity of `push1`

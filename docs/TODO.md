@@ -269,3 +269,61 @@ where $\dim H_1(P) = |E| - |V| + c(G)$ (Z₁ dimension proxy).
 - `exact Convex.isPathConnected` — if convex set non-empty, it's path-connected
 - `nlinarith`, `linarith`, `ring` — for arithmetic steps
 - `simp [AQEI_cone, AQEIFunctional]` — unfold definitions
+
+## Repository Assessment (2026-02-23)
+
+### 1. `lean/lakefile.lean` and `lean/src`
+- **Issues:** The Lean source files contain numerous linter warnings (e.g., `unnecessarySimpa`, `unusedSectionVars`, `unusedSimpArgs`). This indicates unpolished code that would raise concerns in a formal methods peer review.
+- **Action:** Fix all linter warnings in `lean/src/AqeiBridge/*.lean`.
+
+### 2. `lake build` and warnings
+- **Issues:** `lake build` works, but produces warnings from our own source files. The build script `tests/build_lean.sh` does not filter Mathlib warnings like the reference `energy-tensor-cone/tests/build_lean.sh` does, making it hard to see our own warnings clearly.
+- **Action:** Update `tests/build_lean.sh` to filter Mathlib warnings, and ensure `lake build` is warning-free.
+
+### 3. `docs/architecture.md`
+- **Issues:** Contains outdated physics overclaims and describes a "heuristic 'destruction' search" using Mathematica, which contradicts the new formal methods framing.
+- **Action:** Rewrite or remove to align with the formal methods focus.
+
+### 4. `docs/code-overview.md`
+- **Issues:** Outdated. Mentions files like `StressEnergy.lean`, `Spacetime.lean`, `DiscreteCausality.lean`, `DiscreteChronology.lean` which are either placeholders or contain physics overclaims.
+- **Action:** Update to reflect the current Lean files and formal methods focus.
+
+### 5. `docs/conjecture.md`
+- **Issues:** None. Recently updated to be strictly formal methods.
+- **Action:** None.
+
+### 6. `docs/toy-model.md`
+- **Issues:** Contains physics overclaims (Gaussian wavepackets, FFT, Green multiplier) and describes the Mathematica search proxy. Contradicts formal methods framing.
+- **Action:** Remove or heavily rewrite to remove physics overclaims.
+
+### 7. `papers/aqei-bridge-hybrid-workflow.md`
+- **Issues:** Contains physics overclaims and describes the hybrid workflow (Mathematica/Python/Lean) which is no longer the focus.
+- **Action:** Remove or heavily rewrite.
+
+### 8. `papers/aqei-lean-formalization.tex`
+- **Issues:** None. Recently rewritten for formal methods.
+- **Action:** None.
+
+### 9. `python/analyze_candidates.py`
+- **Issues:** Part of the deprecated hybrid workflow. Reads Mathematica JSON and emits Lean code.
+- **Action:** Remove or deprecate.
+
+### 10. `python/orchestrator.py`
+- **Issues:** Part of the deprecated hybrid workflow. Orchestrates Mathematica and Python scripts.
+- **Action:** Remove or deprecate.
+
+### 11. `results` directory
+- **Issues:** Empty. Probably a leftover from the hybrid workflow.
+- **Action:** Remove.
+
+### 12. `tests/build_lean.sh`
+- **Issues:** Does not filter Mathlib warnings.
+- **Action:** Update to match `energy-tensor-cone/tests/build_lean.sh`.
+
+### 13. `tests/lean_tests.sh`
+- **Issues:** Generates placeholder files for the deprecated Python scripts (`GeneratedCandidates.lean`, `GeneratedPosetConjectures.lean`).
+- **Action:** Remove the generation of these placeholder files if the Python scripts are removed.
+
+### 14. `run_tests.sh`
+- **Issues:** Runs `lake build` twice (once directly, once via `tests/lean_tests.sh`).
+- **Action:** Simplify to run `tests/build_lean.sh` and `tests/lean_tests.sh` without redundant builds.

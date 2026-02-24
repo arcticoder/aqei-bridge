@@ -46,8 +46,7 @@ theorem continuous_alexandrov_of_le_monotone
     @Continuous _ _ (alexandrovTopology C₁) (alexandrovTopology C₂) f := by
   classical
   refine continuous_def.2 ?_
-  intro s hs
-  intro a ha b hab
+  intro s hs a ha b hab
   exact hs ha (hf hab)
 
 end CausalPoset
