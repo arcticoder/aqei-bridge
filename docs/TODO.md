@@ -2,31 +2,102 @@
 
 ## CRITICAL: Rewrite aqei-lean-formalization.tex for formal methods venue
 
-**Context (2026-02-23):** The current draft overclaims in three areas that will cause desk-rejection at any serious venue:
-1. LIGO/Virgo "causal graph H₁ verification" — NR instability is constraint violation + boundary artifacts, not spurious 1-cycles. Remove entirely.
-2. Deep-space GPS time synchronisation — Real corrections use post-Newtonian expansion, not Alexandrov-topology certification. Remove entirely.
-3. QKD exotic-matter eavesdropping — No realistic threat model, no operational protocol. Remove entirely.
+**Context (2026-02-23):** Paper now targets CPP / ITP / JAR. All overclaiming sections removed. ✅ **FULLY DONE.**
 
-**Correct framing:** This is an early-stage formal-methods paper, not a physics result. Target venue: CPP / ITP / JAR.
-
-Concrete tasks:
-- [x] Remove §7 (Real-World Applications) entirely — all three subsections and their bib entries (`abbott2016ligo`, `alcubierre2008numerical`, `gisin2002quantum`, `ashby2003relativity`)
-- [x] Rewrite abstract: honest framing as discrete causal poset + convex cone library contribution in Lean 4
+- [x] Remove §7 (Real-World Applications) entirely
+- [x] Rewrite abstract: honest framing as discrete causal poset + convex cone library
 - [x] Update §1.2 (Contributions) to list only what is actually proven
-- [x] Fix §4 (Key Theorems) table: replace stale status with actual theorem list (0 sorries, 131 lemmas/theorems, ~3900 lines)
-- [x] Fix proof sketch for H₁ stability to match actual Lean proof (subgraph monotonicity, not rank-nullity perturbation bounds)
-- [x] Fix module list (remove `SpacetimeCausalPoset.lean` misattribution, add real modules)
-- [x] Update conclusion to remove references to deleted §7 applications
+- [x] Fix §4 (Key Theorems): 0 sorries, 131 lemmas/theorems, ~3900 lines
+- [x] Fix proof sketch to match actual Lean proof (subgraph monotonicity)
+- [x] Fix module list
+- [x] Update conclusion
 - [x] Retarget keywords for formal methods audience
+- [x] Replace vague ε-ball Perturbation definition with exact EdgeHom/subgraph definition
+- [x] Replace vague H₁ Invariance theorem with exact Lean statement (explicit `EdgeHom P' P id` hypothesis)
+- [x] Add explicit Path-Connected Admissible Region theorem with nonemptiness hypothesis
+- [x] Move proven conjecture to a `\begin{theorem}` block; separate open continuous bridge as a `\begin{conjecture}`
 
-## HIGH: Prove a quantitative Lipschitz bound on discrete futures
+## Phase A — Quantitative Strengthening (Next Priority)
 
-**Context:** The user asks for "a genuine Lipschitz bound on discrete futures under convex-parameter perturbations" as the next nontrivial theorem that would materially upgrade the paper.
+### A.1 Tight Hausdorff ≤ 1 under single-edge perturbation
 
-The existing `jplus_discreteHausdorff_coverage` in `DiscreteFutureContinuity.lean` gives a coverage bound; the goal is a proper `discreteHausdorff (boundedDist adj) (JplusFinset P p) (JplusFinset Q p) ≤ 1` when `P` and `Q` differ by at most one edge — making the bound *explicit* and *tight*.
+- [ ] Prove `jplus_hausdorff_le_one_of_edge_diff` in `DiscreteFutureContinuity.lean`:
 
-- [ ] Add `jplus_hausdorff_le_one_of_edge_diff` to `DiscreteFutureContinuity.lean`: when adjacency matrices `P.adj` and `Q.adj` differ on exactly one edge `(u, v)`, bound `discreteHausdorff (boundedDist P.adj) (JplusFinset P p) (JplusFinset Q p) ≤ 1` for all `p`.
-- [ ] Use this in paper §4 as a concrete quantitative result distinguishing this from "the cycle space doesn't grow" vagueness.
+  **Precise goal:** If adjacency matrices `P.adj` and `Q.adj` differ on exactly
+  one edge $(u,v)$ — i.e. $|\mathrm{adj}_P - \mathrm{adj}_Q| = 1$ — then for all `p`:
+  ```
+  discreteHausdorff (boundedDist adj) (JplusFinset P p) (JplusFinset Q p) ≤ 1
+  ```
+  This upgrades the coverage bound `jplus_discreteHausdorff_coverage` (which gives ≤ n)
+  to a tight Lipschitz bound under the minimal perturbation model.
+
+- [ ] Use this in paper §4 as a concrete quantitative result.
+
+### A.2 Dimension inequality under subgraph inclusion
+
+- [ ] Prove `h1_dim_le_of_subgraph` in `H1Stability.lean`:
+
+  **Precise goal:**
+  $$\dim H_1(P') \le \dim H_1(P) \quad \text{under } P' \subseteq P.$$
+
+  In graph terms: $|E'| - |V| + c(G') \le |E| - |V| + c(G)$.
+
+  This makes the stability theorem quantitative (not just $Z_1 = \bot$ preservation).
+
+### A.3 Extend tight bound to k-edge perturbations
+
+- [ ] After A.1: prove linear dependence `≤ k` when adjacencies differ on `k` edges.
+
+## Phase B — Homology Coherence
+
+### B.1 Tight Z₁ ↔ H1_oc equivalence
+
+- [ ] Verify/strengthen `Z1_oc_eq_bot_iff` in `OrderComplexBridge.lean` to an
+  exact equivalence (not just under `IsCompatible` but for all compatible posets
+  without additional assumptions, if achievable).
+
+### B.2 H1_oc monotone under subgraph inclusion
+
+- [ ] Prove `h1_oc_stable_of_subgraph` in `OrderComplexProxy.lean`:
+
+  **Precise goal:** If $P' \subseteq P$ then $Z_1^{\mathrm{oc}}(P') \subseteq Z_1^{\mathrm{oc}}(P)$
+  (monotonicity for the order-complex cycle space).
+
+  This strengthens the narrative from chain-complex proxy to simplicial homology.
+
+### B.3 Acyclic finite posets have vanishing H¹_oc
+
+- [ ] Prove `h1_oc_eq_bot_of_acyclic` in `OrderComplexProxy.lean`:
+
+  **Precise goal:** $\text{acyclic}(P) \Rightarrow H_1^{\mathrm{oc}}(P) = 0$.
+
+  Formally: for all $P$, `acyclic P → H1_oc P = ⊥`.
+
+## Phase C — Conceptual Upgrade (Longer Term)
+
+### C.1 Chamber constancy → global constancy theorem
+
+- [ ] Prove `chamber_constancy_global` (new file `ChamberConstancy.lean`):
+
+  **Precise goal:** If $\Phi : \mathrm{AQEI\_cone}(F) \to \alpha$ is locally constant
+  on polyhedral chambers, then $\Phi$ is constant on each path-component of the cone.
+
+  In Lean sketch:
+  ```lean
+  theorem chamber_constancy_global
+    (C : Set V) (hconv : Convex ℝ C) (hne : C.Nonempty)
+    (Φ : V → α) (hloc : ∀ chamber, IsChamber chamber → ∀ T₁ T₂ ∈ chamber, Φ T₁ = Φ T₂)
+    : ∀ T₁ T₂ ∈ C, Φ T₁ = Φ T₂
+  ```
+
+### C.2 Finite Čech H¹ for Alexandrov opens
+
+- [ ] Implement `H1Cech_vanishes_of_acyclic` in `Cech01.lean`:
+
+  **Precise goal:** For an acyclic finite poset,
+  $H^1_{\check{C}}(P) = 0$ where $H^1_{\check{C}} = \ker(d_1) / \mathrm{im}(d_0)$.
+
+  Builds on the existing `d1_comp_d0 = 0` axiom in `Cech01.lean`.
 
 
 

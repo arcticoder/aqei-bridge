@@ -984,3 +984,24 @@ Done. Here's what was completed across this session:
 | Appendix B | `sorry` in code listing | replaced with actual `H1Map_id` / `H1Map_comp` |
 <!-- ------ -->
 ---
+All done. Committed as `117557b`. Here's a summary of every change made:
+
+**aqei-lean-formalization.tex**
+- Added explicit $Z_1 = \ker \partial_1$ definition to §2 (no more implicit "proxy" language)
+- Replaced ε-ball `Poset Perturbation` definition with exact `EdgeHom P' P id` subgraph definition that matches the Lean hypothesis
+- Replaced vague "H₁ Invariance Under Small Perturbations" with precise `Discrete Bridge Theorem`: $Z_1(P)=0 \land P' \subseteq P \Rightarrow Z_1(P')=0$
+- Added standalone `Path-Connected Admissible Region` theorem block with explicit nonemptiness hypothesis
+- Converted the previously-proven `\begin{conjecture}` to `\begin{theorem}` (`admissible_region_pathConnected`); separated the Lorentzian open problem as a clearly-labeled `\begin{conjecture}[Continuous AQEI Bridge]`
+
+**conjecture.md** — complete rewrite with A/B/C structure:
+- **A** (Proven): Discrete Bridge, Path-Connected Region, Packaged Bridge, Order-Complex Equivalence — all with exact Lean names, mechanism, and key lemmas
+- **B** (Quantitative current strength): coverage bound proven; tight `jplus_hausdorff_le_one_of_edge_diff` labeled as open target with explicit $|\mathrm{adj}_P - \mathrm{adj}_Q| = 1$ perturbation model
+- **C** (Conjectural): Continuous bridge, dim inequality, acyclicity↔H¹_oc, chamber constancy — all clearly labeled open
+
+**TODO.md** — added Phase A/B/C replacing the vague HIGH entry, with 8 new concrete Lean-actionable items
+
+**TODO-backlog.md** — complete rewrite: removed cluster compute, vague "generalize beyond discrete toys," and Mathematica visualizations; replaced with 4 precise long-term items all tied to one of the three formal pillars
+
+**TODO-BLOCKED.md** — presheaf "sections of futures" → concrete `F(U) = monotone maps U → ℤ`; Mathematica item + linearity/polyhedral constraint note; Schwarzschild item → "curved toy adjacency model, no PDE solving"
+<!-- ------ -->
+---

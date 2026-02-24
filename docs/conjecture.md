@@ -1,228 +1,195 @@
-# Conjecture (bridge statement): causal stability under AQEI-admissible perturbations
+# Conjecture: Causal Stability Under AQEI-Admissible Perturbations
 
-## Scope and intent
+This document separates three kinds of statement clearly:
+1. **Proven in Lean** — machine-checked, zero `sorry`.
+2. **Quantitative current strength** — exact bound value and proof status.
+3. **Conjectural / open** — not formalized; aspirational direction.
 
-This document states the conjecture in a way that is:
+---
 
-- precise enough to formalize *interfaces* in Lean now, and
-- explicit about which parts are **heuristic** vs **formalizable**.
+## A. Proven Discrete Bridge (Lean-formalized)
 
-The goal is a bridge paper submission (SciPost Physics) independent of the
-CQG-review manuscript, while citing the unpublished manuscript for any
-nontrivial analytic/QFT content.
+### A.1 Discrete Bridge Theorem
 
-## Background objects (informal mathematics)
+> **Lean name:** `DiscreteSpacetime.h1_stable_small_pert`
+> **File:** `lean/src/AqeiBridge/H1Stability.lean`
 
-Let $(M,g)$ be a Lorentzian spacetime. Let $T_{ab}$ be a (renormalized) stress–energy
-expectation value in some QFT state.
+**Statement:**  
+Let `P` be a finite causal poset.  
+If `Z₁(P, ℤ) = ⊥` and `P'` is a subgraph of `P`
+(i.e. there exists `EdgeHom P' P id` — identity on vertices, subset on edges),  
+then `Z₁(P', ℤ) = ⊥`.
 
-### AQEI admissibility (informal)
-
-AQEI constraints are (schematically) lower bounds on averaged null energy
-functionals, e.g.
-
+**Mathematical form:**
 $$
-\int_{\gamma} T_{ab} k^a k^b \, w(\lambda)\, d\lambda \ge -B_{\gamma,w}
-$$
-
-for families of null/timelike curves $\gamma$ and sampling weights $w$.
-
-**Formalizable now (toy):** represent these as finitely many linear inequalities
-$L_i(T) \ge -B_i$ on a finite coefficient vector.
-
-**Not formalized yet:** deriving the correct $L_i, B_i$ from QFT on curved
-spacetimes.
-
-### Metric perturbation sourced by $T$
-
-In a weak-field / linearized regime (harmonic gauge as an example), one has a
-linear relation between source and perturbation:
-
-$$
-\Box h_{ab} = 16\pi S_{ab}(T)
+Z_1(P;\mathbb{Z}) = 0 \;\land\; P' \subseteq P \;\Longrightarrow\; Z_1(P';\mathbb{Z}) = 0
 $$
 
-with a Green operator producing $h[T]$.
-
-**Heuristic in current code:** we use a scalar FFT Green multiplier in 1+1 as a toy.
-
-### Causal future family
-
-For a point $p\in M$, the causal future is $J_g^+(p)$. Under perturbed metrics
-$g' = g + h[T]$, we get a family
-
+**Mechanism:**  
+The pushforward chain map
 $$
-\mathcal{J}_p := \{ J^+_{g+h[T]}(p) : T \in \mathcal{C}_{\mathrm{AQEI}} \cap \mathcal{U} \}
+\mathrm{push}_1 : C_1(P') \to C_1(P)
+$$
+is injective (proved as `push1_injective` using injectivity of `id` on vertices).
+Any 1-cycle in $P'$ pushes to a 1-cycle in $P$; since $Z_1(P) = \bot$, that push
+is zero; by injectivity the original cycle is zero.
+
+**Key lemmas used:** `push1_apply_mapEdge`, `push1_injective`, `Z1_eq_bot_of_subgraph`.
+
+**Note on "ε-perturbation":** In this formalization, "edge perturbation" = subgraph
+inclusion. Any subset of edges (regardless of magnitude) is covered by the theorem
+because the proof uses only the inclusion structure, not any metric bound.
+
+---
+
+### A.2 Path-Connected Admissible Region
+
+> **Lean name:** `admissible_region_pathConnected`
+> **File:** `lean/src/AqeiBridge/CausalStability.lean`
+
+**Statement:**  
+Let `F` be a finite family of AQEI linear functionals.  
+If the polyhedron
+$$
+\mathrm{AQEI\_cone}(F) = \bigl\{\, T \mid \forall f \in F,\; f(T) \ge 0 \,\bigr\}
+$$
+is **nonempty**, then it is **path-connected**.
+
+**Mechanism:** AQEI cone is convex (proved as `aqei_cone_convex` via halfspace
+intersection). A nonempty convex subset of $\mathbb{R}^n$ is path-connected via
+`Convex.isPathConnected` from Mathlib.
+
+---
+
+### A.3 Packaged Bridge Statement
+
+> **Lean name:** `DiscreteSpacetime.aqei_bridge_conjecture_discrete`
+> **File:** `lean/src/AqeiBridge/DiscreteStabilityBridge.lean`
+
+Packages A.1 with an explicit AQEI cone witness, providing the combined statement
+that a discrete causal graph inside an AQEI-admissible parameter region has stable
+acyclicity under subgraph perturbations.
+
+---
+
+### A.4 Order-Complex Equivalence
+
+> **Lean name:** `Z1_oc_eq_bot_iff`
+> **File:** `lean/src/AqeiBridge/OrderComplexBridge.lean`
+
+**Statement (bidirectional):** For compatible posets,
+$$
+Z_1^{\mathrm{oc}}(R,P) = \bot \;\iff\; Z_1(P.\mathrm{toCausalPoset}, R) = \bot.
 $$
 
-where $\mathcal{U}$ is a small neighborhood (e.g. norm ball) of admissible stress–energy
-configurations.
+This bridges the order-complex simplicial approach to the chain-complex kernel
+approach, confirming both proxies capture the same acyclicity invariant.
 
-## Conjecture (informal)
+---
 
-> **Causal stability conjecture (bridge form).** In sufficiently small neighborhoods
-> of AQEI-admissible stress–energy, the family $\mathcal{J}_p$ is path-connected (and
-> does not change the global causal homotopy class).
+## B. Quantitative Future Stability (Current Strength)
 
-### What is “formalizable now”
+### B.1 Coverage Bound (Proven)
 
-In Lean, we can state a parametric version:
+> **Lean name:** `jplus_discreteHausdorff_coverage`
+> **File:** `lean/src/AqeiBridge/DiscreteFutureContinuity.lean`
 
-- a type of points `M.Pt`
-- an abstract metric `g : Pt → Pt → ℝ` (placeholder)
-- an abstract `linearized_solution : StressEnergy n → MetricPerturbation`
-- a predicate `CausalFuture g p q`
+**Statement (informal):** For finite causal posets `P` and `Q` on `Fin n`,
+under pointwise matching hypotheses,
+$$
+d_H\bigl(J^+(P,p),\; J^+(Q,p)\bigr) \le n
+$$
+where $d_H$ is the discrete Hausdorff distance under the bounded shortest-path
+metric `boundedDist`.
 
-and then define the *interface statement*.
+This uses `GraphDistance.lean` (bounded shortest-path proxy on `Fin n`) and
+`DiscreteHausdorff.lean` (Hausdorff distance for `Finset`).
 
-### What remains heuristic/analytic
+### B.2 Tight Single-Edge Bound (Target — Not Yet Proven)
 
-- identifying the correct topology on the space of causal futures
-- proving continuity of $J^+$ under metric perturbations
-- validating the PDE → observable reduction used in computation
+> **Target Lean name:** `jplus_hausdorff_le_one_of_edge_diff`
+> **Target file:** `lean/src/AqeiBridge/DiscreteFutureContinuity.lean`
 
-## Toward proof (how this comes together)
+**Goal:**  
+If adjacency matrices `P.adj` and `Q.adj` differ on exactly one edge $(u,v)$,
+then for all $p$:
+$$
+d_H\bigl(J^+(P,p),\; J^+(Q,p)\bigr) \le 1.
+$$
 
-The long-term conjecture is about continuity/topology of $J^+(p)$ under AQEI-admissible perturbations.
-In the near term, the repo is set up to prove *discrete/toy analogues* that mirror the same structure:
+**Perturbation model:**
+$$
+|\mathrm{adj}_P - \mathrm{adj}_Q| = 1.
+$$
 
-- **Discrete model target.** Replace “Lorentzian $J^+$” with reachability in a finite directed graph
-	or finite causal preorder, where the reachability relation is induced by a parameter-dependent local rule.
-- **Local constancy / chamber picture.** In many finite-dimensional toy reductions, the behavior of the
-	optimizer and the induced “future proxy” is constant on regions of parameter space determined by which
-	inequalities are active (a hyperplane arrangement / polyhedral chamber decomposition).
-	Each chamber is convex, hence path-connected.
-- **Connectivity reduces to adjacency.** If the union of relevant chambers is connected via shared facets,
-	then the family of (proxy) futures varies in a path-connected way. This is the toy analogue of
-	“no change in causal homotopy class inside a small neighborhood”.
+This is the tight Lipschitz upgrade over the coverage bound in B.1. Currently open.
 
-This motivates the current computational diagnostics:
+---
 
-- The multi-ray “connectedness proxy” (Jaccard overlap of per-ray active constraint sets) is a crude way
-	to detect whether different rays appear to live in the same or adjacent chambers.
+## C. Conjectural / Open Directions
 
-What still requires analytic input (not yet in this repo):
+### C.1 Continuous AQEI Bridge (Conjectural)
 
-- a precise topology/metric on the hyperspace of futures (sets $J^+(p)$),
-- and a proof that the physically meaningful $J^+$ map is continuous under the perturbations generated by
-	AQEI-admissible $T$.
+**Goal:** Replace subgraph inclusion by convex perturbations in parameter space
+$T \in \mathrm{AQEI\_cone}(F)$, and prove that $H^1$-like invariants are stable
+under admissible perturbations in a Lorentzian continuum setting.
 
-Lean status (toy):
+This requires:
+- a precise topology on the hyperspace of futures $\{J^+(p)\}$,
+- continuity of $J^+$ under metric perturbations sourced by AQEI-admissible $T$,
+- and a PDE → observable reduction step (identifying which Green operator to use).
 
-- The “convex chamber ⇒ path-connected” step is formalized for a closed-chamber model in
-	`lean/src/AqeiBridge/Chambers.lean`.
-- As a corollary, the toy `AQEI_cone` is path-connected under a mild feasibility assumption
-	(`0 ≤ B` for each bound so that `T=0` is admissible).
+**Status:** Entirely open. The discrete theorems in §A provide combinatorial
+scaffolding but do not imply this.
 
-- Discrete-toy implication: if a parameter-to-`DiscreteSpacetime` map is constant on each chamber,
-  then the induced discrete futures are constant on chambers (`lean/src/AqeiBridge/DiscreteChamberStability.lean`).
+### C.2 Dimension Inequality Under Subgraph Inclusion (Target)
 
-- Chamber-indexed discrete model: we can *construct* such a locally constant map by factoring through a
-	chamber index induced by the AQEI functionals (`lean/src/AqeiBridge/ChamberIndexedModel.lean`).
+**Goal:**
+$$
+\dim H_1(P') \le \dim H_1(P) \quad \text{under } P' \subseteq P.
+$$
 
-- Active-set vs sign-pattern chambers: `ClosedChamber F active` always implies `active ⊆ chamberIndex F T`,
-  and on interior points (inactive constraints strict) we get `chamberIndex F T = active`
-  (`lean/src/AqeiBridge/ChamberClosedChamberBridge.lean`).
+In graph terms: $|E'| - |V| + c(G') \le |E| - |V| + c(G)$.
 
-### Main theorem (discrete / poset model)
+This would make stability quantitative (not just zero-preservation). Not yet
+formalized; follows naturally from A.1 as a strengthening.
 
-What is now *actually proven in Lean* is the following discrete bridge statement:
+### C.3 Acyclicity ↔ Vanishing H¹_oc (Target)
 
-1. **AQEI admissible region is path-connected (parameter space).**
-	If the finite polyhedron `AQEI_cone F` is nonempty, then it is path-connected, and the same holds for the “admissible + small” region (currently `Small := True`):
+**Goal:**  
+$$
+\text{acyclic}(P) \;\iff\; H_1^{\mathrm{oc}}(P) = 0.
+$$
 
-	- Lean: `admissible_region_pathConnected` in `lean/src/AqeiBridge/CausalStability.lean`.
+The direction $\Rightarrow$ is morally in `OrderComplexBridge.lean` via `Z1_oc_eq_bot_iff`
+together with A.1, but an explicit acyclicity definition and the $\Leftarrow$ direction
+remain to be formalized in `OrderComplexProxy.lean`.
 
-2. **H₁ = 0 is stable under AQEI-admissible perturbations (modeled as edge removal).**
-	If a discrete causal graph `P` is acyclic (`dimH1IsZero P`) and `P'` is a subgraph (`EdgeHom P' P id`), then `P'` is also acyclic:
+### C.4 Chamber Constancy → Global Constancy (Target)
 
-	- Lean: `DiscreteSpacetime.h1_stable_small_pert` in `lean/src/AqeiBridge/H1Stability.lean`.
-	- Packaged bridge form (with explicit AQEI witness): `DiscreteSpacetime.aqei_bridge_conjecture_discrete` in `lean/src/AqeiBridge/DiscreteStabilityBridge.lean`.
+**Goal:**  
+If a map $\Phi : \mathrm{AQEI\_cone}(F) \to \alpha$ is locally constant on
+polyhedral chambers, and the cone is convex (hence path-connected by A.2), then
+$\Phi$ is globally constant on the cone.
 
-3. **Quantitative stability for futures (Hausdorff bound), but not image path-connectedness.**
-	For finite causal posets on `Fin n`, we have a perturbation-sensitive Hausdorff bound for `JplusFinset` under pointwise matching hypotheses:
+This provides a bridge tool for lifting discrete chamber stability to
+continuous parameter independence.
 
-	- Lean: `jplus_discreteHausdorff_coverage` in `lean/src/AqeiBridge/DiscreteFutureContinuity.lean`.
+---
 
-### Important topology nuance (finite hyperspaces)
+## Three Formal Pillars
 
-Be careful with the phrase “the family of futures is path-connected in the Hausdorff topology.”
+All work in this library reduces to one of three structural roles:
 
-If the underlying event set is finite, then the hyperspace of (finite) subsets is itself a **finite metric space** under any Hausdorff-style metric, hence its topology is **totally disconnected**. In particular, a path in that hyperspace is continuous only if it is locally constant, so a *path-connected* subset is typically just a singleton.
+1. **Convex polyhedral geometry** — AQEI cone is $\bigcap_i \{L_i(T) \ge 0\}$;
+   convexity + nonemptiness $\Rightarrow$ path-connectedness.
 
-So the formalizable (and useful) discrete target is better phrased as one of:
+2. **Functorial homology** — $Z_1 = \ker \partial_1$;
+   pushforward $C_1(P') \to C_1(P)$ injective $\Rightarrow$ $Z_1(P') \subseteq Z_1(P)$;
+   $H_1(g \circ f) = H_1(f) \circ H_1(g)$.
 
-- **Parameter-space path-connectedness** (already proven) plus a **quantitative stability bound** (Hausdorff/Lipschitz control), or
-- a combinatorial replacement like **ε-chain connectivity** in Hausdorff distance (connect subsets by a finite sequence of small Hausdorff jumps).
-- **Discrete bridge conjecture — now PROVEN** (`lean/src/AqeiBridge/DiscreteStabilityBridge.lean`):
-  - `aqei_bridge_conjecture_discrete`: H₁ = 0 (acyclicity) is preserved for any subgraph
-    arising from an AQEI-admissible perturbation. Explicit proof using `h1_stable_small_pert`
-    (subgraph monotonicity of acyclicity).
-  - `aqei_bridge_full`: packages both components — uniform H₁ stability over the cone and
-    path-connectedness of `AQEI_cone F` (from convexity + nonemptiness).
-  - `causal_stability_pathConnected` (in `CausalStability.lean`): converted from `axiom` to
-    a theorem using `admissible_region_pathConnected` + `InvariantHomotopyClass = True`.
-  - `global_h1_invariance` and `ChronologyAsInvariant` (in `GlobalConjectures.lean`): both
-    converted from `axiom` to theorems (trivially by placeholder-type reduction).
-  - `causal_futures_path_connected` (in `Conjecture.lean`): converted from `axiom` to `trivial`.
-## Step 2: tie-ins to “topology / reachability / flow” themes (toy)
+3. **Metric stability of futures** — $d_H(J^+_P, J^+_Q) \le k$ under $k$-edge
+   perturbation.
 
-The repo does **not** prove any warp-drive feasibility statement. What it *can* do today is support
-evidence-building for a structured narrative:
-
-- **Theme A (global causality as topological obstruction).**
-	- Proxy object: a directed graph / causal poset representing a toy causal structure.
-	- Proxy invariant: `z1Dim = dim ker(∂₁)` computed by `python/poset_homology_proxy.py` (graph formula `|E|-|V|+c`).
-	- Interpretation: if a perturbation leaves `z1Dim` unchanged across a neighborhood of parameters, that’s evidence
-		that *this* low-degree proxy invariant is stable under that perturbation family.
-	- Caveat: `Z₁` is **not** equivalent to “CTCs exist” (a DAG can have nontrivial `Z₁`). Treat it as a coarse
-		“cycle-space” detector, not as chronology protection.
-
-- **Theme B (reachability theorems).**
-	- In this repo’s discrete toys, “reachability” is just graph reachability (a stand-in for $J^+(p)$).
-	- The cone-widening perturbation (`sweep-minkowski-perturb`) is a toy for “making more events timelike-reachable”
-		by locally widening the allowed step set. If reachability expands but `z1Dim` stays stable, that’s a toy analogue
-		of “more reachability without changing a low-degree causal invariant.”
-	- Caveat: this is not a Lorentzian theorem; it’s a discrete diagnostic.
-
-- **Theme C (Einstein equations as a flow on metric space).**
-	- The scan harness (`scan-minkowski-perturb`) is a practical stand-in for exploring a parameter family of
-		“metric deformations” and asking where low-degree invariants are stable.
-	- It’s not a geometric flow solver. It’s a *map* from a parameter tuple `(epsilon, cutoff, window)` to a distribution
-		of toy causal graphs. This is still useful, because it lets you empirically identify stable “basins” where the toy
-		invariant doesn’t jump.
-
-Pointers:
-- How to run these scans is documented in `docs/phase4_searches.md`.
-
-## Step 3: optimize for personal evidence (not publication)
-
-If your goal is “enough evidence to decide next engineering steps” rather than a publication-grade proof, optimize for:
-
-1. **Reproducibility first.** Always run with explicit seeds and save JSON/CSV artifacts.
-2. **Stability regions, not single runs.** Prefer `scan-minkowski-perturb` over one-off runs.
-3. **Two metrics, not one.** Track both:
-	 - `fractionUnchanged` for `z1Dim`, and
-	 - a separate cycle/CTC proxy (`python/ctc_scan.py` or `python/causal_graph_tools.py ctc`) when relevant.
-4. **Define a stop condition.** For example: “move on if `fractionUnchanged ≥ 0.9` across a 3×3×2 parameter grid
-	 for two grid sizes and two seeds.”
-5. **Escalate the toy only when it breaks.** If stability is too fragile, adjust the perturbation model
-	 (e.g. smaller `epsilon`, larger smoothing `window`, or a different local rule). If stability is overly robust,
-	 increase model fidelity (beyond step-cone widening).
-
-Suggested minimal runbook:
-- Start with `tmax=xmax=6`, `trials=20`, 2–3 seeds.
-- Grid: `epsilons 0.0,0.1,0.2`, `cutoffs -0.1,0.0,0.1`, `windows 5,9`.
-- Export CSV (`--csv-out`) and plot `fractionUnchanged` vs parameters.
-
-This is deliberately framed as a disciplined *diagnostics loop*: it helps decide what to formalize next in Lean
-(e.g. which perturbation families plausibly preserve invariants), without overclaiming physics.
-
-## Lean interface sketch (current repo)
-
-The current Lean repo already contains typed placeholders in:
-
-- `lean/src/AqeiBridge/CausalStability.lean`
-
-As the bridge paper matures, replace `axiom causal_stability : True` with a
-concrete statement for a discrete spacetime model, then generalize.
+If a TODO item does not strengthen one of those three pillars, it belongs
+in a different repo.

@@ -131,6 +131,22 @@ For any $n, m$, $\text{AQEI\_cone}(n,m)$ is convex.
 Each halfspace $\{T \mid \ell_i(T) \geq 0\}$ is convex. Finite intersections of convex sets are convex. \qed
 \end{proof}
 
+\subsection{Homology Proxy}
+
+\begin{definition}[$Z_1$ cycle space]
+For a discrete causal poset $P$ with edge set $E$ and vertex set $V$,
+the boundary map $\partial_1 : \mathbb{Z}^E \to \mathbb{Z}^V$ sends each
+edge $e = (u,v)$ to $v - u$.  The \emph{degree-1 cycle space} is
+\[
+  Z_1(P;\mathbb{Z}) := \ker \partial_1 \;\subseteq\; \mathbb{Z}^E.
+\]
+We write $Z_1(P) = \bot$ when $Z_1(P) = 0$ (the trivial submodule).
+The $H_1$ proxy is $H_1(P) := Z_1(P) / B_1(P)$ where
+$B_1(P) = \mathrm{im}\, \partial_2$.
+Because we work with the subgraph-stability direction only, $Z_1 = \bot$
+implies $H_1 = 0$ regardless of $B_1$.
+\end{definition}
+
 \subsection{Causal Structures}
 
 \subsubsection{Discrete Causal Posets}
@@ -182,16 +198,24 @@ bridge on top of this library.
 
 \subsection{Discrete Stability}
 
-\begin{definition}[Poset Perturbation]
-A perturbation of a causal poset $(P, \leq)$ is a new relation $\leq'$ such that:
-\[
-\leq' \subseteq \leq \cup \{(p,q) \mid \|p-q\| < \epsilon\}
-\]
-for some metric on $P$ and threshold $\epsilon > 0$.
+\begin{definition}[Subgraph / EdgeHom]
+A \emph{subgraph inclusion} from $P'$ into $P$
+(written $\mathrm{EdgeHom}\; P'\; P\; \mathrm{id}$) is an identity map on
+vertices together with an injection on edges — every edge $(u,v) \in P'$
+also belongs to $P$.  We write $P' \subseteq P$ for this relation.
 \end{definition}
 
-\begin{theorem}[H₁ Invariance Under Small Perturbations]
-Let $(P, \leq)$ be a causal poset with $H_1(P) = 0$ (no 1-cycles). For sufficiently small $\epsilon > 0$, any perturbation $(P, \leq_\epsilon)$ satisfies $H_1(P, \leq_\epsilon) = 0$.
+\begin{theorem}[Discrete Bridge Theorem]\label{thm:discrete-bridge}
+Let $P$ be a finite causal poset and let $P' \subseteq P$
+(i.e.\ there exists $\mathrm{EdgeHom}\; P' \hookrightarrow P$ with identity on vertices).
+If
+\[
+  Z_1(P;\mathbb{Z}) = 0,
+\]
+then
+\[
+  Z_1(P';\mathbb{Z}) = 0.
+\]
 \end{theorem}
 
 \begin{proof}[Formal proof strategy]
@@ -206,17 +230,42 @@ Key lemmas: \texttt{push1\_apply\_mapEdge} (coefficient extraction),
 \texttt{push1\_injective}, \texttt{Z1\_eq\_bot\_of\_subgraph}. \qed
 \end{proof}
 
-\subsection{Path-Connectedness of Causal Futures}
+\subsection{Path-Connected Admissible Region}
 
-\begin{conjecture}[AQEI Bridge Conjecture - Discrete Version]
-Let $\mathcal{F}$ be a family of causal posets parameterized by stress-energy configurations $T \in \text{AQEI\_cone}(n,m)$. If $\mathcal{F}$ is continuous in the Hausdorff topology on posets, then the set:
+\begin{theorem}[Path-connected admissible region]\label{thm:path-connected}
+Let $F$ be a finite family of AQEI linear functionals.
+If the polyhedron
 \[
-\{J^+(p)_T \mid T \in \text{AQEI\_cone}(n,m), \|T - T_0\| < \delta\}
+  \mathrm{AQEI\_cone}(F)
+  =
+  \bigl\{\, T \mid \forall f \in F,\ f(T) \ge 0 \,\bigr\}
 \]
-is path-connected in a suitable topology for all $p$ and sufficiently small $\delta > 0$.
+is nonempty, then it is path-connected.
+\end{theorem}
+
+\begin{proof}[Formal proof]
+The AQEI cone is a finite intersection of closed half-spaces, hence convex
+(Theorem~\ref{thm:convex}).  A nonempty convex subset of
+$\mathbb{R}^n$ is path-connected by \texttt{Convex.isPathConnected}.
+Lean name: \texttt{admissible\_region\_pathConnected} in
+\texttt{CausalStability.lean}. \qed
+\end{proof}
+
+\subsection{Open: Continuous Bridge}
+
+\begin{conjecture}[Continuous AQEI Bridge]\label{conj:continuous}
+Let $F$ be a finite family of AQEI functionals (derived from QFT on a
+Lorentzian manifold) and let $J^+_T(p)$ denote the causal future of
+$p$ under the metric sourced by $T$.  If $Z_1(P_T) = 0$ for some
+discretization $P_T$ at each $T \in \mathrm{AQEI\_cone}(F)$, then the
+family $\{J^+_T(p)\}_{T \in \mathrm{AQEI\_cone}(F)}$ is stable under
+AQEI-admissible perturbations in an appropriate topology.
 \end{conjecture}
 
-This conjecture formalizes the intuition that AQEI constraints prevent "discontinuous jumps" in causal structure.
+\noindent
+This continuous analogue is entirely open.  The two proven theorems above
+(Theorems~\ref{thm:discrete-bridge} and~\ref{thm:path-connected})
+constitute the discrete scaffolding toward it.
 
 \section{Lean 4 Implementation}
 

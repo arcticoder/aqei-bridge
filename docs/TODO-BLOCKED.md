@@ -6,8 +6,11 @@ Minimal after latest commits (e.g., diagnostics/posets unblock proxies). Moved u
 	- Unblocked scaffold (Lean): `lean/src/AqeiBridge/AlexandrovPresheaf.lean` defines `OpenInAlexandrov` and a minimal `PresheafOnPoset` interface (objects + restriction maps).
 	- Unblocked scaffold (Mathlib interface): `lean/src/AqeiBridge/AlexandrovPresheafMathlib.lean` defines a genuine Mathlib presheaf `TopCat.Presheaf CommRingCat` on the Alexandrov topological space: continuous ℝ-valued functions on opens (`realContinuousPresheaf`).
 	- Sanity instantiation: `lean/src/AqeiBridge/Examples/DiamondPresheaf.lean` builds this presheaf on a 4-point diamond preorder (`Fin 2 × Fin 2` with product order).
-	- Next concretization (Lean): define a presheaf of “sections of futures” over Alexandrov opens and implement a Čech-style H¹ for finite covers, or reduce to a chain-complex proxy on a finite basis of opens.
-		- Suggested minimal step: implement a Čech 0/1-cochain complex for a *finite* cover of an open and define `H¹` as a quotient kernel/image in `CommRingCat` or `ModuleCat`.
+	- Next concretization (Lean — avoid "sections of futures"):
+		- Define `F(U) = set of monotone maps U → ℤ` with restriction maps given by function restriction.
+		- Implement a Čech 0/1-cochain complex for a *finite* open cover: `C⁰ = ∏_i F(U_i)`, `C¹ = ∏_{i<j} F(U_i ∩ U_j)`, coboundary `d⁰ : C⁰ → C¹` given by restriction difference.
+		- Define `H¹ := ker(d¹) / im(d⁰)` as a `Submodule` quotient in `ModuleCat`.
+		- Prove `H¹ = 0` for acyclic posets using the existing chain-complex equivalence.
 
 - [x] Poset homology / order complex in Lean (full): **DONE** — both cycle proxies are fully bridged.
 	- Unblocked starter: a minimal chain-level 1-cycle proxy is now implemented in Lean for causal posets (`PosetHomologyProxy.lean`) and for directed graphs (`DiscreteHomologyProxy.lean`).
@@ -21,7 +24,7 @@ Minimal after latest commits (e.g., diagnostics/posets unblock proxies). Moved u
 
 - [ ] Replace synthetic AQEI constraints with worldline sampling bumps in Mathematica: blocked here (Mathematica pipeline moved).
 	- Location: implement in `aqei-numerical-validation/mathematica/`.
-	- Next concretization: add an *optional* mode that precomputes bump weights on the existing grid so constraints remain linear in coefficients.
+	- **Linearity requirement:** any new constraint weights must keep the AQEI cone polyhedral (i.e. constraints must remain linear in the stress-energy coefficients). Precompute bump weights as fixed scalars so that `AQEI_cone(F)` stays a finite halfspace intersection.
 
 - [x] **DONE** Future-set topology/continuity (Hausdorff distance on subsets) in Lean:
 	- `GraphDistance.lean`: bounded shortest-path proxy `boundedDist` on `Fin n`.
@@ -29,6 +32,9 @@ Minimal after latest commits (e.g., diagnostics/posets unblock proxies). Moved u
 	- `DiscreteFutureContinuity.lean`: `jplus_discreteHausdorff_coverage` — Lipschitz-style bound for `JplusFinset` under edge perturbations.
 	- **Moved to TODO-completed.md (2026-02-22).**
 
-- [ ] Realistic backgrounds (e.g., Schwarzschild) and curved sweeps: blocked here (numerical solver work moved).
-	- Location: implement in `aqei-numerical-validation` (Python numeric sweep harness + deterministic `--test-mode`).
-	- Next concretization: pick one toy discretization and an observable that runs <1s deterministically.
+- [ ] Curved toy adjacency model: blocked here (numerical solver work moved).
+	- Location: implement in `aqei-numerical-validation`.
+	- **No PDE solving.** Pick a single fixed combinatorial discretization (e.g. a
+	  Regge-calculus-inspired triangulated 2-disk with 10–20 vertices) and define its
+	  causal adjacency matrix by hand from a known closed-form curvature.
+	  The observable must run `< 1s` deterministically in `--test-mode`.
