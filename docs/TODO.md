@@ -1,5 +1,35 @@
 # TODO: aqei-bridge — Lean 4 Formal Verification Track
 
+## CRITICAL: Rewrite aqei-lean-formalization.tex for formal methods venue
+
+**Context (2026-02-23):** The current draft overclaims in three areas that will cause desk-rejection at any serious venue:
+1. LIGO/Virgo "causal graph H₁ verification" — NR instability is constraint violation + boundary artifacts, not spurious 1-cycles. Remove entirely.
+2. Deep-space GPS time synchronisation — Real corrections use post-Newtonian expansion, not Alexandrov-topology certification. Remove entirely.
+3. QKD exotic-matter eavesdropping — No realistic threat model, no operational protocol. Remove entirely.
+
+**Correct framing:** This is an early-stage formal-methods paper, not a physics result. Target venue: CPP / ITP / JAR.
+
+Concrete tasks:
+- [x] Remove §7 (Real-World Applications) entirely — all three subsections and their bib entries (`abbott2016ligo`, `alcubierre2008numerical`, `gisin2002quantum`, `ashby2003relativity`)
+- [x] Rewrite abstract: honest framing as discrete causal poset + convex cone library contribution in Lean 4
+- [x] Update §1.2 (Contributions) to list only what is actually proven
+- [x] Fix §4 (Key Theorems) table: replace stale status with actual theorem list (0 sorries, 131 lemmas/theorems, ~3900 lines)
+- [x] Fix proof sketch for H₁ stability to match actual Lean proof (subgraph monotonicity, not rank-nullity perturbation bounds)
+- [x] Fix module list (remove `SpacetimeCausalPoset.lean` misattribution, add real modules)
+- [x] Update conclusion to remove references to deleted §7 applications
+- [x] Retarget keywords for formal methods audience
+
+## HIGH: Prove a quantitative Lipschitz bound on discrete futures
+
+**Context:** The user asks for "a genuine Lipschitz bound on discrete futures under convex-parameter perturbations" as the next nontrivial theorem that would materially upgrade the paper.
+
+The existing `jplus_discreteHausdorff_coverage` in `DiscreteFutureContinuity.lean` gives a coverage bound; the goal is a proper `discreteHausdorff (boundedDist adj) (JplusFinset P p) (JplusFinset Q p) ≤ 1` when `P` and `Q` differ by at most one edge — making the bound *explicit* and *tight*.
+
+- [ ] Add `jplus_hausdorff_le_one_of_edge_diff` to `DiscreteFutureContinuity.lean`: when adjacency matrices `P.adj` and `Q.adj` differ on exactly one edge `(u, v)`, bound `discreteHausdorff (boundedDist P.adj) (JplusFinset P p) (JplusFinset Q p) ≤ 1` for all `p`.
+- [ ] Use this in paper §4 as a concrete quantitative result distinguishing this from "the cycle space doesn't grow" vagueness.
+
+
+
 ## Post-proof phase (discrete model) — lock in the win
 
 **Status:** ✅ The bridge conjecture is now **formally proven in the discrete graph/poset toy model**, in the precise sense implemented by:

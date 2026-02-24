@@ -963,3 +963,24 @@ Commit `71c43af` on `main`. Here's a summary of what was done:
 The `"Poset homology / order complex"` item in TODO-BLOCKED.md is now marked `[x] DONE` and recorded in TODO-completed.md.
 <!-- ------ -->
 ---
+Done. Here's what was completed across this session:
+
+**Paper rewrite — all changes committed and pushed (`12217b2`):**
+
+| Area | Before | After |
+|------|--------|-------|
+| Title | "Causal Stability of AQEI-Admissible…" | "Discrete Causal Posets and Convex Stability: A Lean 4 Library" |
+| Abstract | vague, physics-framed | 131 theorems, ~3900 lines, 0 sorries, CPP/ITP framing |
+| §1 Introduction | warp drives, CTCs, Hawking CPC | explicit toy-model disclaimer, 6 real contributions |
+| §2.3 Bridging | claimed 3-step Lorentzian functor | honest paragraph |
+| §3 Proof sketch | "rank-nullity perturbation bounds" | actual `push1_injective` / subgraph monotonicity proof |
+| §4.1 Modules | 7 stale/wrong modules | 10 real modules with correct file names |
+| §4.2 Theorems | 3 "proven" + 2 "pending" | 12 fully proven; "pending" list deleted |
+| §4.3 Statistics | 15 theorems, ~2500 lines, ~300 sorries | **131 theorems, ~3900 lines, 0 sorries** |
+| §5 Empirical | "proofs remain incomplete" | removed stale claim |
+| §7 | LIGO / GPS / QKD applications | **deleted entirely** |
+| §8 Conclusion | referenced deleted §7 content | honest formal-methods summary |
+| Bibliography | 4 unjustified entries | removed; added Bombelli 1987, Sørensen 2006 |
+| Appendix B | `sorry` in code listing | replaced with actual `H1Map_id` / `H1Map_comp` |
+<!-- ------ -->
+---
