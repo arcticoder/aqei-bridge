@@ -8,7 +8,7 @@ All items must strengthen one of three formal pillars:
 
 ## Phase 4: Structural Generalization
 
-- [ ] Prove chamber-constancy → global constancy theorem for invariants on AQEI_cone(F):
+- [x] Prove chamber-constancy → global constancy theorem for invariants on AQEI_cone(F):
 
   If Φ : AQEI_cone(F) → α is locally constant on polyhedral chambers,
   and the cone is nonempty (hence path-connected by `admissible_region_pathConnected`),
@@ -26,7 +26,7 @@ All items must strengthen one of three formal pillars:
     : ∀ T₁ T₂ ∈ C, Φ T₁ = Φ T₂
   ```
 
-- [ ] Define finite Čech H¹ for Alexandrov opens of a finite poset and prove
+- [x] Define finite Čech H¹ for Alexandrov opens of a finite poset and prove
   vanishing for acyclic posets:
 
   $$\text{acyclic}(P) \;\Rightarrow\; H^1_{\check{C}}(P) = 0.$$
@@ -37,7 +37,7 @@ All items must strengthen one of three formal pillars:
   Use coefficient object `F(U) = set of monotone maps U → ℤ` with restriction maps
   given by function restriction (not "sections of futures" — keep it concrete).
 
-- [ ] Extend discrete Lipschitz bound to k-edge perturbations with explicit linear
+- [x] Extend discrete Lipschitz bound to k-edge perturbations with explicit linear
   dependence on k:
 
   $$d_H(J^+(P,p),\; J^+(Q,p)) \le k \quad \text{when } |\mathrm{adj}_P - \mathrm{adj}_Q| = k.$$

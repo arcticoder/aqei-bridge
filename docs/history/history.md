@@ -1081,3 +1081,18 @@ Phase 3 is complete. Committed and pushed as `4818a68`.
 All 5 theorems (A.1, A.2, B.2, B.3, C.2) build cleanly across 3397 jobs with run_tests.sh passing.
 <!-- ------ -->
 ---
+**Summary of what was completed:**
+
+- **A.4 `jplus_hausdorff_le_card_diff_of_subgraph`** now compiles and proves:
+  ```
+  dH(adj)(J⁺(P,p), J⁺(Q,p)) ≤ |{(a,b) : P.rel a b ∧ ¬Q.rel a b}|
+  ```
+  using induction on the size of the difference set, bridged by the new single-edge lemma `jFuture_hausdorff_le_one_of_edge_adj`.
+
+- **Backlog items 1–3 marked `[x]`** in TODO-backlog.md (chamber constancy, Čech H¹ vanishing, k-edge bound).
+
+- **TODO-completed.md** updated with entries for A.4 and C.1.
+
+- Full library (`AqeiBridge`, 3398 jobs) builds clean.
+<!-- ------ -->
+---

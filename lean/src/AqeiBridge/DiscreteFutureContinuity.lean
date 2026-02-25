@@ -1,4 +1,5 @@
 import Mathlib.Data.Real.Basic
+import Mathlib.Data.Fintype.Prod
 
 import AqeiBridge.DiscreteHausdorff
 import AqeiBridge.GraphDistance
@@ -348,6 +349,177 @@ lemma jplus_hausdorff_le_chain
       ((chain ⟨0, Nat.succ_pos k⟩).JplusFinset p)
       ((chain ⟨k, Nat.lt_succ_self k⟩).JplusFinset p) ≤ (k : ℝ) :=
   jplus_hausdorff_le_chain_aux adj p k chain hstep
+
+/-! ## A.4 — k-edge Hausdorff bound for subgraph pairs -/
+
+/-- Generalized single-step bound for abstract decidable relations.
+If `relP` and `relQ` agree on every pair except `(u,v)` — present in `relP`,
+absent in `relQ` — and `adj v u`, and `relQ p p` (reflexivity at `p`),
+then `dH(adj)(𝒥⁺(relP,p), 𝒥⁺(relQ,p)) ≤ 1`. -/
+private lemma jFuture_hausdorff_le_one_of_edge_adj
+    (adj : Fin n → Fin n → Prop) [DecidableRel adj]
+    (relP relQ : Fin n → Fin n → Prop) [DecidableRel relP] [DecidableRel relQ]
+    (u v : Fin n)
+    (hPQ : ∀ a b : Fin n, ¬(a = u ∧ b = v) → (relP a b ↔ relQ a b))
+    (hPuv : relP u v) (hQuv : ¬ relQ u v)
+    (hadjvu : adj v u)
+    (hreflQ : relQ p p) :
+    FinsetMetric.discreteHausdorff
+        (GraphDistance.boundedDist (n := n) adj)
+        (Finset.univ.filter (relP p ·)) (Finset.univ.filter (relQ p ·)) ≤ 1 := by
+  classical
+  refine FinsetMetric.discreteHausdorff_le_of_forall_exists
+      (d := GraphDistance.boundedDist adj) (C := 1) (by norm_num) _ _ ?_ ?_
+  · intro q hq
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hq
+    by_cases hQpq : relQ p q
+    · exact ⟨q, by simp [hQpq], by simp [GraphDistance.boundedDist_self]⟩
+    · have hpq : p = u ∧ q = v := by
+        by_contra hne; exact hQpq ((hPQ p q hne).mp hq)
+      obtain ⟨rfl, rfl⟩ := hpq
+      exact ⟨p, by simp [hreflQ], GraphDistance.boundedDist_le_one_of_adj adj hadjvu⟩
+  · intro q hq
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hq
+    have hPpq : relP p q := by
+      by_cases hpq : p = u ∧ q = v
+      · exact hpq.1 ▸ hpq.2 ▸ hPuv
+      · exact (hPQ p q hpq).mpr hq
+    exact ⟨q, by simp [hPpq], by simp [GraphDistance.boundedDist_self]⟩
+
+/-- Auxiliary induction for A.4. -/
+private lemma jFuture_hausdorff_diff_le_aux
+    (adj : Fin n → Fin n → Prop) [DecidableRel adj]
+    (Q : FiniteCausalPoset n) (p : Fin n) :
+    ∀ (k : ℕ) (relP : Fin n → Fin n → Prop) [DecidableRel relP],
+      relP p p →
+      (∀ a b, Q.rel a b → relP a b) →
+      (∀ a b, relP a b → adj b a) →
+      ((Finset.univ : Finset (Fin n × Fin n)).filter
+          (fun e : Fin n × Fin n => relP e.1 e.2 ∧ ¬ Q.rel e.1 e.2)).card ≤ k →
+      FinsetMetric.discreteHausdorff (GraphDistance.boundedDist (n := n) adj)
+          (Finset.univ.filter (relP p ·)) (Finset.univ.filter (Q.rel p ·)) ≤ (k : ℝ) := by
+  intro k
+  induction k with
+  | zero =>
+    intro relP _ hreflP hQP hadjP hcard
+    simp only [Nat.cast_zero]
+    have hempty : (Finset.univ : Finset (Fin n × Fin n)).filter
+        (fun e : Fin n × Fin n => relP e.1 e.2 ∧ ¬ Q.rel e.1 e.2) = ∅ :=
+      Finset.card_eq_zero.mp (Nat.le_zero.mp hcard)
+    have heq : ∀ a b, relP a b ↔ Q.rel a b := fun a b =>
+      ⟨fun h => by
+          by_contra hq
+          have hmem : (a, b) ∈ (Finset.univ : Finset (Fin n × Fin n)).filter
+              (fun e : Fin n × Fin n => relP e.1 e.2 ∧ ¬ Q.rel e.1 e.2) :=
+            Finset.mem_filter.mpr ⟨by simp, h, hq⟩
+          rw [hempty] at hmem
+          exact absurd hmem (by simp),
+       hQP a b⟩
+    have hJeq : Finset.univ.filter (relP p ·) = Finset.univ.filter (Q.rel p ·) := by
+      ext q; simp only [Finset.mem_filter, Finset.mem_univ, true_and]; exact heq p q
+    rw [hJeq]
+    apply FinsetMetric.discreteHausdorff_le_of_forall_exists (hC := le_refl 0)
+    · intro a ha; exact ⟨a, ha, by simp [GraphDistance.boundedDist_self]⟩
+    · intro b hb; exact ⟨b, hb, by simp [GraphDistance.boundedDist_self]⟩
+  | succ k' ih =>
+    intro relP _ hreflP hQP hadjP hcard
+    set diff := (Finset.univ : Finset (Fin n × Fin n)).filter
+        (fun e : Fin n × Fin n => relP e.1 e.2 ∧ ¬ Q.rel e.1 e.2) with hdiff_def
+    by_cases hempty : diff.card = 0
+    · have h0 := ih relP hreflP hQP hadjP
+            (le_trans (hdiff_def ▸ Nat.le_zero.mpr hempty) (Nat.zero_le k'))
+      exact le_trans h0 (by exact_mod_cast Nat.le_succ k')
+    · obtain ⟨⟨u, v⟩, hmem⟩ := Finset.card_pos.mp (Nat.pos_of_ne_zero hempty)
+      simp only [hdiff_def, Finset.mem_filter, Finset.mem_univ, true_and] at hmem
+      have hPuv : relP u v := hmem.1
+      have hQuv : ¬ Q.rel u v := hmem.2
+      have huv : u ≠ v := fun heq => hQuv (heq ▸ Q.refl v)
+      let relP' : Fin n → Fin n → Prop := fun a b =>
+        if a = u ∧ b = v then False else relP a b
+      haveI : DecidableRel relP' := fun a b =>
+        if h : a = u ∧ b = v then
+          isFalse (by simp only [relP', h, and_self, ↓reduceIte]; exact fun hf => hf)
+        else decidable_of_iff (relP a b) (by simp only [relP', if_neg h])
+      have hreflP' : relP' p p := by
+        have hne : ¬(p = u ∧ p = v) := fun ⟨ha, hb⟩ => huv (ha.symm.trans hb)
+        simp only [relP', if_neg hne]
+        exact hreflP
+      have hQP' : ∀ a b, Q.rel a b → relP' a b := fun a b hq => by
+        simp only [relP']
+        by_cases h1 : a = u ∧ b = v
+        · exact absurd (h1.1 ▸ h1.2 ▸ hq) hQuv
+        · simp only [if_neg h1]; exact hQP a b hq
+      have hadjP' : ∀ a b, relP' a b → adj b a := fun a b h => by
+        have hPab : relP a b := by
+          by_cases h1 : a = u ∧ b = v
+          · simp only [relP', if_pos h1] at h
+          · simp only [relP', if_neg h1] at h; exact h
+        exact hadjP a b hPab
+      have hmem_uv : (u, v) ∈ diff := by
+        simp only [hdiff_def, Finset.mem_filter, Finset.mem_univ, true_and, hPuv, hQuv,
+          not_false_eq_true, and_self]
+      have hdiff' :
+          ((Finset.univ : Finset (Fin n × Fin n)).filter
+              (fun e : Fin n × Fin n => relP' e.1 e.2 ∧ ¬ Q.rel e.1 e.2)).card ≤ k' := by
+        set diff' := (Finset.univ : Finset (Fin n × Fin n)).filter
+            (fun e : Fin n × Fin n => relP' e.1 e.2 ∧ ¬ Q.rel e.1 e.2) with hdiff'_def
+        have hsub : diff' ⊆ diff.erase (u, v) := by
+          intro ⟨a, b⟩ hmem'
+          simp only [hdiff'_def, Finset.mem_filter, Finset.mem_univ, true_and] at hmem'
+          obtain ⟨hP'ab, hQab⟩ := hmem'
+          rw [Finset.mem_erase]
+          constructor
+          · intro heq
+            obtain ⟨ha, hb⟩ := Prod.mk.inj heq; subst ha; subst hb
+            simp only [relP', and_self, ↓reduceIte] at hP'ab
+          · simp only [hdiff_def, Finset.mem_filter, Finset.mem_univ, true_and]
+            refine ⟨?_, hQab⟩
+            by_cases h1 : a = u ∧ b = v
+            · simp only [relP', if_pos h1] at hP'ab
+            · simp only [relP', if_neg h1] at hP'ab; exact hP'ab
+        have hle := Finset.card_le_card hsub
+        rw [Finset.card_erase_of_mem hmem_uv] at hle
+        omega
+      have hIH := ih relP' hreflP' hQP' hadjP' hdiff'
+      have hstep : FinsetMetric.discreteHausdorff (GraphDistance.boundedDist (n := n) adj)
+          (Finset.univ.filter (relP p ·)) (Finset.univ.filter (relP' p ·)) ≤ 1 :=
+        jFuture_hausdorff_le_one_of_edge_adj adj relP relP' u v
+          (fun a b hne => by simp only [relP', if_neg hne])
+          hPuv
+          (by show ¬ relP' u v; simp [relP'])
+          (hadjP u v hPuv)
+          hreflP'
+      have hmid : (Finset.univ.filter (relP' p ·)).Nonempty :=
+        ⟨p, by simp [hreflP']⟩
+      have htri := FinsetMetric.discreteHausdorff_triangle
+          (GraphDistance.boundedDist (n := n) adj)
+          (fun a b c => GraphDistance.boundedDist_triangle adj a b c)
+          (fun a b => GraphDistance.boundedDist_nonneg adj a b)
+          hmid
+          (Finset.univ.filter (relP p ·)) (Finset.univ.filter (Q.rel p ·))
+      have hcast : (k' : ℝ) + 1 = ((k' + 1 : ℕ) : ℝ) := by
+        simp [Nat.cast_add, Nat.cast_one]
+      linarith [htri, hstep, hIH, hcast]
+
+/-- **A.4 — k-edge Hausdorff bound**: If `Q ⊆ P` (as FiniteCausalPosets) and
+`adj` contains all reversed edges of `P` (`P.rel a b → adj b a`), then
+
+  `dH(adj)(J⁺(P, p), J⁺(Q, p)) ≤ |{(a,b) : P.rel a b ∧ ¬Q.rel a b}|`.
+
+Corollary with `adj a b := P.rel a b ∨ P.rel b a`: removing k edges from P
+moves the causal future by at most k steps in the Hausdorff sense. -/
+theorem jplus_hausdorff_le_card_diff_of_subgraph
+    (adj : Fin n → Fin n → Prop) [DecidableRel adj]
+    (P Q : FiniteCausalPoset n)
+    (hQP : ∀ a b, Q.rel a b → P.rel a b)
+    (hadjP : ∀ a b, P.rel a b → adj b a)
+    (p : Fin n) :
+    FinsetMetric.discreteHausdorff (GraphDistance.boundedDist (n := n) adj)
+        (P.JplusFinset p) (Q.JplusFinset p) ≤
+    ((Finset.univ : Finset (Fin n × Fin n)).filter
+        (fun e : Fin n × Fin n => P.rel e.1 e.2 ∧ ¬ Q.rel e.1 e.2)).card := by
+  simp only [FiniteCausalPoset.JplusFinset]
+  exact_mod_cast jFuture_hausdorff_diff_le_aux adj Q p _ P.rel (P.refl p) hQP hadjP le_rfl
 
 end FiniteCausalPoset
 

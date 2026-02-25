@@ -367,3 +367,21 @@ Completed in two phases (Phase 1: linter/build fixes; Phase 2: docs, deprecation
 - Added `H1Cech_vanishes_of_exact`: if the Čech 0/1/2 cochain complex is exact at degree 1
   (i.e. `ker d1 = im d0`), then `H1Cech = ⊥` (vanishing of the H¹ quotient).
 - Proof: `Submodule.Quotient.eq_bot_iff` + exactness ↔ quotient is trivial.
+
+### A.4 — `jplus_hausdorff_le_card_diff_of_subgraph` (`DiscreteFutureContinuity.lean`)
+
+- Added `jFuture_hausdorff_le_one_of_edge_adj`: removing a single edge from a relation
+  moves J⁺ by ≤ 1 in Hausdorff distance.
+- Added `jFuture_hausdorff_diff_le_aux`: induction on |diff(relP, Q)| giving
+  `dH(relP p, Q p) ≤ |{(a,b) : relP a b ∧ ¬Q.rel a b}|`.
+- Added `jplus_hausdorff_le_card_diff_of_subgraph`: the main theorem,
+  `dH(adj)(J⁺(P,p), J⁺(Q,p)) ≤ |{(a,b) : P.rel a b ∧ ¬Q.rel a b}|`
+  whenever Q ⊆ P and adj contains all reversed edges of P.
+- Required adding `import Mathlib.Data.Fintype.Prod` for `Fintype (Fin n × Fin n)`.
+
+### C.1 — `chamber_constancy_global` (`ChamberConstancy.lean`)
+
+- Added `ChamberConstancy.lean` with:
+  - `AQEI_chamber_constancy`: for convex C with nonempty interior, locally
+    constant Φ is globally constant.
+  - `AQEI_chamber_constancy_of_bounds_nonneg`: tangibility bounds variant.
