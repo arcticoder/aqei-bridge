@@ -1068,3 +1068,16 @@ Phase 3 is complete. Committed and pushed as `4818a68`.
 All 5 theorems (A.1, A.2, B.2, B.3, C.2) build cleanly across 3397 jobs with run_tests.sh passing.
 <!-- ------ -->
 ---
+Completed: *Commit and push Phase 3 changes* (4/4)
+
+Phase 3 is complete. Committed and pushed as `4818a68`.
+
+**What was fixed and delivered:**
+
+- **Root cause of "Unknown identifier `u`"**: After `obtain ⟨rfl, rfl⟩ := hpq` where `hpq : p = u ∧ q = v`, Lean 4 substitutes *`u := p`* and *`v := q`* (eliminates the earlier-introduced lemma parameters), not `p := u`. So the post-substitution witness must use `p` and `q`.
+- **Root cause of syntax error**: `set_option linter.unusedSectionVars false in` followed by a docstring before `lemma` is not valid Lean 4 syntax. Removed the `set_option` wrapper.
+- **Root cause of `Decidable` instance mismatch**: `haveI hdec := fun a b => inferInstance` creates a named instance `hdec` that conflicts with the `instDecidableOr` used in the goal. Fixed by using `classical` instead.
+
+All 5 theorems (A.1, A.2, B.2, B.3, C.2) build cleanly across 3397 jobs with run_tests.sh passing.
+<!-- ------ -->
+---

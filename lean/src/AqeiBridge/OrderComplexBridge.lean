@@ -122,7 +122,17 @@ respects the natural ordering of `Fin n` indices: `P.rel a b → a.val ≤ b.val
 
 Under this condition `OC1_to_edge` is a bijection, giving the converse of
 `Z1_oc_eq_bot_of_posethom` and hence the full equivalence of the two acyclicity
-conditions. -/
+conditions.
+
+**Remark (B.1):** The `IsCompatible` condition cannot be dropped in general.
+Counterexample: take `n = 3`, declare `rel 2 0 = true`, `rel 2 1 = true`,
+`rel 1 0 = true` (a backward chain), and `R = ℤ`.  Then `OC1_to_edge` is no
+longer a bijection (the OC1 simplex `(2, 0)` satisfies `2 > 0` in `Fin 3` and
+does not map to a strict edge under the `a.val < b.val` orientation).  The 1-chain
+`[2→0] - [2→1] - [1→0]` can then be a non-trivial cycle in `Z1_oc`, showing
+`Z1_oc R P ≠ ⊥` even when `Z1 P.toCausalPoset R = ⊥`.  Hence the equivalence
+`Z1_oc R P = ⊥ ↔ Z1 P.toCausalPoset R = ⊥` (Theorem B.1) requires at least a
+compatibility assumption or a canonical orientation convention. -/
 def IsCompatible : Prop :=
   ∀ a b : Fin n, P.rel a b → a.val ≤ b.val
 

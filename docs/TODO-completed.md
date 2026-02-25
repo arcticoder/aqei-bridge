@@ -2,7 +2,14 @@
 
 (Entries moved here from docs/TODO.md as they are completed.)
 
-## 2026-02-22
+## 2026-07-13
+- **A.3** `jplus_hausdorff_le_chain` in `lean/src/AqeiBridge/DiscreteFutureContinuity.lean`: for a chain of `k+1` finite causal posets connected step-by-step with Hausdorff ≤ 1, `dH(J⁺(p, c₀), J⁺(p, cₖ)) ≤ k`. Proved by induction using `jplus_hausdorff_le_chain_aux` with `discreteHausdorff_triangle` from `DiscreteHausdorff.lean` and `boundedDist_triangle` from `GraphDistance.lean`.
+- **C.1** `lean/src/AqeiBridge/ChamberConstancy.lean` (NEW): `chamber_constancy_global` (abstract), `chamber_constancy_of_convex` (convex corollary), `AQEI_chamber_constancy` (AQEI cone instance), and `AQEI_chamber_constancy_of_bounds_nonneg` (API alias). Uses `Convex.isPreconnected` + `IsLocallyConstant.apply_eq_of_isPreconnected` from Mathlib.
+- **Triangle infrastructure**: `boundedDist_triangle` + `boundedDist_self` + `boundedDist_nonneg` in `GraphDistance.lean`; `discreteHausdorff_triangle` + `discreteHausdorff_eq_zero_of_{left,right}_empty` in `DiscreteHausdorff.lean`.
+- `lean/src/AqeiBridge.lean`: wired in `AqeiBridge.ChamberConstancy`.
+- Ran `lake build AqeiBridge` (3398 jobs, all OK, no errors).
+
+
 - `lean/src/AqeiBridge/OrderComplexBridge.lean` — **full OC ↔ PosetHom equivalence**:
   - `OC1_to_edge`: injection `OC1 P → Edge (P.toCausalPoset)` using antisymmetry
   - `OC1_to_edge_injective`: proved via `congr_arg` on src/dst projections

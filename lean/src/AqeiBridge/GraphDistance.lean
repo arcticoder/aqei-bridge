@@ -2,8 +2,10 @@ import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Real.Basic
+import Mathlib.Tactic.Linarith
 
 /-!
 # Graph distance on `Fin n` (bounded shortest-path scaffold)
@@ -127,6 +129,98 @@ lemma boundedDist_le_one_of_adj (adj : Fin n → Fin n → Prop) [DecidableRel a
   simp only [boundedDist]
   exact_mod_cast hdist
 
+/-! ## Triangle inequality for boundedDist -/
+
+/-- The `step` function is monotone: larger starting sets give larger 1-step
+reachable sets. -/
+lemma step_mono (adj : Fin n → Fin n → Prop) [DecidableRel adj]
+    {S T : Finset (Fin n)} (h : S ⊆ T) : step (n := n) adj S ⊆ step (n := n) adj T := by
+  classical
+  intro w hw
+  simp only [step, Finset.mem_filter, Finset.mem_univ, true_and] at hw ⊢
+  obtain ⟨v, hv, hadj⟩ := hw
+  exact ⟨v, h hv, hadj⟩
+
+/-- If `u ∈ ball adj v k` and `w ∈ ball adj u j`, then `w ∈ ball adj v (k + j)`.
+This is the key path-concatenation lemma. -/
+lemma ball_concat (adj : Fin n → Fin n → Prop) [DecidableRel adj]
+    (v u w : Fin n) (k j : ℕ)
+    (hvu : u ∈ ball (n := n) adj v k)
+    (huw : w ∈ ball (n := n) adj u j) :
+    w ∈ ball (n := n) adj v (k + j) := by
+  classical
+  induction j generalizing w with
+  | zero =>
+    simp only [ball, Finset.mem_singleton] at huw
+    subst huw
+    simpa using hvu
+  | succ j' ih =>
+    simp only [ball, step, Finset.mem_filter, Finset.mem_univ, true_and] at huw
+    obtain ⟨w', hw', hadj⟩ := huw
+    have hw'_in_v : w' ∈ ball (n := n) adj v (k + j') := ih w' hw'
+    rw [show k + (j' + 1) = (k + j') + 1 from by omega]
+    simp only [ball, step, Finset.mem_filter, Finset.mem_univ, true_and]
+    exact ⟨w', hw'_in_v, hadj⟩
+
+/-- If `u` is reachable from `v` within `n` steps
+(i.e., `candidates adj v u` is nonempty), then `u ∈ ball adj v (boundedDistNat adj v u)`. -/
+lemma mem_ball_of_boundedDistNat_of_nonempty (adj : Fin n → Fin n → Prop) [DecidableRel adj]
+    (v u : Fin n) (hne : (candidates (n := n) adj v u).Nonempty) :
+    u ∈ ball (n := n) adj v (boundedDistNat (n := n) adj v u) := by
+  classical
+  simp only [boundedDistNat, hne, dif_pos]
+  -- The infimum over a nonempty finite set is achieved at some k_min in the set.
+  rcases Finset.exists_min_image (candidates (n := n) adj v u) id hne
+      with ⟨k_min, hk_min, hmin⟩
+  have heq : (candidates (n := n) adj v u).inf' hne (fun k => k) = k_min :=
+    le_antisymm (Finset.inf'_le (f := fun k => k) hk_min)
+                (Finset.le_inf' hne (fun k => k) (fun b hb => hmin b hb))
+  rw [heq]
+  simp only [candidates, Finset.mem_filter] at hk_min
+  exact hk_min.2
+
+/-- **Triangle inequality for `boundedDistNat`**: the bounded nat-distance satisfies
+`boundedDistNat v w ≤ boundedDistNat v u + boundedDistNat u w`. -/
+lemma boundedDistNat_triangle (adj : Fin n → Fin n → Prop) [DecidableRel adj]
+    (v u w : Fin n) :
+    boundedDistNat (n := n) adj v w ≤
+      boundedDistNat (n := n) adj v u + boundedDistNat (n := n) adj u w := by
+  classical
+  rcases le_or_gt
+      (boundedDistNat (n := n) adj v u + boundedDistNat (n := n) adj u w) n with hle | hgt
+  · -- sum ≤ n: look for an actual path of combined length
+    by_cases hvune : (candidates (n := n) adj v u).Nonempty
+    · by_cases huwne : (candidates (n := n) adj u w).Nonempty
+      · -- Both sub-paths are reachable; concatenate them.
+        have hvu := mem_ball_of_boundedDistNat_of_nonempty adj v u hvune
+        have huw := mem_ball_of_boundedDistNat_of_nonempty adj u w huwne
+        have hw := ball_concat adj v u w _ _ hvu huw
+        have hkj_cands : boundedDistNat (n := n) adj v u + boundedDistNat (n := n) adj u w
+            ∈ candidates (n := n) adj v w := by
+          simp only [candidates, Finset.mem_filter, Finset.mem_range]
+          exact ⟨by omega, hw⟩
+        simp only [boundedDistNat, show (candidates (n := n) adj v w).Nonempty from ⟨_, hkj_cands⟩, dif_pos]
+        exact Finset.inf'_le (f := fun k => k) hkj_cands
+      · -- v→u path exists but u→w does not (within n steps); dist u w = n
+        have hj : boundedDistNat (n := n) adj u w = n := by
+          simp only [boundedDistNat, dif_neg huwne]
+        linarith [boundedDistNat_le adj v u, boundedDistNat_le adj v w]
+    · -- v→u path does not exist within n steps; dist v u = n
+      have hk : boundedDistNat (n := n) adj v u = n := by
+        simp only [boundedDistNat, dif_neg hvune]
+      linarith [boundedDistNat_le adj u w, boundedDistNat_le adj v w]
+  · -- sum > n: both ≤ n, so automatically ≥ n ≥ boundedDistNat v w
+    linarith [boundedDistNat_le adj v w]
+
+/-- **Triangle inequality for `boundedDist`** (ℝ version). -/
+lemma boundedDist_triangle (adj : Fin n → Fin n → Prop) [DecidableRel adj]
+    (v u w : Fin n) :
+    boundedDist (n := n) adj v w ≤
+      boundedDist (n := n) adj v u + boundedDist (n := n) adj u w := by
+  simp only [boundedDist]
+  exact_mod_cast boundedDistNat_triangle adj v u w
+
 end GraphDistance
+
 
 end AqeiBridge

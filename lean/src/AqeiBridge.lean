@@ -16,6 +16,7 @@ import AqeiBridge.AQEI_Cone
 import AqeiBridge.Chambers
 import AqeiBridge.ChamberIndexedModel
 import AqeiBridge.ChamberClosedChamberBridge
+import AqeiBridge.ChamberConstancy
 import AqeiBridge.DiscreteChamberStability
 import AqeiBridge.DiscreteCausality
 import AqeiBridge.DiscreteCausalPoset

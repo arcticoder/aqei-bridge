@@ -259,4 +259,96 @@ lemma jplus_hausdorff_le_one_of_edge_diff (P Q : FiniteCausalPoset n)
            by simp [GraphDistance.boundedDist_self]⟩
 end FiniteCausalPoset
 
+/-!
+### A.3 Extend tight bound to k-edge perturbations
+
+Combining A.1 with the `discreteHausdorff_triangle` from `DiscreteHausdorff.lean`,
+a chain of `k` single-edge perturbations gives Hausdorff distance ≤ k.
+-/
+
+namespace FiniteCausalPoset
+
+open FinsetMetric GraphDistance
+
+variable {n : ℕ}
+
+/-- Inner induction lemma for A.3: avoids variable-capture issues. -/
+private lemma jplus_hausdorff_le_chain_aux
+    (adj : Fin n → Fin n → Prop) [DecidableRel adj]
+    (p : Fin n) :
+    ∀ (m : ℕ) (c : Fin (m + 1) → FiniteCausalPoset n)
+      (_ : ∀ i : Fin m,
+          FinsetMetric.discreteHausdorff (boundedDist (n := n) adj)
+            ((c (Fin.castSucc i)).JplusFinset p)
+            ((c i.succ).JplusFinset p) ≤ 1),
+      FinsetMetric.discreteHausdorff (boundedDist (n := n) adj)
+        ((c ⟨0, Nat.succ_pos m⟩).JplusFinset p)
+        ((c ⟨m, Nat.lt_succ_self m⟩).JplusFinset p) ≤ (m : ℝ) := by
+  intro m
+  induction m with
+  | zero =>
+    intro c _
+    simp only [Nat.cast_zero]
+    have heq : c ⟨0, Nat.succ_pos 0⟩ = c ⟨0, Nat.lt_succ_self 0⟩ := by congr 1
+    rw [heq]
+    -- dH(S, S) = 0 ≤ 0: for each a ∈ S pick b = a — boundedDist_self gives d a a = 0 ≤ 0
+    apply FinsetMetric.discreteHausdorff_le_of_forall_exists
+    · exact le_refl 0
+    · intro a ha
+      exact ⟨a, ha, by rw [GraphDistance.boundedDist_self]⟩
+    · intro b hb
+      exact ⟨b, hb, by rw [GraphDistance.boundedDist_self]⟩
+  | succ m' ih =>
+    intro c hs
+    -- The middle set is nonempty because JplusFinset always contains p (via refl)
+    have hmid : ((c ⟨m', Nat.lt_succ_of_lt (Nat.lt_succ_self m')⟩).JplusFinset p).Nonempty :=
+      ⟨p, by simp [FiniteCausalPoset.JplusFinset,
+        (c ⟨m', Nat.lt_succ_of_lt (Nat.lt_succ_self m')⟩).refl p]⟩
+    -- Step bound: dH(c m', c m'+1) ≤ 1
+    have hlast : FinsetMetric.discreteHausdorff (boundedDist (n := n) adj)
+        ((c ⟨m', Nat.lt_succ_of_lt (Nat.lt_succ_self m')⟩).JplusFinset p)
+        ((c ⟨m' + 1, Nat.lt_succ_self (m' + 1)⟩).JplusFinset p) ≤ 1 :=
+      hs ⟨m', Nat.lt_succ_self m'⟩
+    -- IH bound: dH(c 0, c m') ≤ m'
+    have hprev : FinsetMetric.discreteHausdorff (boundedDist (n := n) adj)
+        ((c ⟨0, Nat.succ_pos (m' + 1)⟩).JplusFinset p)
+        ((c ⟨m', Nat.lt_succ_of_lt (Nat.lt_succ_self m')⟩).JplusFinset p) ≤ (m' : ℝ) := by
+      have hstep' : ∀ i : Fin m',
+          FinsetMetric.discreteHausdorff (boundedDist (n := n) adj)
+            ((c (Fin.castSucc (Fin.castSucc i))).JplusFinset p)
+            ((c (Fin.castSucc i).succ).JplusFinset p) ≤ 1 :=
+        fun i => hs (Fin.castSucc i)
+      have h := ih (fun i => c (Fin.castSucc i)) hstep'
+      convert h using 2
+    -- Triangle: dH(c 0, c m'+1) ≤ dH(c 0, c m') + dH(c m', c m'+1)
+    have htri := FinsetMetric.discreteHausdorff_triangle
+        (boundedDist (n := n) adj)
+        (fun a b c => GraphDistance.boundedDist_triangle adj a b c)
+        (fun a b => GraphDistance.boundedDist_nonneg adj a b)
+        hmid
+        ((c ⟨0, Nat.succ_pos (m' + 1)⟩).JplusFinset p)
+        ((c ⟨m' + 1, Nat.lt_succ_self (m' + 1)⟩).JplusFinset p)
+    have hcast : (m' : ℝ) + 1 = ((m' + 1 : ℕ) : ℝ) := by
+      simp [Nat.cast_add, Nat.cast_one]
+    linarith [hcast]
+
+/-- **A.3**: For a chain of `k+1` finite causal posets each connected to the next
+by a single-edge perturbation (Hausdorff distance ≤ 1 under fixed adjacency `adj`),
+the total Hausdorff distance from the first to the last future set is ≤ k. -/
+lemma jplus_hausdorff_le_chain
+    (adj : Fin n → Fin n → Prop) [DecidableRel adj]
+    (k : ℕ)
+    (chain : Fin (k + 1) → FiniteCausalPoset n)
+    (p : Fin n)
+    (hstep : ∀ i : Fin k,
+        FinsetMetric.discreteHausdorff (boundedDist (n := n) adj)
+          ((chain (Fin.castSucc i)).JplusFinset p)
+          ((chain i.succ).JplusFinset p) ≤ 1) :
+    FinsetMetric.discreteHausdorff (boundedDist (n := n) adj)
+      ((chain ⟨0, Nat.succ_pos k⟩).JplusFinset p)
+      ((chain ⟨k, Nat.lt_succ_self k⟩).JplusFinset p) ≤ (k : ℝ) :=
+  jplus_hausdorff_le_chain_aux adj p k chain hstep
+
+end FiniteCausalPoset
+
 end AqeiBridge

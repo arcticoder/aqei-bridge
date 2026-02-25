@@ -29,17 +29,15 @@
 
 - [x] Proved `h1_dim_le_of_subgraph` in `H1Stability.lean` (via `push1_Z1_map` injective linear map + `Submodule.rank_le`).
 
-### A.3 Extend tight bound to k-edge perturbations
+### A.3 Extend tight bound to k-edge perturbations ✅ DONE
 
-- [ ] After A.1: prove linear dependence `≤ k` when adjacencies differ on `k` edges.
+- [x] Proved `jplus_hausdorff_le_chain` in `DiscreteFutureContinuity.lean`: for a chain of `k+1` finite causal posets each connected to the next by a Hausdorff-distance-≤1 perturbation, `dH(J⁺(p, c₀), J⁺(p, cₖ)) ≤ k`. Infrastructure: `boundedDist_triangle` in `GraphDistance.lean`, `discreteHausdorff_triangle` in `DiscreteHausdorff.lean`.
 
 ## Phase B — Homology Coherence
 
 ### B.1 Tight Z₁ ↔ H1_oc equivalence
 
-- [ ] Verify/strengthen `Z1_oc_eq_bot_iff` in `OrderComplexBridge.lean` to an
-  exact equivalence (not just under `IsCompatible` but for all compatible posets
-  without additional assumptions, if achievable).
+- [x] Added a counterexample note to the `IsCompatible` docstring in `OrderComplexBridge.lean` explaining why the condition cannot be dropped: a backward-oriented 3-vertex chain gives `Z1_oc R P ≠ ⊥` even when `Z1 P.toCausalPoset R = ⊥`. The full `↔` equivalence therefore holds under `IsCompatible` and this is tight.
 
 ### B.2 H1_oc monotone under subgraph inclusion ✅ DONE
 
@@ -51,20 +49,9 @@
 
 ## Phase C — Conceptual Upgrade (Longer Term)
 
-### C.1 Chamber constancy → global constancy theorem
+### C.1 Chamber constancy → global constancy theorem ✅ DONE
 
-- [ ] Prove `chamber_constancy_global` (new file `ChamberConstancy.lean`):
-
-  **Precise goal:** If $\Phi : \mathrm{AQEI\_cone}(F) \to \alpha$ is locally constant
-  on polyhedral chambers, then $\Phi$ is constant on each path-component of the cone.
-
-  In Lean sketch:
-  ```lean
-  theorem chamber_constancy_global
-    (C : Set V) (hconv : Convex ℝ C) (hne : C.Nonempty)
-    (Φ : V → α) (hloc : ∀ chamber, IsChamber chamber → ∀ T₁ T₂ ∈ chamber, Φ T₁ = Φ T₂)
-    : ∀ T₁ T₂ ∈ C, Φ T₁ = Φ T₂
-  ```
+- [x] Proved `chamber_constancy_global`, `chamber_constancy_of_convex`, and `AQEI_chamber_constancy` in new file `ChamberConstancy.lean`. A locally constant function on a path-connected (or convex) set is globally constant. AQEI cone instantiation uses `AQEI_cone_convex` + `Convex.isPreconnected`.
 
 ### C.2 Finite Čech H¹ for Alexandrov opens ✅ DONE
 
