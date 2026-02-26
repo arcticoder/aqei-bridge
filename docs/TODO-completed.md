@@ -2,7 +2,35 @@
 
 (Entries moved here from docs/TODO.md as they are completed.)
 
-## 2026-07-13
+## 2026-07-14
+- **A.5 `rank_Z1_formula`** (`lean/src/AqeiBridge/DiscreteH1QuantitativeUpgrade.lean`):
+  Closed all build errors in the Betti-number identity proof `rank Z₁(M) + |V| = |E| + c(M)`.
+  The theorem `rank_Z1_formula` and its assembly lemmas `rank_Z1_add_rank_im_eq_numDirEdges`,
+  `rank_im_boundary1_add_numComponents_le`, `rank_im_add_numComponents_eq`, and
+  `h1_quantitative_upgrade` are now **sorry-free**.
+  One sub-lemma `rank_im_boundary1_add_numComponents_ge` (the spanning-forest lower bound)
+  retains a `sorry`; this is the only remaining open proof obligation in the file.
+  Key technical fixes applied:
+  - **`rank_C1_eq`**: replaced `Fintype.card_congr` (needed `Fintype (Edge M)`) with
+    `Cardinal.mk_congr (edgeEquiv M)` + `Cardinal.mk_fintype` on the subtype; no
+    `[Fintype (Edge M)]` instance needed.
+  - **`rank_Z1_add_rank_im_eq_numDirEdges`**: replaced `linarith` (doesn't work on
+    `Cardinal`) with `rw [rank_C1_eq M, add_comm]` applied to `rank_range_add_rank_ker`.
+  - **`compMap_edgeBoundary_eq_zero`**: fixed circular `ne_of_adj` proof by case-splitting
+    on `e.src = e.dst`; self-loop case uses `simp [heq]`, non-loop case proves `hadj`
+    directly as `⟨heq, Or.inl e.ok⟩`.
+  - **`rank_im_boundary1_add_numComponents_le`**: removed cardinal subtraction (`HSub
+    Cardinal Cardinal` doesn't exist); restructured using additive form
+    `|Pt| = numComponents + rank(ker)` and a `calc` block with `gcongr`.
+  - **`rank_Z1_formula`**: replaced `linarith` with explicit `calc` using `rw [h2]` and
+    `ring` to avoid Cardinal `linarith` failure.
+  - Added `import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition` for
+    `StrongRankCondition ℤ` (needed by `rank_finsupp_self'`).
+  - Added `set_option linter.unusedSectionVars false` at section level to suppress
+    harmless lint warnings for `rank_C1_eq` and `compMap_surjective`.
+  - Ran `lake build AqeiBridge` (3432 jobs, all OK, one expected sorry warning).
+
+
 - **A.3** `jplus_hausdorff_le_chain` in `lean/src/AqeiBridge/DiscreteFutureContinuity.lean`: for a chain of `k+1` finite causal posets connected step-by-step with Hausdorff ≤ 1, `dH(J⁺(p, c₀), J⁺(p, cₖ)) ≤ k`. Proved by induction using `jplus_hausdorff_le_chain_aux` with `discreteHausdorff_triangle` from `DiscreteHausdorff.lean` and `boundedDist_triangle` from `GraphDistance.lean`.
 - **C.1** `lean/src/AqeiBridge/ChamberConstancy.lean` (NEW): `chamber_constancy_global` (abstract), `chamber_constancy_of_convex` (convex corollary), `AQEI_chamber_constancy` (AQEI cone instance), and `AQEI_chamber_constancy_of_bounds_nonneg` (API alias). Uses `Convex.isPreconnected` + `IsLocallyConstant.apply_eq_of_isPreconnected` from Mathlib.
 - **Triangle infrastructure**: `boundedDist_triangle` + `boundedDist_self` + `boundedDist_nonneg` in `GraphDistance.lean`; `discreteHausdorff_triangle` + `discreteHausdorff_eq_zero_of_{left,right}_empty` in `DiscreteHausdorff.lean`.

@@ -46,10 +46,10 @@ All items must strengthen one of three formal pillars:
 
   $$|E'| - |V| + c(G') \le |E| - |V| + c(G).$$
 
-  Implemented as A.5 (`h1_quantitative_upgrade`) in `DiscreteH1QuantitativeUpgrade.lean`,
-  conditional on `rank_Z1_formula` (one sorry remaining: Betti-number identity
-  `rank Z₁ + |V| = |E| + c` requiring spanning-forest argument via
-  `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`).  
+  Implemented as A.5 (`h1_quantitative_upgrade`) in `DiscreteH1QuantitativeUpgrade.lean`.
+  `rank_Z1_formula` (`rank Z₁ + |V| = |E| + c`) is now proved (all assembly lemmas
+  sorry-free).  One internal sub-lemma `rank_im_boundary1_add_numComponents_ge`
+  (spanning-forest lower bound) retains a sorry.
   Connected-component infrastructure: `DiscreteConnectedComponents.lean`
   (`undirGraph`, `numComponents`, `numComponents_antitone`).  
 

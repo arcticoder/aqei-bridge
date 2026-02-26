@@ -1121,3 +1121,19 @@ Two new Lean modules:
 **What remains**: close the one `rank_Z1_formula` sorry — needs spanning-forest argument connecting `boundary1`'s image rank to `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix` from Mathlib's Laplacian module (over ℝ, then transfer to ℤ).
 <!-- ------ -->
 ---
+Completed: *Update TODO files and commit* (7/7)
+
+All done. Committed as `125559c`. Summary of what was fixed:
+
+| Error | Fix |
+|---|---|
+| `Fintype (Edge M)` not found in `rank_C1_eq` | Used `Cardinal.mk_congr (edgeEquiv M)` + `Cardinal.mk_fintype` on the subtype instead of `Fintype.card_congr` |
+| `linarith` fails on `Cardinal` in rank-nullity | Replaced with `rw [rank_C1_eq M, add_comm]` applied to `rank_range_add_rank_ker` |
+| Circular `ne_of_adj` in `compMap_edgeBoundary_eq_zero` | Case-split on `e.src = e.dst`; self-loop case via `simp [heq]`; non-loop case uses `⟨heq, Or.inl e.ok⟩` |
+| `HSub Cardinal Cardinal` not found in upper bound | Removed cardinal subtraction; used additive `calc`: rank(im) + c ≤ rank(ker) + c = c + rank(ker) = \|Pt\| |
+| `linarith` fails in `rank_Z1_formula` | Replaced with explicit `calc` using `rw [h2]` + `ring` |
+| `StrongRankCondition ℤ` not found | Added `import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition` |
+
+The only remaining `sorry` is `rank_im_boundary1_add_numComponents_ge` (the spanning-forest lower bound), which is the planned open item in TODO.md.
+<!-- ------ -->
+---
