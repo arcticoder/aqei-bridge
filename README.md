@@ -73,7 +73,7 @@ aqei-bridge/
 │   ├── orchestrator.py             # Main workflow driver (stages I-IV)
 │   └── analyze_candidates.py       # Mathematica JSON → Lean skeleton emission
 ├── papers/
-│   ├── aqei-lean-formalization.tex      # Manuscript: Lean 4 formal methods (CPP/ITP target)
+│   ├── discrete-causal-posets-lean4.tex      # Manuscript: Lean 4 formal methods (CPP/ITP target)
 │   └── aqei-bridge-hybrid-workflow.md   # Living draft overview of bridge conjecture
 ├── docs/
 │   ├── TODO.md                     # High-priority active tasks
@@ -120,7 +120,7 @@ python python/analyze_candidates.py --input /path/to/aqei-numerical-validation/m
 
 ## Publication track
 
-### Formal Verification Track (`papers/aqei-lean-formalization.tex`)
+### Formal Verification Track (`papers/discrete-causal-posets-lean4.tex`)
 
 **Target venue:** CPP / ITP (formal methods / theorem proving)
 

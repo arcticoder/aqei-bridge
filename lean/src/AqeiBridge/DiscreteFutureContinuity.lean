@@ -455,9 +455,8 @@ private lemma jFuture_hausdorff_diff_le_aux
           · simp only [relP', if_pos h1] at h
           · simp only [relP', if_neg h1] at h; exact h
         exact hadjP a b hPab
-      have hmem_uv : (u, v) ∈ diff := by
-        simp only [hdiff_def, Finset.mem_filter, Finset.mem_univ, true_and, hPuv, hQuv,
-          not_false_eq_true, and_self]
+      have hmem_uv : (u, v) ∈ diff :=
+        hdiff_def ▸ Finset.mem_filter.mpr ⟨Finset.mem_univ _, hPuv, hQuv⟩
       have hdiff' :
           ((Finset.univ : Finset (Fin n × Fin n)).filter
               (fun e : Fin n × Fin n => relP' e.1 e.2 ∧ ¬ Q.rel e.1 e.2)).card ≤ k' := by

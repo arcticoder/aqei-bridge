@@ -233,7 +233,7 @@
 
 ## 2026-02-18
 - **Publication track manuscript enhancements:**
-  - Added "Real-World Applications and Broader Impact" section to `papers/aqei-lean-formalization.tex`
+  - Added "Real-World Applications and Broader Impact" section to `papers/discrete-causal-posets-lean4.tex`
     - Numerical relativity verification (LIGO/VIRGO): H₁ invariance theorem for simulation stability
     - High-precision time synchronization (Deep Space Navigation): Alexandrov topology for certified clock protocols
     - Quantum communication network verification: AQEI cone convexity for causal tampering prevention
@@ -243,7 +243,7 @@
     - Outlined roadmap: computational discovery → conjecture formalization → proof automation → certification
   - Fixed LaTeX compilation issues (removed unused algorithm package)
   - Both manuscripts compile successfully:
-    - `aqei-lean-formalization.pdf`: 10 pages
+    - `discrete-causal-posets-lean4.pdf`: 10 pages
     - `aqei-numerical-validation.pdf`: 12 pages
 - **Documentation:**
   - Updated `docs/TODO.md` with Gemini 3 Pro expert analysis of incremental real-world applications
@@ -251,7 +251,7 @@
 
 ## 2026-02-18
 - **Publication track manuscript enhancements:**
-  - Added "Real-World Applications and Broader Impact" section to papers/aqei-lean-formalization.tex
+  - Added "Real-World Applications and Broader Impact" section to papers/discrete-causal-posets-lean4.tex
     - Numerical relativity verification (LIGO/VIRGO): H₁ invariance theorem for simulation stability
     - High-precision time synchronization (Deep Space Navigation): Alexandrov topology for certified clock protocols
     - Quantum communication network verification: AQEI cone convexity for causal tampering prevention
@@ -261,7 +261,7 @@
     - Outlined roadmap: computational discovery → conjecture formalization → proof automation → certification
   - Fixed LaTeX compilation issues (removed unused algorithm package)
   - Both manuscripts compile successfully:
-    - aqei-lean-formalization.pdf: 10 pages
+    - discrete-causal-posets-lean4.pdf: 10 pages
     - aqei-numerical-validation.pdf: 12 pages
 - **Documentation:**
   - Updated docs/TODO.md with Gemini 3 Pro expert analysis of incremental real-world applications
@@ -272,7 +272,7 @@
 - **Repository split:** Extracted numerical validation pipeline into standalone repo `aqei-numerical-validation`
   - New repo: https://github.com/arcticoder/aqei-numerical-validation
   - Moved: python numerical scripts (8 scripts), mathematica/ directory, papers/aqei-numerical-validation.tex, docs/h1_stability_results.md, docs/matlab_comsol_integration.md, docs/phase4_searches.md, runs/, tests/python_tests.sh, tests/mathematica_tests.sh, tests/test_pipeline.py
-  - Retained in aqei-bridge: lean/, python/orchestrator.py, python/analyze_candidates.py, papers/aqei-lean-formalization.tex, papers/aqei-bridge-hybrid-workflow.md, all formal docs
+  - Retained in aqei-bridge: lean/, python/orchestrator.py, python/analyze_candidates.py, papers/discrete-causal-posets-lean4.tex, papers/aqei-bridge-hybrid-workflow.md, all formal docs
   - Updated: README.md, run_tests.sh, docs/TODO.md, docs/code-overview.md to reflect split
   - Energy-tensor-cone review: confirmed PRD submission complete (Feb 21), `Candidate_Is_Extreme_Point` proven, provides geometric foundation for bridge conjecture
 
@@ -283,7 +283,7 @@
   - Added naming clarification comment to `AQEI_cone`: convex polyhedron NOT homogeneous cone, references energy-tensor-cone/AffineToCone.lean
   - Replaced `axiom admissible_region_pathConnected` with proven theorem: added `hne : (AQEI_cone F).Nonempty` hypothesis, uses `Convex.isPathConnected`; added import `Mathlib.Analysis.Convex.PathConnected`
   - Updated `causal_stability_pathConnected` axiom signature to include `hne` parameter
-  - Added 5 missing citations + 5 bibliography entries to `papers/aqei-lean-formalization.tex` (LIGO, Alcubierre numerical GR, Gisin QKD, Ashby GPS, Penrose 1965)
+  - Added 5 missing citations + 5 bibliography entries to `papers/discrete-causal-posets-lean4.tex` (LIGO, Alcubierre numerical GR, Gisin QKD, Ashby GPS, Penrose 1965)
   - Updated `docs/TODO.md`: `homology_functorial` marked ✅ PROVEN, `admissible_region_pathConnected` marked ✅ PROVEN, energy-tensor-cone LOW item updated
 
 - **Proved `h1_stable_small_pert` (HIGH priority TODO):**
@@ -319,7 +319,7 @@ Completed in two phases (Phase 1: linter/build fixes; Phase 2: docs, deprecation
 - **Item 5 — docs/conjecture.md:** No action needed; already up to date.
 - **Item 6 — docs/toy-model.md:** Replaced with a historical note that redirects to current architecture docs; original content preserved verbatim in an "(Archived)" section.
 - **Item 7 — papers/aqei-bridge-hybrid-workflow.md:** Moved to `docs/history/aqei-bridge-hybrid-workflow.md`; removed from `papers/`.
-- **Item 8 — papers/aqei-lean-formalization.tex:** No action needed; already up to date.
+- **Item 8 — papers/discrete-causal-posets-lean4.tex:** No action needed; already up to date.
 - **Item 9 — python/analyze_candidates.py:** Archived to `deprecated/python/`; removed from git.
 - **Item 10 — python/orchestrator.py:** Archived to `deprecated/python/`; removed from git.
 - **Item 11 — results/ directory:** Was already empty and untracked; nothing to do.

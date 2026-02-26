@@ -299,7 +299,10 @@ The library (\texttt{lean/src/AqeiBridge/}) contains the following modules:
           $H^1_{\check{C}}$ quotient
     \item \texttt{GraphDistance.lean}, \texttt{DiscreteHausdorff.lean},
           \texttt{DiscreteFutureContinuity.lean}: bounded shortest-path
-          distance, Hausdorff bound, $J^+$ Lipschitz coverage lemma
+          distance, Hausdorff triangle inequality, $J^+$ Lipschitz coverage
+          lemma, and $k$-edge Hausdorff bound
+    \item \texttt{ChamberConstancy.lean}: global constancy of locally
+          constant functions on convex sets; AQEI cone instantiation
 \end{itemize}
 
 \subsection{Key Theorems}
@@ -328,6 +331,14 @@ All of the following are fully machine-checked with zero \texttt{sorry}:
     \item \texttt{d1\_comp\_d0} (\v{C}ech): $\delta^1\circ\delta^0=0$
     \item \texttt{jplus\_discreteHausdorff\_coverage}: Lipschitz-style
           coverage bound for $J^+$ under edge perturbations
+    \item \texttt{jplus\_hausdorff\_le\_chain}: for a chain of $k+1$ finite
+          causal posets each differing by one edge, $d_H(J^+(P_0,p),J^+(P_k,p))\leq k$
+    \item \texttt{jplus\_hausdorff\_le\_card\_diff\_of\_subgraph}: if
+          $Q\subseteq P$ then
+          $d_H(J^+(P,p),J^+(Q,p))\leq |\{(a,b):P\text{-rel }a\,b\land\lnot Q\text{-rel }a\,b\}|$
+    \item \texttt{chamber\_constancy\_global},
+          \texttt{AQEI\_chamber\_constancy}: locally constant functions on
+          convex (hence path-connected) sets are globally constant
 \end{enumerate}
 
 \subsection{Verification Statistics}
@@ -335,12 +346,12 @@ All of the following are fully machine-checked with zero \texttt{sorry}:
 As of \today:
 
 \begin{itemize}
-    \item Total Lean codebase: $\approx 3900$ lines across 30 modules
-    \item Theorems and lemmas: 131
+    \item Total Lean codebase: $\approx 4800$ lines across 36 modules
+    \item Theorems, lemmas and definitions: $\approx$219
     \item \texttt{sorry} placeholders: \textbf{0}
     \item Pinned Lean version: \texttt{leanprover/lean4:v4.27.0}
     \item Pinned Mathlib: compatible release
-    \item CI: all 3397 build jobs pass
+    \item CI: all 3398 build jobs pass
 \end{itemize}
 
 \section{Empirical Validation}

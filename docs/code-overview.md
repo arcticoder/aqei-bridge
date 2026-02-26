@@ -183,5 +183,5 @@ Output log: `lean/build.log`.
 
 ## Papers
 
-`papers/aqei-lean-formalization.tex` — the formal methods manuscript
+`papers/discrete-causal-posets-lean4.tex` — the formal methods manuscript
 targeting CPP / ITP / JAR.
