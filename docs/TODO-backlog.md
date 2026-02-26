@@ -42,9 +42,16 @@ All items must strengthen one of three formal pillars:
 
   $$d_H(J^+(P,p),\; J^+(Q,p)) \le k \quad \text{when } |\mathrm{adj}_P - \mathrm{adj}_Q| = k.$$
 
-- [ ] Prove dim H₁(P') ≤ dim H₁(P) under subgraph inclusion (quantitative upgrade):
+- [x] Prove dim H₁(P') ≤ dim H₁(P) under subgraph inclusion (quantitative upgrade):
 
   $$|E'| - |V| + c(G') \le |E| - |V| + c(G).$$
+
+  Implemented as A.5 (`h1_quantitative_upgrade`) in `DiscreteH1QuantitativeUpgrade.lean`,
+  conditional on `rank_Z1_formula` (one sorry remaining: Betti-number identity
+  `rank Z₁ + |V| = |E| + c` requiring spanning-forest argument via
+  `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`).  
+  Connected-component infrastructure: `DiscreteConnectedComponents.lean`
+  (`undirGraph`, `numComponents`, `numComponents_antitone`).  
 
 ## Infrastructure (Optional)
 

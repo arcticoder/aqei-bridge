@@ -303,6 +303,13 @@ The library (\texttt{lean/src/AqeiBridge/}) contains the following modules:
           lemma, and $k$-edge Hausdorff bound
     \item \texttt{ChamberConstancy.lean}: global constancy of locally
           constant functions on convex sets; AQEI cone instantiation
+    \item \texttt{DiscreteConnectedComponents.lean}: underlying undirected
+          graph (\texttt{undirGraph}), connected-component count
+          (\texttt{numComponents}), and antitone monotonicity
+          (\texttt{numComponents\_antitone})
+    \item \texttt{DiscreteH1QuantitativeUpgrade.lean}: Betti-number formula
+          and quantitative $H_1$ upgrade (\texttt{h1\_quantitative\_upgrade},
+          one \texttt{sorry} for the rank identity)
 \end{itemize}
 
 \subsection{Key Theorems}
@@ -339,6 +346,14 @@ All of the following are fully machine-checked with zero \texttt{sorry}:
     \item \texttt{chamber\_constancy\_global},
           \texttt{AQEI\_chamber\_constancy}: locally constant functions on
           convex (hence path-connected) sets are globally constant
+    \item \texttt{h1\_dim\_le\_of\_subgraph} (A.2): rank inequality
+          $\mathrm{rank}(Z_1(M_1))\le\mathrm{rank}(Z_1(M_2))$ for
+          $M_1\subseteq M_2$
+    \item \texttt{numComponents\_antitone}: subgraph inclusion increases
+          connected-component count
+    \item \texttt{h1\_quantitative\_upgrade} (A.5): combinatorial Betti
+          bound $|E'|+c(G')\le|E|+c(G)$ under $M_1\subseteq M_2$
+          (one \texttt{sorry} for \texttt{rank\_Z1\_formula})
 \end{enumerate}
 
 \subsection{Verification Statistics}
@@ -346,12 +361,12 @@ All of the following are fully machine-checked with zero \texttt{sorry}:
 As of \today:
 
 \begin{itemize}
-    \item Total Lean codebase: $\approx 4800$ lines across 36 modules
-    \item Theorems, lemmas and definitions: $\approx$219
-    \item \texttt{sorry} placeholders: \textbf{0}
+    \item Total Lean codebase: $\approx 5000$ lines across 38 modules
+    \item Theorems, lemmas and definitions: $\approx$225
+    \item \texttt{sorry} placeholders: \textbf{1} (\texttt{rank\_Z1\_formula}: Betti-number identity)
     \item Pinned Lean version: \texttt{leanprover/lean4:v4.27.0}
     \item Pinned Mathlib: compatible release
-    \item CI: all 3398 build jobs pass
+    \item CI: all 3419 build jobs pass
 \end{itemize}
 
 \section{Empirical Validation}

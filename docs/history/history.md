@@ -1096,3 +1096,28 @@ All 5 theorems (A.1, A.2, B.2, B.3, C.2) build cleanly across 3397 jobs with run
 - Full library (`AqeiBridge`, 3398 jobs) builds clean.
 <!-- ------ -->
 ---
+Completed: *Update docs + paper + commit* (4/4)
+
+Done. Here's a summary of what was accomplished this session:
+
+**Committed `bd4c8d2`** (from previous session — housekeeping):
+- `git mv` paper renamed `aqei-lean-formalization.tex` → discrete-causal-posets-lean4.tex
+- Trimmed TODO.md 277→45 lines, TODO-BLOCKED.md
+- Fixed DiscreteFutureContinuity.lean simp warning (`hmem_uv` proof)
+
+**Committed `9ad3878`** (this session — A.5 quantitative upgrade):
+
+Two new Lean modules:
+
+**DiscreteConnectedComponents.lean** (fully sorry-free):
+- `undirGraph M : SimpleGraph Pt` — symmetrizes directed edges via `SimpleGraph.fromRel`
+- `numComponents M : ℕ` — `Fintype.card` of connected component quotient
+- `numComponents_antitone` — subgraph inclusion increases component count; proof uses `surjective_map_ofLE` + `Fintype.card_le_of_surjective`
+
+**DiscreteH1QuantitativeUpgrade.lean** (1 sorry):
+- `rank_Z1_formula` **[sorry]** — Betti-number identity `rank Z₁(M) + |V| = |E_directed| + c(G_undir)`
+- `h1_quantitative_upgrade` **[sorry-free]** — `numDirEdges M₁ + numComponents M₁ ≤ numDirEdges M₂ + numComponents M₂` under `EdgeHom M₁ M₂ id`; proof: A.2 + rank formula via Cardinal calc
+
+**What remains**: close the one `rank_Z1_formula` sorry — needs spanning-forest argument connecting `boundary1`'s image rank to `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix` from Mathlib's Laplacian module (over ℝ, then transfer to ℤ).
+<!-- ------ -->
+---

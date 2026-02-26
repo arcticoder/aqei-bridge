@@ -385,3 +385,25 @@ Completed in two phases (Phase 1: linter/build fixes; Phase 2: docs, deprecation
   - `AQEI_chamber_constancy`: for convex C with nonempty interior, locally
     constant Φ is globally constant.
   - `AQEI_chamber_constancy_of_bounds_nonneg`: tangibility bounds variant.
+
+### A.5 — `h1_quantitative_upgrade` + connected-component infrastructure
+
+- Added `DiscreteConnectedComponents.lean` with:
+  - `undirGraph M : SimpleGraph Pt` — symmetrize directed edge relation via
+    `SimpleGraph.fromRel` to get the underlying undirected simple graph.
+  - `numComponents M : ℕ` — `Fintype.card (undirGraph M).ConnectedComponent`.
+  - `numComponents_antitone`: `EdgeHom M₁ M₂ id →
+    numComponents M₂ ≤ numComponents M₁`
+    (subgraph inclusion increases connected-component count).
+    Proof: surjective map `G₁.ConnectedComponent → G₂.ConnectedComponent` from
+    `ConnectedComponent.surjective_map_ofLE` + `Fintype.card_le_of_surjective`.
+
+- Added `DiscreteH1QuantitativeUpgrade.lean` with:
+  - `numDirEdges M : ℕ` — count of directed edges.
+  - `rank_Z1_formula` (one sorry): combinatorial rank identity
+    `rank Z₁(M) + |V| = numDirEdges M + numComponents M` (Euler/Betti formula).
+  - `h1_quantitative_upgrade` (sorry-free given `rank_Z1_formula`):
+    `EdgeHom M₁ M₂ id → numDirEdges M₁ + numComponents M₁ ≤ numDirEdges M₂ + numComponents M₂`.
+    This is the combinatorial form of the backlog item
+    `|E'| - |V| + c(G') ≤ |E| - |V| + c(G)`.
+    Proof: from A.2 + rank formula (cardinal calc + `exact_mod_cast`).

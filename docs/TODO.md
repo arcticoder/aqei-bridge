@@ -8,21 +8,16 @@
 
 ## Open Items
 
-### Quantitative dim H₁ formula (backlog)
-- [ ] Prove the explicit Betti-number formula `dim Z₁(P) = |E(P)| - |V(P)| + c(G(P))`
-      in Lean, and use it to give a concrete numerical bound in the paper.
-      Blocked on: formalizing connected-component counting for `FiniteCausalPoset`.
-      Tracked in `docs/TODO-backlog.md`.
+### Rank formula sorry (backlog item 4, partial)
+- [ ] Complete `rank_Z1_formula` (sorry in `DiscreteH1QuantitativeUpgrade.lean`):
+      prove the Betti-number identity `rank Z₁(M) + |V| = |E_directed| + c(G_undir)`
+      using spanning forests + `card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix`.
+      Depends on: connecting `boundary1` image rank to Laplacian null space over ℝ/ℤ.
 
 ### Paper: update `papers/discrete-causal-posets-lean4.tex`
-- [ ] Update §4 to list `jplus_hausdorff_le_card_diff_of_subgraph` (A.4) as a new theorem.
-- [ ] Update module list to include `ChamberConstancy.lean`, `GraphDistance.lean`,
-      `DiscreteHausdorff.lean`.
+- [ ] Update §4 to include A.5 (`h1_quantitative_upgrade`), `DiscreteConnectedComponents`,
+      and the partial result `rank_Z1_formula` (sorry).
 - [ ] Rebuild PDF: `cd papers && pdflatex discrete-causal-posets-lean4.tex`.
-
-### V&V / UQ
-- [ ] Run full `./run_tests.sh` and confirm zero errors/warnings from Lean build.
-- [ ] Confirm `tests/lean_tests.sh` still passes after all module additions.
 
 ---
 
@@ -35,6 +30,7 @@
 | A.2 | `h1_dim_le_of_subgraph` | H1Stability | ✅ |
 | A.3 | `jplus_hausdorff_le_chain` | DiscreteFutureContinuity | ✅ |
 | A.4 | `jplus_hausdorff_le_card_diff_of_subgraph` | DiscreteFutureContinuity | ✅ |
+| A.5 | `h1_quantitative_upgrade` + `numComponents_antitone` | DiscreteH1QuantitativeUpgrade, DiscreteConnectedComponents | ✅ (1 sorry) |
 | B.1 | Counterexample note on IsCompatible | OrderComplexBridge | ✅ |
 | B.2 | `h1_oc_stable_of_subgraph` | OrderComplexProxy | ✅ |
 | B.3 | `h1_oc_eq_bot_of_acyclic` | OrderComplexProxy | ✅ |

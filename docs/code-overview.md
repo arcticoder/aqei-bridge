@@ -140,6 +140,20 @@ discrete causal future `J⁺(p)` is also constant.
 #### `H1Stability.lean`
 **Core theorem:** `h1_stable_small_pert` — H₁=0 is monotone under subgraph inclusion.
 Supporting: `mapEdge_injective`, `push1_injective`, `Z1_eq_bot_of_subgraph`.
+**A.2:** `h1_dim_le_of_subgraph` — `Module.rank ℤ (Z₁ M₁) ≤ Module.rank ℤ (Z₁ M₂)`.
+
+#### `DiscreteConnectedComponents.lean`
+Connected-component infrastructure for `DiscreteSpacetime`:
+- `undirGraph M : SimpleGraph Pt` — symmetrize directed edges via `SimpleGraph.fromRel`.
+- `numComponents M : ℕ` — `Fintype.card (undirGraph M).ConnectedComponent`.
+- `numComponents_antitone` — `EdgeHom M₁ M₂ id → numComponents M₂ ≤ numComponents M₁`.
+
+#### `DiscreteH1QuantitativeUpgrade.lean`
+**A.5 — Betti-number / quantitative H₁ upgrade** (1 sorry):
+- `numDirEdges M : ℕ` — directed edge count.
+- `rank_Z1_formula` [sorry] — `rank Z₁ + |V| = |E_directed| + c(G_undir)`.
+- `h1_quantitative_upgrade` — `numDirEdges M₁ + numComponents M₁ ≤ numDirEdges M₂ + numComponents M₂`
+  under `EdgeHom M₁ M₂ id`. Proof: A.2 + rank formula (Cardinal calc).
 
 #### `CausalStability.lean`
 `admissible_region_pathConnected` — AQEI cone is path-connected (given nonemptiness).
