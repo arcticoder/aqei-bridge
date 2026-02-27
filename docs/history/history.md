@@ -1186,3 +1186,30 @@ Done. The node is live:
 Both components are on-chain: `discrete-causal-posets-lean4.pdf` (pdf) and aqei-bridge-lean-src.zip (code). Everything committed to `main`.
 <!-- ------ -->
 ---
+Upload 41 Lean source files individually to DeSci node drive:
+  root/lakefile.lean, root/lean-toolchain, root/lake-manifest.json
+  root/src/AqeiBridge.lean
+  root/src/AqeiBridge/*.lean (37 modules)
+  root/src/AqeiBridge/Examples/DiamondPresheaf.lean
+  root/src/AqeiBridge/Tactics/Linear.lean
+
+Published v1 with new Ceramic stream:
+  Stream: kjzl6kcym7w8yauwmvek5i9th3dp74moeyh8p8eqkojir3b8pdo8m8nkzi625l6
+  CID:    bafkreifi5t2cn2vx3lw7pfi6h7kbbmv55pt3nhzm5gllew6xaeczzsfalm
+  dPID:   1029 (unchanged)"
+
+Completed: *Record v1 results in docs* (3/3)
+
+Done. Here's what changed:
+
+**What was wrong:** The original upload was a single aqei-bridge-lean-src.zip file — an opaque archive with no visible `lakefile.lean`, so DeSci couldn't recognize the Lean 4 project structure.
+
+**What's correct now (dPID 1029 v1):** All 41 Lean source files are uploaded individually to the node drive with proper structure:
+- `root/lakefile.lean` (at root — triggers Lean 4 recognition)
+- `root/lean-toolchain`, `root/lake-manifest.json`  
+- `root/src/AqeiBridge.lean` + `root/src/AqeiBridge/*.lean` (37 modules)
+- `root/src/AqeiBridge/Examples/` and `Tactics/` subdirectories
+
+**Note:** The `energy/.env` now has `DESCI_NODES_SIGNER_KEY` set — that's the controller key for the v1 Ceramic stream. Any future version updates to this node must use that key (pass `signerFromPkey(process.env.DESCI_NODES_SIGNER_KEY)` instead of a fresh random wallet).
+<!-- ------ -->
+---

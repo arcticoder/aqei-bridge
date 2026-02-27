@@ -450,15 +450,34 @@ Published aqei-bridge Lean 4 formal proofs to DeSci Nodes.
 | dPID | **1029** |
 | Node URL | https://nodes.desci.com/node/w7FUY3agqCUH4jWT8RipPpIf2XNMODMUJ1F-5OOKbMI |
 | dPID URL | https://dpid.org/1029 |
-| Ceramic Stream | `kjzl6kcym7w8y8h9uua80nc1knnbhoabczxxolni9rclloi2rjdh32jqq2zsqs7` |
-| Manifest CID | `bafkreihro7uzyt4ucrfc76uhhn37kisqzgqhzsikna5aqmebaxe7y7zwza` |
 | Title | AqeiBridge: Lean 4 Formal Proofs of Causal Stability under AQEI Perturbations |
 | License | CC-BY-4.0 |
 
-### Uploaded Components
+### Version 0 (initial — 2026-02-27)
 
-- `discrete-causal-posets-lean4.pdf` — 9-page manuscript (componentType: `pdf`)
-- `aqei-bridge-lean-src.zip` — 47-file Lean 4 source archive (componentType: `code`)
+| Field | Value |
+|-------|-------|
+| Ceramic Stream | `kjzl6kcym7w8y8h9uua80nc1knnbhoabczxxolni9rclloi2rjdh32jqq2zsqs7` |
+| Manifest CID | `bafkreihro7uzyt4ucrfc76uhhn37kisqzgqhzsikna5aqmebaxe7y7zwza` |
+
+Components:
+- `discrete-causal-posets-lean4.pdf` — 9-page manuscript (`pdf`)
+- `aqei-bridge-lean-src.zip` — 47-file Lean 4 source archive (`code`, single zip)
+
+### Version 1 — individual Lean source files (2026-02-27)
+
+| Field | Value |
+|-------|-------|
+| Ceramic Stream | `kjzl6kcym7w8yauwmvek5i9th3dp74moeyh8p8eqkojir3b8pdo8m8nkzi625l6` |
+| Manifest CID | `bafkreifi5t2cn2vx3lw7pfi6h7kbbmv55pt3nhzm5gllew6xaeczzsfalm` |
+| Controller key | `DESCI_NODES_SIGNER_KEY` in `energy/.env` (address `0x1fa0486d2f455baA7A08b4E803D606B666f1916c`) |
+
+Components (v1 adds individual files — `lakefile.lean` at `root/`):
+- `root/lakefile.lean`, `root/lean-toolchain`, `root/lake-manifest.json`
+- `root/src/AqeiBridge.lean`
+- `root/src/AqeiBridge/*.lean` (37 module files)
+- `root/src/AqeiBridge/Examples/DiamondPresheaf.lean`
+- `root/src/AqeiBridge/Tactics/Linear.lean`
 
 ### Manuscript Updates (before publication)
 
