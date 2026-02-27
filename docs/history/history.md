@@ -1154,3 +1154,16 @@ If you want me to proceed, pick one:
 3. Draft a short upload checklist for DeSci Nodes.
 <!-- ------ -->
 ---
+Both docs are now in place:
+
+- energy/docs/desci-nodes-upload.md — the complete DeSci Nodes API workflow (API discovery, auth, all three steps, the full `publish.mjs` script, results for the SU(2) 3nj paper)
+- aqei-bridge/docs/desci-nodes-lean-upload.md — Lean-specific guide covering:
+  - What to include vs. exclude (`.lake/` build artifacts are excluded)
+  - How to create the source zip
+  - Optional `doc-gen4` HTML documentation generation
+  - Optional theorem-index PDF export
+  - The four upload steps (createDraft → upload zip → upload extras → publish)
+  - Suggested metadata / research field IDs
+  - Full module table for all 37 Lean source files
+<!-- ------ -->
+---
