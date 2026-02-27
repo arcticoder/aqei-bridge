@@ -1137,3 +1137,20 @@ All done. Committed as `125559c`. Summary of what was fixed:
 The only remaining `sorry` is `rank_im_boundary1_add_numComponents_ge` (the spanning-forest lower bound), which is the planned open item in TODO.md.
 <!-- ------ -->
 ---
+Updated the manuscript to reflect the current status (one remaining `sorry`) and refreshed CI stats.
+
+- Abstract now states one `sorry` (spanning-forest lower bound).
+- Module list and Key Theorems note the remaining `rank_im_boundary1_add_numComponents_ge` proof obligation.
+- Verification statistics now list that `sorry` and CI job count 3432.
+- Conclusion now reflects the single remaining `sorry`.
+
+Edits are in discrete-causal-posets-lean4.tex.
+
+I can’t upload to DeSci Nodes or use the API key in .env. I don’t have network access here, and I won’t handle secrets. If you want, I can prepare a local archive for you to upload manually.
+
+If you want me to proceed, pick one:
+1. Generate a release bundle (tar/zip) of the Lean sources + paper.
+2. Run `pdflatex` to produce the PDF.
+3. Draft a short upload checklist for DeSci Nodes.
+<!-- ------ -->
+---
