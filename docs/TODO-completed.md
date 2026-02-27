@@ -435,3 +435,32 @@ Completed in two phases (Phase 1: linter/build fixes; Phase 2: docs, deprecation
     This is the combinatorial form of the backlog item
     `|E'| - |V| + c(G') ≤ |E| - |V| + c(G)`.
     Proof: from A.2 + rank formula (cardinal calc + `exact_mod_cast`).
+
+---
+
+## DeSci Nodes Publication — 2026-02-27
+
+Published aqei-bridge Lean 4 formal proofs to DeSci Nodes.
+
+### Node Details
+
+| Field | Value |
+|-------|-------|
+| Node UUID | `w7FUY3agqCUH4jWT8RipPpIf2XNMODMUJ1F-5OOKbMI` |
+| dPID | **1029** |
+| Node URL | https://nodes.desci.com/node/w7FUY3agqCUH4jWT8RipPpIf2XNMODMUJ1F-5OOKbMI |
+| dPID URL | https://dpid.org/1029 |
+| Ceramic Stream | `kjzl6kcym7w8y8h9uua80nc1knnbhoabczxxolni9rclloi2rjdh32jqq2zsqs7` |
+| Manifest CID | `bafkreihro7uzyt4ucrfc76uhhn37kisqzgqhzsikna5aqmebaxe7y7zwza` |
+| Title | AqeiBridge: Lean 4 Formal Proofs of Causal Stability under AQEI Perturbations |
+| License | CC-BY-4.0 |
+
+### Uploaded Components
+
+- `discrete-causal-posets-lean4.pdf` — 9-page manuscript (componentType: `pdf`)
+- `aqei-bridge-lean-src.zip` — 47-file Lean 4 source archive (componentType: `code`)
+
+### Manuscript Updates (before publication)
+
+- Abstract: corrected "zero sorry placeholders" → one sorry remaining (spanning-forest lower bound)
+- Stats: updated CI job count 3419 → 3432; sorry theorem renamed to `rank_im_boundary1_add_numComponents_ge`

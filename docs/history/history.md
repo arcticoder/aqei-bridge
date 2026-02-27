@@ -1167,3 +1167,22 @@ Both docs are now in place:
   - Full module table for all 37 Lean source files
 <!-- ------ -->
 ---
+Node UUID: w7FUY3agqCUH4jWT8RipPpIf2XNMODMUJ1F-5OOKbMI
+dPID:      1029
+URL:       https://nodes.desci.com/node/w7FUY3agqCUH4jWT8RipPpIf2XNMODMUJ1F-5OOKbMI
+Stream:    kjzl6kcym7w8y8h9uua80nc1knnbhoabczxxolni9rclloi2rjdh32jqq2zsqs7
+CID:       bafkreihro7uzyt4ucrfc76uhhn37kisqzgqhzsikna5aqmebaxe7y7zwza
+
+Uploaded: discrete-causal-posets-lean4.pdf (pdf) + aqei-bridge-lean-src.zip (code)
+Paper: corrected sorry count (1 remaining), CI job count 3419→3432"
+
+Done. The node is live:
+
+- **dPID:** 1029 — https://dpid.org/1029
+- **Node URL:** https://nodes.desci.com/node/w7FUY3agqCUH4jWT8RipPpIf2XNMODMUJ1F-5OOKbMI
+- **Ceramic Stream:** `kjzl6kcym7w8y8h9uua80nc1knnbhoabczxxolni9rclloi2rjdh32jqq2zsqs7`
+- **Manifest CID:** `bafkreihro7uzyt4ucrfc76uhhn37kisqzgqhzsikna5aqmebaxe7y7zwza`
+
+Both components are on-chain: `discrete-causal-posets-lean4.pdf` (pdf) and aqei-bridge-lean-src.zip (code). Everything committed to `main`.
+<!-- ------ -->
+---
